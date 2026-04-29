@@ -85,6 +85,7 @@
   <button class="tab" onclick="showTab('entry')">Log entry</button>
   <button class="tab" onclick="showTab('log')">History</button>
   <button class="tab" onclick="showTab('summary')">Summary</button>
+  <button class="tab" onclick="showTab('about')">About</button>
 </div>
 
 <!-- SETUP -->
@@ -417,6 +418,71 @@ function buildResponse(data) {
   <div id="summary-container"><p class="es">Log at least 3 entries to see summary.</p></div>
 </div>
 
+
+<!-- ABOUT -->
+<div id="tab-about" style="display:none">
+  <div class="sec">
+    <p class="sec-title">What is this?</p>
+    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">Project Diagnonsense is a free symptom tracker for people navigating undiagnosed or early-stage inflammatory conditions — particularly where symptoms are episodic, bilateral, or hard to document at a clinical appointment.</p>
+    <p style="font-size:14px;line-height:1.7;color:#333">It tracks joint temperatures against control sites, circumference measurements, bilateral pain scores with type detail, headache patterns, sun exposure correlation, medications, and photo flagging. Everything is designed to produce objective, timestamped data that can be brought to a rheumatologist or specialist.</p>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">How your data works — and why it's yours</p>
+    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">This app stores nothing on any server we control. When you fill in the form and press <strong>Save and sync</strong>, your entry is sent directly from your device to a Google Sheet that <strong>you created and own</strong>. No one else has access to it unless you share it.</p>
+    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">The connection works through a small script (Google Apps Script) that you paste into your own Google Sheet during setup. That script receives your data and writes it as a row in your sheet — it runs entirely within your own Google account.</p>
+    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">The app itself is a single HTML file. It runs locally in your browser. It has no analytics, no advertising, no tracking, and no back-end. Your health data never touches any third-party server.</p>
+    <p style="font-size:14px;line-height:1.7;color:#333"><strong>To export your data:</strong> open your Google Sheet at any time and download it as a CSV or Excel file. You can share it directly with a doctor, or delete it at any time by deleting the sheet.</p>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Quick start</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">1</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Set up your Google Sheet</p>
+          <p style="font-size:13px;color:#666;line-height:1.6">Go to the <strong>Setup tab</strong>, follow the 5 steps. Takes about 5 minutes the first time. You'll need a free Google account.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">2</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Add to your home screen</p>
+          <p style="font-size:13px;color:#666;line-height:1.6">On iPhone: open in Safari → Share button → Add to Home Screen. On Android: open in Chrome → three dots → Add to Home Screen. It will open like an app.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">3</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Use on multiple devices</p>
+          <p style="font-size:13px;color:#666;line-height:1.6">Open the same URL on any device, paste the same Google Sheets URL in the Setup tab. All entries from all devices go into the same sheet.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">4</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Bring data to appointments</p>
+          <p style="font-size:13px;color:#666;line-height:1.6">Open your Google Sheet before an appointment. Download as CSV or share directly. The Summary tab in the app also gives an overview of patterns over time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Temperature protocol</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:8px">Use an infrared non-contact thermometer (12:1 spot ratio, 0.1°C resolution — around €30–50). Always measure at the same time, from the same distance.</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:8px"><strong>Inner forearm control</strong> — mid-point between wrist and elbow, soft tissue. Used as baseline for upper body joints (elbows, hands, jaw).</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:8px"><strong>Calf control</strong> — mid-calf, soft tissue. Used as baseline for lower body joints (knees, hips, feet).</p>
+    <p style="font-size:13px;line-height:1.7;color:#666">The differential (joint minus control) is what matters clinically — not the absolute reading. A consistent pattern of +1.5°C or more at the same joint on waking is meaningful data.</p>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Open source</p>
+    <p style="font-size:13px;line-height:1.7;color:#666">This project is free and open source. If you're a developer and want to improve it, fork the repository, make changes, and submit a pull request. All contributions welcome.</p>
+  </div>
+</div>
+
 <script>
 const SHEET_URL_KEY = 'diagno_sheets_url';
 const ENTRIES_KEY = 'diagno_entries_v5';
@@ -699,11 +765,11 @@ async function loadFromSheets(){
 }
 
 function showTab(t){
-  ['setup','entry','log','summary'].forEach(id=>{
+  ['setup','entry','log','summary','about'].forEach(id=>{
     document.getElementById('tab-'+id).style.display=id===t?'block':'none';
   });
   document.querySelectorAll('.tab').forEach((el,i)=>{
-    el.classList.toggle('active',['setup','entry','log','summary'][i]===t);
+    el.classList.toggle('active',['setup','entry','log','summary','about'][i]===t);
   });
   if(t==='entry') document.getElementById('no-url-warn').style.display=sheetsUrl?'none':'block';
   if(t==='log') renderLog();
