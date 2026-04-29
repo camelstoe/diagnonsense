@@ -4,7 +4,7 @@ A free, open-source symptom tracker for people navigating undiagnosed or early-s
 
 ## Live app
 
-[Open Project Diagnonsense](https://your-github-pages-url-here](https://camelstoe.github.io/diagnonsense/)
+[Open Project Diagnonsense](https://camelstoe.github.io/diagnonsense/)
 
 ## What it tracks
 
