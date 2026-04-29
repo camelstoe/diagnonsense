@@ -136,11 +136,11 @@ function doPost(e) {
         "Raw L knee","Raw R knee","Raw L elbow","Raw R elbow",
         "Raw L hand","Raw R hand","Raw L jaw","Raw R jaw",
         "Circ L knee (mm)","Circ R knee (mm)","Circ L elbow (mm)","Circ R elbow (mm)",
-        "Finger L (size)","Finger R (size)","Jaw opening (mm)",
-        "Pain hips","Pain knees","Pain elbows","Pain hands",
+        "Thumb L","Thumb R","Index L","Index R","Middle L","Middle R","Ring L","Ring R","Little L","Little R","Jaw opening (mm)",
+        "Pain head","Pain neck","Pain hips","Pain knees","Pain elbows","Pain hands",
         "Pain jaw","Pain feet","Pain fatigue",
         "Sun exposure","UV index","Hours since sun","Skin coverage",
-        "Swelling visible","Photos taken of","Medications","Notes"
+        "Swelling visible","Photos taken of","Pain types","Head location","Head type","Head area","Ice wanted","Ice applied","Medications","Notes"
       ]);
       sheet.setFrozenRows(1);
     }
@@ -152,11 +152,11 @@ function doPost(e) {
       d.rLknee, d.rRknee, d.rLelbow, d.rRelbow,
       d.rLhand, d.rRhand, d.rLjaw, d.rRjaw,
       d.cLknee, d.cRknee, d.cLelbow, d.cRelbow,
-      d.cLfinger, d.cRfinger, d.cJaw,
-      d.pHips, d.pKnees, d.pElbows, d.pHands,
+      d.cLthumb, d.cRthumb, d.cLindex, d.cRindex, d.cLmiddle, d.cRmiddle, d.cLring, d.cRring, d.cLlittle, d.cRlittle, d.cJaw,
+      d.pHead, d.pNeck, d.pHips, d.pKnees, d.pElbows, d.pHands,
       d.pJaw, d.pFeet, d.pFatigue,
       d.sunExp, d.uvIndex, d.sunHours, d.sunCoverage,
-      d.swelling, d.photos, d.meds, d.notes
+      d.swelling, d.photos, d.painTypes, d.headLoc, d.headType, d.headArea, d.iceWanted, d.iceApplied, d.meds, d.notes
     ]);
     return buildResponse({status:"ok"});
   } catch(err) {
@@ -220,7 +220,7 @@ function buildResponse(data) {
       <div class="f"><label>Date</label><input type="date" id="entry-date"></div>
       <div class="f"><label>Time slot</label>
         <select id="entry-time">
-          <option value="AM on waking">AM — on waking</option>
+          <option value="Waking">Waking</option>
           <option value="Midday">Midday</option>
           <option value="Evening">Evening</option>
           <option value="Night">Night</option>
@@ -255,21 +255,94 @@ function buildResponse(data) {
       <div class="f"><label>Right knee (mid-patella, mm)</label><input type="number" id="c-rknee" placeholder="mm"></div>
       <div class="f"><label>Left elbow (olecranon, mm)</label><input type="number" id="c-lelbow" placeholder="mm"></div>
       <div class="f"><label>Right elbow (olecranon, mm)</label><input type="number" id="c-relbow" placeholder="mm"></div>
-      <div class="f"><label>Index finger L (ring sizer no.)</label><input type="number" id="c-lfinger" placeholder="size"></div>
-      <div class="f"><label>Index finger R (ring sizer no.)</label><input type="number" id="c-rfinger" placeholder="size"></div>
+      <div class="f"><label>L thumb (ring sizer)</label><input type="number" id="c-lthumb" placeholder="size"></div>
+      <div class="f"><label>R thumb (ring sizer)</label><input type="number" id="c-rthumb" placeholder="size"></div>
+      <div class="f"><label>L index finger</label><input type="number" id="c-lindex" placeholder="size"></div>
+      <div class="f"><label>R index finger</label><input type="number" id="c-rindex" placeholder="size"></div>
+      <div class="f"><label>L middle finger</label><input type="number" id="c-lmiddle" placeholder="size"></div>
+      <div class="f"><label>R middle finger</label><input type="number" id="c-rmiddle" placeholder="size"></div>
+      <div class="f"><label>L ring finger</label><input type="number" id="c-lring" placeholder="size"></div>
+      <div class="f"><label>R ring finger</label><input type="number" id="c-rring" placeholder="size"></div>
+      <div class="f"><label>L little finger</label><input type="number" id="c-llittle" placeholder="size"></div>
+      <div class="f"><label>R little finger</label><input type="number" id="c-rlittle" placeholder="size"></div>
       <div class="f"><label>Jaw — max mouth opening (mm)</label><input type="number" id="c-jaw" placeholder="mm"></div>
     </div>
   </div>
 
   <div class="sec">
     <p class="sec-title">Pain and symptom scores (0 = none, 10 = worst)</p>
-    <div class="pr"><label>Hips</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="hips"><span class="val">0</span></div>
-    <div class="pr"><label>Knees</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="knees"><span class="val">0</span></div>
-    <div class="pr"><label>Elbows</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="elbows"><span class="val">0</span></div>
-    <div class="pr"><label>Hands / fingers</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="hands"><span class="val">0</span></div>
-    <div class="pr"><label>Jaw</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="jaw"><span class="val">0</span></div>
-    <div class="pr"><label>Feet</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="feet"><span class="val">0</span></div>
-    <div class="pr"><label>Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="fatigue"><span class="val">0</span></div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Head</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="head"><span class="val">0</span></div>
+    <p style="font-size:12px;color:#888;margin:8px 0 5px">Headache location</p>
+    <div class="cb-group"><label class="cb-label"><input type="checkbox" class="head-loc" value="Both sides / band"> Both sides / band</label><label class="cb-label"><input type="checkbox" class="head-loc" value="One side"> One side</label><label class="cb-label"><input type="checkbox" class="head-loc" value="Behind / around eye"> Behind / around eye</label><label class="cb-label"><input type="checkbox" class="head-loc" value="Forehead / face"> Forehead / face</label><label class="cb-label"><input type="checkbox" class="head-loc" value="Back of head / neck"> Back of head / neck</label></div>
+    <p style="font-size:12px;color:#888;margin:8px 0 5px">Pain type</p>
+    <div class="cb-group"><label class="cb-label"><input type="checkbox" class="head-type" value="Squeezing / tightness"> Squeezing / tightness</label><label class="cb-label"><input type="checkbox" class="head-type" value="Throbbing / pulsating"> Throbbing / pulsating</label><label class="cb-label"><input type="checkbox" class="head-type" value="Piercing / burning"> Piercing / burning</label><label class="cb-label"><input type="checkbox" class="head-type" value="Pressure / aching"> Pressure / aching</label><label class="cb-label"><input type="checkbox" class="head-type" value="Dull / stiff"> Dull / stiff</label></div>
+    <p style="font-size:12px;color:#888;margin:8px 0 5px">Area affected</p>
+    <div class="cb-group"><label class="cb-label"><input type="checkbox" class="head-area" value="Eyes"> Eyes</label><label class="cb-label"><input type="checkbox" class="head-area" value="Cheeks"> Cheeks</label><label class="cb-label"><input type="checkbox" class="head-area" value="Temples"> Temples</label><label class="cb-label"><input type="checkbox" class="head-area" value="Forehead"> Forehead</label><label class="cb-label"><input type="checkbox" class="head-area" value="Back of head"> Back of head</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="head"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="head"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Neck</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="neck"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:6px"><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Burning"> Burning</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Throbbing"> Throbbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Aching"> Aching</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Stabbing"> Stabbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Pressing"> Pressing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Dull"> Dull</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Stiff"> Stiff</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="neck" value="Shooting"> Shooting</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="neck"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="neck"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Hips</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="hips"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:6px"><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Burning"> Burning</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Throbbing"> Throbbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Aching"> Aching</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Stabbing"> Stabbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Pressing"> Pressing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Dull"> Dull</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Stiff"> Stiff</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hips" value="Shooting"> Shooting</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="hips"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="hips"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Knees</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="knees"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:6px"><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Burning"> Burning</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Throbbing"> Throbbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Aching"> Aching</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Stabbing"> Stabbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Pressing"> Pressing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Dull"> Dull</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Stiff"> Stiff</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="knees" value="Shooting"> Shooting</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="knees"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="knees"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Elbows</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="elbows"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:6px"><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Burning"> Burning</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Throbbing"> Throbbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Aching"> Aching</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Stabbing"> Stabbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Pressing"> Pressing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Dull"> Dull</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Stiff"> Stiff</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="elbows" value="Shooting"> Shooting</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="elbows"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="elbows"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Hands / fingers</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="hands"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:6px"><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Burning"> Burning</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Throbbing"> Throbbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Aching"> Aching</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Stabbing"> Stabbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Pressing"> Pressing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Dull"> Dull</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Stiff"> Stiff</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="hands" value="Shooting"> Shooting</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="hands"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="hands"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Jaw</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="jaw"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:6px"><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Burning"> Burning</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Throbbing"> Throbbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Aching"> Aching</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Stabbing"> Stabbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Pressing"> Pressing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Dull"> Dull</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Stiff"> Stiff</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="jaw" value="Shooting"> Shooting</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="jaw"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="jaw"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Feet</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="feet"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:6px"><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Burning"> Burning</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Throbbing"> Throbbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Aching"> Aching</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Stabbing"> Stabbing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Pressing"> Pressing</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Dull"> Dull</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Stiff"> Stiff</label><label class="cb-label"><input type="checkbox" class="ptype" data-joint="feet" value="Shooting"> Shooting</label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-wanted" data-joint="feet"> Ice wanted</label>
+        <label class="cb-label" style="background:#e6f1fb;border-color:#b3d1f0"><input type="checkbox" class="ice-applied" data-joint="feet"> Ice applied</label>
+      </div>
+  </div>
+  <div class="sec" style="margin-bottom:10px">
+    <div class="pr"><label style="font-weight:500">Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="fatigue"><span class="val">0</span></div>
   </div>
 
   <div class="sec">
@@ -460,6 +533,24 @@ function getSunCoverage() {
   return Object.entries(map).filter(([k]) => document.getElementById('sun-' + k).checked).map(([,v]) => v).join('; ');
 }
 
+function getPainTypes() {
+  const result = {};
+  document.querySelectorAll('.ptype:checked').forEach(el => {
+    const j = el.dataset.joint;
+    if(!result[j]) result[j] = [];
+    result[j].push(el.value);
+  });
+  return Object.entries(result).map(([j,types]) => j + ': ' + types.join(', ')).join(' | ');
+}
+
+function getGroupChecked(cls) {
+  return Array.from(document.querySelectorAll('.' + cls + ':checked')).map(el => el.value).join('; ');
+}
+
+function getIce(cls) {
+  return Array.from(document.querySelectorAll('.' + cls + ':checked')).map(el => el.dataset.joint).join('; ');
+}
+
 async function saveEntry() {
   const btn = document.getElementById('save-btn');
   const bar = document.getElementById('save-status');
@@ -489,16 +580,30 @@ async function saveEntry() {
     cRknee: document.getElementById('c-rknee').value||null,
     cLelbow: document.getElementById('c-lelbow').value||null,
     cRelbow: document.getElementById('c-relbow').value||null,
-    cLfinger: document.getElementById('c-lfinger').value||null,
-    cRfinger: document.getElementById('c-rfinger').value||null,
+    cLthumb: document.getElementById('c-lthumb').value||null,
+    cRthumb: document.getElementById('c-rthumb').value||null,
+    cLindex: document.getElementById('c-lindex').value||null,
+    cRindex: document.getElementById('c-rindex').value||null,
+    cLmiddle: document.getElementById('c-lmiddle').value||null,
+    cRmiddle: document.getElementById('c-rmiddle').value||null,
+    cLring: document.getElementById('c-lring').value||null,
+    cRring: document.getElementById('c-rring').value||null,
+    cLlittle: document.getElementById('c-llittle').value||null,
+    cRlittle: document.getElementById('c-rlittle').value||null,
     cJaw: document.getElementById('c-jaw').value||null,
-    pHips: pain.hips, pKnees: pain.knees, pElbows: pain.elbows,
+    pHead: pain.head, pNeck: pain.neck, pHips: pain.hips, pKnees: pain.knees, pElbows: pain.elbows,
     pHands: pain.hands, pJaw: pain.jaw, pFeet: pain.feet, pFatigue: pain.fatigue,
     sunExp: document.getElementById('sun-exp').value,
     uvIndex: document.getElementById('uv-index').value||null,
     sunHours: document.getElementById('sun-hours').value||null,
     sunCoverage: getSunCoverage(),
     swelling: getChecked('swelling-checks'),
+    painTypes: getPainTypes(),
+    headLoc: getGroupChecked('head-loc'),
+    headType: getGroupChecked('head-type'),
+    headArea: getGroupChecked('head-area'),
+    iceWanted: getIce('ice-wanted'),
+    iceApplied: getIce('ice-applied'),
     photos: getChecked('photo-checks'),
     meds: medRows.filter(r=>r.name.trim()).map(m=>(m.taken?'[taken] ':'[not taken] ')+m.name).join('; '),
     notes: document.getElementById('entry-notes').value
@@ -550,7 +655,10 @@ function resetForm() {
   });
   document.getElementById('t-control').value='';
   document.getElementById('ctrl-display').textContent='';
-  ['c-lknee','c-rknee','c-lelbow','c-relbow','c-lfinger','c-rfinger','c-jaw'].forEach(id => document.getElementById(id).value='');
+  ['c-lknee','c-rknee','c-lelbow','c-relbow','c-jaw',
+   'c-lthumb','c-rthumb','c-lindex','c-rindex','c-lmiddle','c-rmiddle',
+   'c-lring','c-rring','c-llittle','c-rlittle'].forEach(id => document.getElementById(id).value='');
+  document.querySelectorAll('.ptype,.head-loc,.head-type,.head-area,.ice-wanted,.ice-applied').forEach(el => el.checked=false);
   medRows=[]; renderMedRows();
 }
 
@@ -597,7 +705,7 @@ function renderLog() {
     const topDiffs = diffKeys.map((k,i)=>({l:TEMP_LABELS[i],v:parseFloat(e[k])}))
       .filter(x=>!isNaN(x.v)&&x.v>0.3).sort((a,b)=>b.v-a.v).slice(0,3)
       .map(x=>x.l+' +'+x.v.toFixed(1)).join(', ') || '—';
-    const painCfg=[{l:'hips',k:'pHips'},{l:'knees',k:'pKnees'},{l:'elbows',k:'pElbows'},{l:'hands',k:'pHands'},{l:'jaw',k:'pJaw'},{l:'feet',k:'pFeet'},{l:'fatigue',k:'pFatigue'}];
+    const painCfg=[{l:'head',k:'pHead'},{l:'neck',k:'pNeck'},{l:'hips',k:'pHips'},{l:'knees',k:'pKnees'},{l:'elbows',k:'pElbows'},{l:'hands',k:'pHands'},{l:'jaw',k:'pJaw'},{l:'feet',k:'pFeet'},{l:'fatigue',k:'pFatigue'}];
     const painPeak = painCfg.map(({l,k})=>({l,v:parseInt(e[k]||0)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,2).map(x=>x.l+' '+x.v).join(', ')||'—';
     const sw = (e['Swelling visible']||e.swelling||'');
     const swTags = sw ? sw.split(';').map(s=>`<span class="tag">${s.trim()}</span>`).join('') : '—';
@@ -627,7 +735,7 @@ function renderSummary() {
     if(!vals.length) return null;
     return {label:TEMP_LABELS[i], avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1), max:Math.max(...vals).toFixed(1), n:vals.length};
   }).filter(Boolean);
-  const painCfg=[{l:'Hips',k:'pHips'},{l:'Knees',k:'pKnees'},{l:'Elbows',k:'pElbows'},{l:'Hands',k:'pHands'},{l:'Jaw',k:'pJaw'},{l:'Feet',k:'pFeet'},{l:'Fatigue',k:'pFatigue'}];
+  const painCfg=[{l:'Head',k:'pHead'},{l:'Neck',k:'pNeck'},{l:'Hips',k:'pHips'},{l:'Knees',k:'pKnees'},{l:'Elbows',k:'pElbows'},{l:'Hands',k:'pHands'},{l:'Jaw',k:'pJaw'},{l:'Feet',k:'pFeet'},{l:'Fatigue',k:'pFatigue'}];
   const avgPain = painCfg.map(({l,k})=>{
     const vals=entries.map(e=>parseInt(e[k]||0)).filter(v=>v>0);
     return vals.length?{label:l,avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1)}:null;
