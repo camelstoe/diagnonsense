@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Diagnonsense</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:#f5f5f3;color:#1a1a1a;padding:16px;max-width:720px;margin:0 auto}
+  h1{font-size:18px;font-weight:500;margin-bottom:16px;color:#1a1a1a}
+  .tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+  .tab{padding:6px 14px;font-size:13px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:none;color:#666}
+  .tab.active{background:#eee;color:#1a1a1a;font-weight:500;border-color:#bbb}
+  .sec{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:16px;margin-bottom:12px}
+  .sec-title{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+  .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .f{display:flex;flex-direction:column;gap:4px}
+  .f label{font-size:12px;color:#666}
+  .f input,.f select,.f textarea{font-size:14px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;width:100%}
+  .f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:#999}
+  .diff-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
+  .diff-pos{background:#faeeda;color:#854f0b}
+  .diff-neg{background:#eaf3de;color:#3b6d11}
+  .diff-zero{background:#f0f0ee;color:#888}
+  .ctrl-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:10px 12px;background:#f5f5f3;border-radius:8px;flex-wrap:wrap}
+  .ctrl-row label{font-size:13px;color:#666}
+  .ctrl-row input{width:90px;font-size:14px;padding:6px 10px;border:1px solid #ddd;border-radius:8px}
+  .ctrl-val{font-size:13px;font-weight:500;color:#1a1a1a}
+  .pr{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .pr label{font-size:13px;color:#1a1a1a;min-width:120px}
+  .pr input[type=range]{flex:1;accent-color:#555}
+  .pr .val{font-size:13px;font-weight:500;min-width:24px;color:#1a1a1a}
+  .cb-group{display:flex;flex-wrap:wrap;gap:8px}
+  .cb-label{font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;padding:4px 10px;border:1px solid #e5e5e5;border-radius:8px;background:#fff}
+  .cb-label input{width:14px;height:14px;accent-color:#555}
+  .cb-label:has(input:checked){background:#f0f0ee;border-color:#bbb}
+  .sun-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px}
+  .add-med-btn{font-size:12px;color:#888;background:none;border:1px dashed #ccc;border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:6px}
+  .add-med-btn:hover{color:#333}
+  .med-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .med-row input[type=text]{flex:1;min-width:140px;font-size:13px;padding:6px 10px;border:1px solid #ddd;border-radius:8px}
+  .btn-p{background:#eee;border:1px solid #ccc;border-radius:8px;padding:9px 22px;font-size:14px;cursor:pointer;color:#1a1a1a;font-weight:500}
+  .btn-p:hover{background:#e0e0e0}
+  .btn-p:disabled{opacity:.5;cursor:not-allowed}
+  .btn-s{background:none;border:1px solid #ddd;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:#888}
+  .btn-s:hover{color:#333}
+  .status-bar{font-size:13px;padding:9px 13px;border-radius:8px;margin-top:10px;display:none}
+  .status-ok{background:#e1f5ee;color:#0f6e56}
+  .status-err{background:#fcebeb;color:#a32d2d}
+  .status-pending{background:#faeeda;color:#854f0b}
+  .warn{background:#faeeda;color:#854f0b;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;padding:7px 8px;border-bottom:1px solid #e5e5e5;color:#888;font-weight:500}
+  td{padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#1a1a1a;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:#f0f0ee;color:#666;margin:1px}
+  .tag.sun{background:#faeeda;color:#854f0b}
+  .tag.photo{background:#e6f1fb;color:#185fa5}
+  .tag.med{background:#e1f5ee;color:#0f6e56}
+  .es{color:#888;font-size:13px;text-align:center;padding:2rem 0}
+  .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+  .mc{background:#f5f5f3;border-radius:8px;padding:12px 14px}
+  .ml{font-size:12px;color:#888;margin:0 0 4px}
+  .mv{font-size:22px;font-weight:500;color:#1a1a1a;margin:0}
+  .url-saved{font-size:12px;color:#0f6e56;margin-top:5px}
+  .setup-step{border:1px solid #e5e5e5;border-radius:10px;padding:13px 15px;margin-bottom:10px}
+  .step-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#eee;font-size:12px;font-weight:500;margin-right:8px}
+  .step-title{font-size:13px;font-weight:500}
+  .step-body{font-size:13px;color:#666;margin:8px 0 0 30px;line-height:1.65}
+  .step-body a{color:#185fa5}
+  .code-wrap{background:#f5f5f3;border:1px solid #e5e5e5;border-radius:8px;padding:11px 13px;font-family:monospace;font-size:11px;color:#1a1a1a;white-space:pre-wrap;word-break:break-all;max-height:140px;overflow-y:auto;margin:8px 0 0 30px;line-height:1.5}
+  .copy-btn{font-size:11px;background:none;border:1px solid #ccc;border-radius:6px;padding:3px 9px;cursor:pointer;color:#666;margin:5px 0 0 30px}
+  .copy-btn:hover{color:#333}
+  @media(max-width:480px){
+    body{padding:10px}
+    .pr label{min-width:90px;font-size:12px}
+    .tabs{gap:3px}
+    .tab{padding:5px 10px;font-size:12px}
+  }
+</style>
+</head>
+<body>
+<h1>Project Diagnonsense</h1>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('setup')">Setup</button>
+  <button class="tab" onclick="showTab('entry')">Log entry</button>
+  <button class="tab" onclick="showTab('log')">History</button>
+  <button class="tab" onclick="showTab('summary')">Summary</button>
+</div>
+
+<!-- SETUP -->
+<div id="tab-setup">
+  <div class="sec">
+    <p class="sec-title">Connect to Google Sheets</p>
+    <p style="font-size:13px;color:#666;margin-bottom:16px">Paste your Google Apps Script web app URL below. If you haven't set it up yet, follow the steps.</p>
+    <div class="f" style="margin-bottom:12px">
+      <label>Web app URL</label>
+      <input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/..." oninput="saveUrl()" style="font-family:monospace;font-size:12px">
+      <div id="url-saved-msg" class="url-saved" style="display:none">URL saved</div>
+    </div>
+    <button class="btn-p" onclick="testConnection()">Test connection</button>
+    <div class="status-bar" id="test-status"></div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">First time setup — 5 minutes</p>
+
+    <div class="setup-step">
+      <span class="step-num">1</span><span class="step-title">Create a Google Sheet</span>
+      <div class="step-body">Go to <a href="https://sheets.new" target="_blank">sheets.new</a> and name it "Project Diagnonsense".</div>
+    </div>
+
+    <div class="setup-step">
+      <span class="step-num">2</span><span class="step-title">Open Apps Script</span>
+      <div class="step-body">In the sheet: click <strong>Extensions → Apps Script</strong>. Delete everything in the editor.</div>
+    </div>
+
+    <div class="setup-step">
+      <span class="step-num">3</span><span class="step-title">Paste the script</span>
+      <div class="step-body">Copy the code below and paste it into Apps Script, then click the save icon.</div>
+      <div class="code-wrap" id="script-code">const SHEET_NAME = "Entries";
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      sheet = ss.insertSheet(SHEET_NAME);
+      sheet.appendRow([
+        "Timestamp","Date","Time slot","Temp control (°C)",
+        "Diff L knee","Diff R knee","Diff L elbow","Diff R elbow",
+        "Diff L hand","Diff R hand","Diff L jaw","Diff R jaw",
+        "Raw L knee","Raw R knee","Raw L elbow","Raw R elbow",
+        "Raw L hand","Raw R hand","Raw L jaw","Raw R jaw",
+        "Circ L knee (mm)","Circ R knee (mm)","Circ L elbow (mm)","Circ R elbow (mm)",
+        "Finger L (size)","Finger R (size)","Jaw opening (mm)",
+        "Pain hips","Pain knees","Pain elbows","Pain hands",
+        "Pain jaw","Pain feet","Pain fatigue",
+        "Sun exposure","UV index","Hours since sun","Skin coverage",
+        "Swelling visible","Photos taken of","Medications","Notes"
+      ]);
+      sheet.setFrozenRows(1);
+    }
+    const d = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      new Date().toISOString(), d.date, d.time, d.tempControl,
+      d.dLknee, d.dRknee, d.dLelbow, d.dRelbow,
+      d.dLhand, d.dRhand, d.dLjaw, d.dRjaw,
+      d.rLknee, d.rRknee, d.rLelbow, d.rRelbow,
+      d.rLhand, d.rRhand, d.rLjaw, d.rRjaw,
+      d.cLknee, d.cRknee, d.cLelbow, d.cRelbow,
+      d.cLfinger, d.cRfinger, d.cJaw,
+      d.pHips, d.pKnees, d.pElbows, d.pHands,
+      d.pJaw, d.pFeet, d.pFatigue,
+      d.sunExp, d.uvIndex, d.sunHours, d.sunCoverage,
+      d.swelling, d.photos, d.meds, d.notes
+    ]);
+    return buildResponse({status:"ok"});
+  } catch(err) {
+    return buildResponse({status:"error", message: err.toString()});
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function doGet(e) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) return buildResponse({rows:[]});
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const rows = data.slice(1).map(r => {
+      const obj = {};
+      headers.forEach((h,i) => obj[h] = r[i]);
+      return obj;
+    });
+    return buildResponse({rows});
+  } catch(err) {
+    return buildResponse({status:"error", message: err.toString()});
+  }
+}
+
+function buildResponse(data) {
+  const output = ContentService.createTextOutput(JSON.stringify(data));
+  output.setMimeType(ContentService.MimeType.JSON);
+  return output;
+}</div>
+      <button class="copy-btn" onclick="copyScript()">Copy script</button>
+    </div>
+
+    <div class="setup-step">
+      <span class="step-num">4</span><span class="step-title">Deploy as web app</span>
+      <div class="step-body">
+        Click <strong>Deploy → New deployment</strong><br>
+        — Type: <strong>Web app</strong><br>
+        — Execute as: <strong>Me</strong><br>
+        — Who has access: <strong>Anyone</strong><br>
+        Click Deploy, authorise when prompted, copy the URL you receive.
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <span class="step-num">5</span><span class="step-title">Paste URL above and test</span>
+      <div class="step-body">Paste into the URL field at the top of this tab. On a second device, just open this same HTML file and paste the same URL.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ENTRY -->
+<div id="tab-entry" style="display:none">
+  <div class="warn" id="no-url-warn" style="display:none">No Google Sheets URL set — go to Setup. Entries will save locally only.</div>
+
+  <div class="sec">
+    <p class="sec-title">Date and time slot</p>
+    <div class="fg">
+      <div class="f"><label>Date</label><input type="date" id="entry-date"></div>
+      <div class="f"><label>Time slot</label>
+        <select id="entry-time">
+          <option value="AM on waking">AM — on waking</option>
+          <option value="Midday">Midday</option>
+          <option value="Evening">Evening</option>
+          <option value="Night">Night</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Temperature readings — differentials calculated automatically</p>
+    <div class="ctrl-row">
+      <label>Forearm control (°C)</label>
+      <input type="number" id="t-control" step="0.1" placeholder="e.g. 32.1" oninput="recalcDiffs()">
+      <span class="ctrl-val" id="ctrl-display"></span>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Left knee</label><input type="number" id="t-lknee" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lknee">—</span></div>
+      <div class="f"><label>Right knee</label><input type="number" id="t-rknee" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rknee">—</span></div>
+      <div class="f"><label>Left elbow</label><input type="number" id="t-lelbow" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lelbow">—</span></div>
+      <div class="f"><label>Right elbow</label><input type="number" id="t-relbow" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-relbow">—</span></div>
+      <div class="f"><label>Left hand (dorsum)</label><input type="number" id="t-lhand" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhand">—</span></div>
+      <div class="f"><label>Right hand (dorsum)</label><input type="number" id="t-rhand" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhand">—</span></div>
+      <div class="f"><label>Left jaw</label><input type="number" id="t-ljaw" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
+      <div class="f"><label>Right jaw</label><input type="number" id="t-rjaw" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rjaw">—</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Circumference — leave blank if not measured today</p>
+    <div class="fg">
+      <div class="f"><label>Left knee (mid-patella, mm)</label><input type="number" id="c-lknee" placeholder="mm"></div>
+      <div class="f"><label>Right knee (mid-patella, mm)</label><input type="number" id="c-rknee" placeholder="mm"></div>
+      <div class="f"><label>Left elbow (olecranon, mm)</label><input type="number" id="c-lelbow" placeholder="mm"></div>
+      <div class="f"><label>Right elbow (olecranon, mm)</label><input type="number" id="c-relbow" placeholder="mm"></div>
+      <div class="f"><label>Index finger L (ring sizer no.)</label><input type="number" id="c-lfinger" placeholder="size"></div>
+      <div class="f"><label>Index finger R (ring sizer no.)</label><input type="number" id="c-rfinger" placeholder="size"></div>
+      <div class="f"><label>Jaw — max mouth opening (mm)</label><input type="number" id="c-jaw" placeholder="mm"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Pain and symptom scores (0 = none, 10 = worst)</p>
+    <div class="pr"><label>Hips</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="hips"><span class="val">0</span></div>
+    <div class="pr"><label>Knees</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="knees"><span class="val">0</span></div>
+    <div class="pr"><label>Elbows</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="elbows"><span class="val">0</span></div>
+    <div class="pr"><label>Hands / fingers</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="hands"><span class="val">0</span></div>
+    <div class="pr"><label>Jaw</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="jaw"><span class="val">0</span></div>
+    <div class="pr"><label>Feet</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="feet"><span class="val">0</span></div>
+    <div class="pr"><label>Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="fatigue"><span class="val">0</span></div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Visible swelling noted</p>
+    <div class="cb-group" id="swelling-checks">
+      <label class="cb-label"><input type="checkbox" value="L knee"> Left knee</label>
+      <label class="cb-label"><input type="checkbox" value="R knee"> Right knee</label>
+      <label class="cb-label"><input type="checkbox" value="L elbow"> Left elbow</label>
+      <label class="cb-label"><input type="checkbox" value="R elbow"> Right elbow</label>
+      <label class="cb-label"><input type="checkbox" value="L hand/fingers"> Left hand/fingers</label>
+      <label class="cb-label"><input type="checkbox" value="R hand/fingers"> Right hand/fingers</label>
+      <label class="cb-label"><input type="checkbox" value="Feet"> Feet</label>
+      <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
+    </div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Photos taken of — tick to flag, retrieve from photo library by date</p>
+    <div class="cb-group" id="photo-checks">
+      <label class="cb-label"><input type="checkbox" value="L knee"> Left knee</label>
+      <label class="cb-label"><input type="checkbox" value="R knee"> Right knee</label>
+      <label class="cb-label"><input type="checkbox" value="L elbow"> Left elbow</label>
+      <label class="cb-label"><input type="checkbox" value="R elbow"> Right elbow</label>
+      <label class="cb-label"><input type="checkbox" value="L hand/fingers"> Left hand/fingers</label>
+      <label class="cb-label"><input type="checkbox" value="R hand/fingers"> Right hand/fingers</label>
+      <label class="cb-label"><input type="checkbox" value="Feet"> Feet</label>
+      <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
+      <label class="cb-label"><input type="checkbox" value="Full body/other"> Full body / other</label>
+    </div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Sun exposure</p>
+    <div class="sun-grid">
+      <div class="f"><label>Duration</label>
+        <select id="sun-exp">
+          <option value="None">None today</option>
+          <option value="Brief <15min">Brief — under 15 min</option>
+          <option value="Moderate 15-60min">Moderate — 15 to 60 min</option>
+          <option value="Prolonged >60min">Prolonged — over 60 min</option>
+        </select>
+      </div>
+      <div class="f"><label>UV index</label><input type="number" id="uv-index" min="0" max="12" step="1" placeholder="0–12"></div>
+      <div class="f"><label>Hours since exposure ended</label><input type="number" id="sun-hours" min="0" max="48" step="0.5" placeholder="hrs"></div>
+    </div>
+    <p style="font-size:12px;color:#888;margin-bottom:8px">Skin coverage during exposure</p>
+    <div class="cb-group">
+      <label class="cb-label"><input type="checkbox" id="sun-arms"> Arms bare</label>
+      <label class="cb-label"><input type="checkbox" id="sun-legs"> Legs bare</label>
+      <label class="cb-label"><input type="checkbox" id="sun-face"> Face exposed</label>
+      <label class="cb-label"><input type="checkbox" id="sun-hands"> Hands exposed</label>
+      <label class="cb-label"><input type="checkbox" id="sun-hat"> Hat worn</label>
+      <label class="cb-label"><input type="checkbox" id="sun-spf"> SPF applied</label>
+      <label class="cb-label"><input type="checkbox" id="sun-shade"> Mostly in shade</label>
+    </div>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Medication this time slot</p>
+    <div id="med-rows"></div>
+    <button class="add-med-btn" onclick="addMedRow()">+ add medication</button>
+  </div>
+
+  <div class="sec">
+    <p class="sec-title">Notes</p>
+    <textarea id="entry-notes" rows="2" style="width:100%" placeholder="Anything else — new joints, triggers, how symptoms changed through the day..."></textarea>
+  </div>
+
+  <button class="btn-p" id="save-btn" onclick="saveEntry()">Save and sync</button>
+  <div class="status-bar" id="save-status"></div>
+</div>
+
+<!-- HISTORY -->
+<div id="tab-log" style="display:none">
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+    <button class="btn-p" onclick="loadFromSheets()">Refresh from Google Sheets</button>
+    <span id="refresh-status" style="font-size:12px;color:#888"></span>
+  </div>
+  <div id="log-container"><p class="es">No entries yet. Save a first entry or refresh from Sheets.</p></div>
+</div>
+
+<!-- SUMMARY -->
+<div id="tab-summary" style="display:none">
+  <div style="margin-bottom:12px">
+    <button class="btn-p" onclick="loadFromSheets()">Refresh from Google Sheets</button>
+  </div>
+  <div id="summary-container"><p class="es">Log at least 3 entries to see summary statistics.</p></div>
+</div>
+
+<script>
+const SHEET_URL_KEY = 'diagno_sheets_url';
+const ENTRIES_KEY = 'diagno_entries_v3';
+const TEMP_JOINTS = ['lknee','rknee','lelbow','relbow','lhand','rhand','ljaw','rjaw'];
+const TEMP_LABELS = ['L knee','R knee','L elbow','R elbow','L hand','R hand','L jaw','R jaw'];
+
+let entries = [];
+let medRows = [];
+let sheetsUrl = '';
+
+try { sheetsUrl = localStorage.getItem(SHEET_URL_KEY) || ''; } catch(e){}
+try { entries = JSON.parse(localStorage.getItem(ENTRIES_KEY) || '[]'); } catch(e){}
+
+document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+if(sheetsUrl) {
+  document.getElementById('sheets-url').value = sheetsUrl;
+  showTab('entry');
+}
+
+function saveUrl() {
+  sheetsUrl = document.getElementById('sheets-url').value.trim();
+  try { localStorage.setItem(SHEET_URL_KEY, sheetsUrl); } catch(e){}
+  const msg = document.getElementById('url-saved-msg');
+  msg.style.display = sheetsUrl ? 'block' : 'none';
+}
+
+function copyScript() {
+  const text = document.getElementById('script-code').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy script', 2000);
+  });
+}
+
+async function testConnection() {
+  const bar = document.getElementById('test-status');
+  if(!sheetsUrl) { showStatus(bar,'error','No URL entered.'); return; }
+  showStatus(bar,'pending','Testing...');
+  try {
+    const r = await fetch(sheetsUrl);
+    const j = await r.json();
+    showStatus(bar,'ok','Connected! Google Sheet is ready.');
+  } catch(e) {
+    showStatus(bar,'error','Could not connect. Check URL and deployment settings.');
+  }
+}
+
+function showStatus(el, type, msg) {
+  el.style.display = 'block';
+  el.className = 'status-bar status-' + type;
+  el.textContent = msg;
+}
+
+function recalcDiffs() {
+  const ctrl = parseFloat(document.getElementById('t-control').value);
+  document.getElementById('ctrl-display').textContent = isNaN(ctrl) ? '' : ctrl.toFixed(1) + '°C (control)';
+  TEMP_JOINTS.forEach(j => {
+    const val = parseFloat(document.getElementById('t-' + j).value);
+    const badge = document.getElementById('d-' + j);
+    if(isNaN(val) || isNaN(ctrl)) {
+      badge.textContent = '—'; badge.className = 'diff-badge diff-zero';
+    } else {
+      const diff = val - ctrl;
+      badge.textContent = (diff >= 0 ? '+' : '') + diff.toFixed(1) + '°C';
+      badge.className = 'diff-badge ' + (diff > 0.3 ? 'diff-pos' : diff < -0.3 ? 'diff-neg' : 'diff-zero');
+    }
+  });
+}
+
+function addMedRow(name='', taken=false) {
+  const id = Date.now() + Math.random();
+  medRows.push({id, name, taken});
+  renderMedRows();
+}
+
+function removeMedRow(id) {
+  medRows = medRows.filter(r => r.id !== id);
+  renderMedRows();
+}
+
+function renderMedRows() {
+  const c = document.getElementById('med-rows');
+  if(!medRows.length) { c.innerHTML = ''; return; }
+  c.innerHTML = medRows.map(r => `
+    <div class="med-row">
+      <input type="checkbox" ${r.taken?'checked':''} onchange="medRows.find(x=>x.id==${r.id}).taken=this.checked" style="width:16px;height:16px;accent-color:#555">
+      <input type="text" value="${r.name}" placeholder="medication name / dose" oninput="medRows.find(x=>x.id==${r.id}).name=this.value">
+      <button class="btn-s" onclick="removeMedRow(${r.id})">×</button>
+    </div>`).join('');
+}
+
+function getChecked(id) {
+  return Array.from(document.querySelectorAll('#' + id + ' input:checked')).map(el => el.value).join('; ');
+}
+
+function getSunCoverage() {
+  const map = {arms:'Arms bare',legs:'Legs bare',face:'Face exposed',hands:'Hands exposed',hat:'Hat worn',spf:'SPF',shade:'Mostly in shade'};
+  return Object.entries(map).filter(([k]) => document.getElementById('sun-' + k).checked).map(([,v]) => v).join('; ');
+}
+
+async function saveEntry() {
+  const btn = document.getElementById('save-btn');
+  const bar = document.getElementById('save-status');
+  const ctrl = parseFloat(document.getElementById('t-control').value);
+  const temps = {}; const diffs = {};
+  TEMP_JOINTS.forEach(j => {
+    const raw = parseFloat(document.getElementById('t-' + j).value);
+    temps[j] = isNaN(raw) ? null : raw;
+    diffs[j] = (!isNaN(raw) && !isNaN(ctrl)) ? parseFloat((raw - ctrl).toFixed(2)) : null;
+  });
+  const pain = {};
+  document.querySelectorAll('#tab-entry input[type=range]').forEach(el => { pain[el.dataset.joint] = parseInt(el.value); });
+
+  const payload = {
+    date: document.getElementById('entry-date').value,
+    time: document.getElementById('entry-time').value,
+    tempControl: isNaN(ctrl) ? null : ctrl,
+    dLknee: diffs.lknee, dRknee: diffs.rknee,
+    dLelbow: diffs.lelbow, dRelbow: diffs.relbow,
+    dLhand: diffs.lhand, dRhand: diffs.rhand,
+    dLjaw: diffs.ljaw, dRjaw: diffs.rjaw,
+    rLknee: temps.lknee, rRknee: temps.rknee,
+    rLelbow: temps.lelbow, rRelbow: temps.relbow,
+    rLhand: temps.lhand, rRhand: temps.rhand,
+    rLjaw: temps.ljaw, rRjaw: temps.rjaw,
+    cLknee: document.getElementById('c-lknee').value||null,
+    cRknee: document.getElementById('c-rknee').value||null,
+    cLelbow: document.getElementById('c-lelbow').value||null,
+    cRelbow: document.getElementById('c-relbow').value||null,
+    cLfinger: document.getElementById('c-lfinger').value||null,
+    cRfinger: document.getElementById('c-rfinger').value||null,
+    cJaw: document.getElementById('c-jaw').value||null,
+    pHips: pain.hips, pKnees: pain.knees, pElbows: pain.elbows,
+    pHands: pain.hands, pJaw: pain.jaw, pFeet: pain.feet, pFatigue: pain.fatigue,
+    sunExp: document.getElementById('sun-exp').value,
+    uvIndex: document.getElementById('uv-index').value||null,
+    sunHours: document.getElementById('sun-hours').value||null,
+    sunCoverage: getSunCoverage(),
+    swelling: getChecked('swelling-checks'),
+    photos: getChecked('photo-checks'),
+    meds: medRows.filter(r=>r.name.trim()).map(m=>(m.taken?'[taken] ':'[not taken] ')+m.name).join('; '),
+    notes: document.getElementById('entry-notes').value
+  };
+
+  const local = {id: Date.now(), ...payload, synced: false};
+  entries.unshift(local);
+  try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch(e){}
+
+  if(!sheetsUrl) {
+    showStatus(bar,'pending','Saved locally — add a Sheets URL in Setup to sync across devices.');
+    resetForm(); return;
+  }
+
+  btn.disabled = true;
+  showStatus(bar,'pending','Syncing to Google Sheets...');
+  try {
+    const res = await fetch(sheetsUrl, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const j = await res.json();
+    if(j.status === 'ok') {
+      entries[0].synced = true;
+      try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch(e){}
+      showStatus(bar,'ok','Saved and synced to Google Sheets.');
+    } else {
+      showStatus(bar,'err','Saved locally. Sheet returned: ' + (j.message||'unknown error'));
+    }
+  } catch(err) {
+    showStatus(bar,'error','Saved locally — could not reach Google Sheets right now.');
+  }
+  btn.disabled = false;
+  resetForm();
+}
+
+function resetForm() {
+  document.querySelectorAll('#tab-entry input[type=range]').forEach(el => { el.value=0; el.nextElementSibling.textContent='0'; });
+  document.querySelectorAll('#swelling-checks input, #photo-checks input').forEach(el => el.checked=false);
+  ['arms','legs','face','hands','hat','spf','shade'].forEach(f => document.getElementById('sun-'+f).checked=false);
+  document.getElementById('entry-notes').value='';
+  document.getElementById('uv-index').value='';
+  document.getElementById('sun-hours').value='';
+  document.getElementById('sun-exp').value='None';
+  TEMP_JOINTS.forEach(j => {
+    document.getElementById('t-'+j).value='';
+    const b = document.getElementById('d-'+j);
+    b.textContent='—'; b.className='diff-badge diff-zero';
+  });
+  document.getElementById('t-control').value='';
+  document.getElementById('ctrl-display').textContent='';
+  ['c-lknee','c-rknee','c-lelbow','c-relbow','c-lfinger','c-rfinger','c-jaw'].forEach(id => document.getElementById(id).value='');
+  medRows=[]; renderMedRows();
+}
+
+async function loadFromSheets() {
+  const status = document.getElementById('refresh-status');
+  if(!sheetsUrl) { status.textContent='No URL in Setup.'; return; }
+  status.textContent='Loading...';
+  try {
+    const r = await fetch(sheetsUrl);
+    const j = await r.json();
+    if(j.rows && j.rows.length) {
+      entries = j.rows.reverse().map((row,i) => ({id:i, ...row, synced:true}));
+      try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch(e){}
+      status.textContent = entries.length + ' entries loaded.';
+    } else {
+      status.textContent = 'No entries in sheet yet.';
+    }
+  } catch(e) {
+    status.textContent = 'Could not reach Google Sheets.';
+  }
+  renderLog(); renderSummary();
+}
+
+function showTab(t) {
+  ['setup','entry','log','summary'].forEach(id => {
+    document.getElementById('tab-'+id).style.display = id===t ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i) => {
+    el.classList.toggle('active', ['setup','entry','log','summary'][i]===t);
+  });
+  if(t==='entry') {
+    document.getElementById('no-url-warn').style.display = sheetsUrl ? 'none' : 'block';
+  }
+  if(t==='log') renderLog();
+  if(t==='summary') renderSummary();
+}
+
+function renderLog() {
+  const c = document.getElementById('log-container');
+  if(!entries.length) { c.innerHTML='<p class="es">No entries yet.</p>'; return; }
+  let html='<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Time</th><th>Top diffs</th><th>Pain peaks</th><th>Swelling</th><th>Photos</th><th>Sun</th></tr></thead><tbody>';
+  const diffKeys = ['dLknee','dRknee','dLelbow','dRelbow','dLhand','dRhand','dLjaw','dRjaw'];
+  entries.slice(0,60).forEach(e => {
+    const topDiffs = diffKeys.map((k,i)=>({l:TEMP_LABELS[i],v:parseFloat(e[k])}))
+      .filter(x=>!isNaN(x.v)&&x.v>0.3).sort((a,b)=>b.v-a.v).slice(0,3)
+      .map(x=>x.l+' +'+x.v.toFixed(1)).join(', ') || '—';
+    const painCfg=[{l:'hips',k:'pHips'},{l:'knees',k:'pKnees'},{l:'elbows',k:'pElbows'},{l:'hands',k:'pHands'},{l:'jaw',k:'pJaw'},{l:'feet',k:'pFeet'},{l:'fatigue',k:'pFatigue'}];
+    const painPeak = painCfg.map(({l,k})=>({l,v:parseInt(e[k]||0)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,2).map(x=>x.l+' '+x.v).join(', ')||'—';
+    const sw = (e['Swelling visible']||e.swelling||'');
+    const swTags = sw ? sw.split(';').map(s=>`<span class="tag">${s.trim()}</span>`).join('') : '—';
+    const ph = (e['Photos taken of']||e.photos||'');
+    const phTags = ph ? ph.split(';').map(s=>`<span class="tag photo">${s.trim()}</span>`).join('') : '—';
+    const sunV = e['Sun exposure']||e.sunExp||'None';
+    const uvV = e['UV index']||e.uvIndex||'';
+    const sunTag = (sunV&&sunV!=='None') ? `<span class="tag sun">UV${uvV} · ${sunV.split(' ')[0]}</span>` : '—';
+    const dateV = e['Date']||e.date||'';
+    const timeV = e['Time slot']||e.time||'';
+    html+=`<tr><td style="white-space:nowrap">${dateV}</td><td style="white-space:nowrap;font-size:11px">${timeV}</td><td style="font-size:11px">${topDiffs}</td><td style="font-size:12px">${painPeak}</td><td>${swTags}</td><td>${phTags}</td><td>${sunTag}</td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  c.innerHTML=html;
+}
+
+function renderSummary() {
+  const c = document.getElementById('summary-container');
+  if(entries.length<3) { c.innerHTML='<p class="es">Log at least 3 entries to see summary.</p>'; return; }
+  const getV=(e,keys)=>{ for(const k of keys){const v=e[k];if(v!==undefined&&v!=='')return v;} return null; };
+  const sunDays = entries.filter(e=>{ const v=getV(e,['Sun exposure','sunExp']); return v&&v!=='None'; }).length;
+  const allDiffs = ['dLknee','dRknee','dLelbow','dRelbow','dLhand','dRhand','dLjaw','dRjaw']
+    .flatMap(k=>entries.map(e=>parseFloat(e[k])).filter(v=>!isNaN(v)&&v>0));
+  const avgDiff = allDiffs.length ? (allDiffs.reduce((a,b)=>a+b,0)/allDiffs.length).toFixed(1) : '—';
+  const jointRows = ['dLknee','dRknee','dLelbow','dRelbow','dLhand','dRhand','dLjaw','dRjaw'].map((key,i)=>{
+    const vals=entries.map(e=>parseFloat(e[key])).filter(v=>!isNaN(v));
+    if(!vals.length) return null;
+    return {label:TEMP_LABELS[i], avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1), max:Math.max(...vals).toFixed(1), n:vals.length};
+  }).filter(Boolean);
+  const painCfg=[{l:'Hips',k:'pHips'},{l:'Knees',k:'pKnees'},{l:'Elbows',k:'pElbows'},{l:'Hands',k:'pHands'},{l:'Jaw',k:'pJaw'},{l:'Feet',k:'pFeet'},{l:'Fatigue',k:'pFatigue'}];
+  const avgPain = painCfg.map(({l,k})=>{
+    const vals=entries.map(e=>parseInt(e[k]||0)).filter(v=>v>0);
+    return vals.length?{label:l,avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1)}:null;
+  }).filter(Boolean);
+
+  let html=`<div class="sg">
+    <div class="mc"><p class="ml">Total entries</p><p class="mv">${entries.length}</p></div>
+    <div class="mc"><p class="ml">Sun exposure days</p><p class="mv">${sunDays}</p></div>
+    <div class="mc"><p class="ml">Avg temp differential</p><p class="mv">+${avgDiff}°C</p></div>
+  </div>`;
+
+  if(avgPain.length) {
+    html+='<div class="sec"><p class="sec-title">Average pain scores</p>';
+    avgPain.forEach(({label,avg})=>{
+      html+=`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px"><span>${label}</span><span style="font-weight:500">${avg}/10</span></div><div style="height:6px;background:#f0f0ee;border-radius:3px"><div style="height:6px;width:${parseFloat(avg)*10}%;background:#888;border-radius:3px"></div></div></div>`;
+    });
+    html+='</div>';
+  }
+
+  if(jointRows.length) {
+    html+='<div class="sec"><p class="sec-title">Temperature differentials by joint</p><table><thead><tr><th>Joint</th><th>Average</th><th>Peak</th><th>Readings</th></tr></thead><tbody>';
+    jointRows.forEach(({label,avg,max,n})=>{
+      html+=`<tr><td>${label}</td><td>${parseFloat(avg)>=0?'+':''}${avg}°C</td><td>+${max}°C</td><td>${n}</td></tr>`;
+    });
+    html+='</tbody></table></div>';
+  }
+  c.innerHTML=html;
+}
+</script>
+</body>
+</html>
