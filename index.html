@@ -510,14 +510,14 @@ function recalcDiffs() {
     const ctrl = LOWER.includes(j) ? ankle : forearm;
     const badge = document.getElementById('d-'+j);
     if(isNaN(raw)){badge.textContent='—';badge.className='diff-badge diff-zero';return;}
-    badge.textContent = 'Raw: '+raw.toFixed(1)+'°C';
-    if(!isNaN(ctrl)){
-      const diff = raw-ctrl;
-      badge.textContent += ' (+'+ (diff>=0?'+':'')+diff.toFixed(1)+')';
-      badge.className = 'diff-badge '+(diff>0.3?'diff-pos':diff<-0.3?'diff-neg':'diff-zero');
-    } else {
+    if(isNaN(ctrl)){
+      badge.textContent='Raw: '+raw.toFixed(1)+'°C';
       badge.className='diff-badge diff-zero';
+      return;
     }
+    const diff = raw-ctrl;
+    badge.textContent = raw.toFixed(1)+'°C ('+(diff>=0?'+':'')+diff.toFixed(1)+')';
+    badge.className = 'diff-badge '+(diff>0.3?'diff-pos':diff<-0.3?'diff-neg':'diff-zero');
   });
 }
 
@@ -583,7 +583,7 @@ async function saveEntry() {
   document.getElementById('t-ctrl-innerarm').classList.remove('required-missing');
 
   const raw = id => { const v=parseFloat(document.getElementById('t-'+id).value); return isNaN(v)?null:v; };
-  const diff = (rawId, ctrl) => { const r=raw(rawId); return (r!==null&&!isNaN(ctrl))?parseFloat((r-ctrl).toFixed(2)):null; };
+  const diff = (rawId, ctrl) => { const r=raw(rawId); if(r===null) return null; if(ctrl===null||isNaN(ctrl)) return null; return parseFloat((r-ctrl).toFixed(2)); };
 
   const payload = {
     date: document.getElementById('entry-date').value,
