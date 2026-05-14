@@ -195,6 +195,7 @@ const COLUMNS = [
   ["Ring L thumb","cLthumb"],["Ring R thumb","cRthumb"],["Ring L index","cLindex"],["Ring R index","cRindex"],
   ["Ring L middle","cLmiddle"],["Ring R middle","cRmiddle"],["Ring L ring","cLring"],["Ring R ring","cRring"],
   ["Ring L little","cLlittle"],["Ring R little","cRlittle"],
+  ["Grip L","gripL"],["Grip R","gripR"],
   ["Circ L knee (mm)","cLknee"],["Circ R knee (mm)","cRknee"],
   ["Circ L elbow (mm)","cLelbow"],["Circ R elbow (mm)","cRelbow"],
   ["Jaw opening (mm)","cJaw"],
@@ -428,6 +429,22 @@ function buildResponse(data) {
         <div class="f"><label>Middle</label><input type="text" id="c-rmiddle" placeholder="P or 19"></div>
         <div class="f"><label>Ring</label><input type="text" id="c-rring" placeholder="P or 19"></div>
         <div class="f"><label>Little</label><input type="text" id="c-rlittle" placeholder="P or 19"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRIP STRENGTH -->
+  <div class="sec">
+    <p class="sec-title">Grip strength</p>
+    <p class="sec-hint">Raw value from your dynamometer (e.g. kg or lbs — use the same unit every time).</p>
+    <div class="lr-grid">
+      <div class="lr-col">
+        <div class="lr-col-label">Left</div>
+        <div class="f"><label>Grip strength</label><input type="text" id="grip-l" placeholder="e.g. 24"></div>
+      </div>
+      <div class="lr-col">
+        <div class="lr-col-label">Right</div>
+        <div class="f"><label>Grip strength</label><input type="text" id="grip-r" placeholder="e.g. 26"></div>
       </div>
     </div>
   </div>
@@ -1054,6 +1071,7 @@ function blankPayload(){
     cLthumb:'', cRthumb:'', cLindex:'', cRindex:'',
     cLmiddle:'', cRmiddle:'', cLring:'', cRring:'',
     cLlittle:'', cRlittle:'',
+    gripL:'', gripR:'',
     cLknee:'', cRknee:'', cLelbow:'', cRelbow:'', cJaw:'',
     handHot:'', handLhotTemp:null, handRhotTemp:null,
     handCold:'', handLcoldTemp:null, handRcoldTemp:null,
@@ -1164,6 +1182,8 @@ async function saveEntry() {
     cRring: document.getElementById('c-rring').value||'',
     cLlittle: document.getElementById('c-llittle').value||'',
     cRlittle: document.getElementById('c-rlittle').value||'',
+    gripL: document.getElementById('grip-l').value||'',
+    gripR: document.getElementById('grip-r').value||'',
     cLknee: document.getElementById('c-lknee').value||'',
     cRknee: document.getElementById('c-rknee').value||'',
     cLelbow: document.getElementById('c-lelbow').value||'',
@@ -1224,7 +1244,7 @@ function resetForm(){
   ['ref-initials','ref-lhand','ref-rhand','ref-forehead','t-l-hot','t-l-cold','t-r-hot','t-r-cold'].forEach(id=>document.getElementById(id).value='');
   ['c-lknee','c-rknee','c-lelbow','c-relbow','c-jaw',
    'c-lthumb','c-rthumb','c-lindex','c-rindex','c-lmiddle','c-rmiddle',
-   'c-lring','c-rring','c-llittle','c-rlittle'].forEach(id=>document.getElementById(id).value='');
+   'c-lring','c-rring','c-llittle','c-rlittle','grip-l','grip-r'].forEach(id=>document.getElementById(id).value='');
   document.querySelectorAll('.head-loc,.head-type,.head-area,.ice-w,.ice-a').forEach(el=>el.checked=false);
   BILATERAL.forEach(({id})=>{
     document.querySelectorAll('.pt-'+id).forEach(el=>el.checked=false);
