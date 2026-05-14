@@ -844,7 +844,8 @@ function buildHand(side){
   // 'right' = palm view of right hand: thumb on left of SVG.
   // 'left' = mirror the same drawing so thumb is on the right.
   const mirror = side === 'left' ? ' transform="scale(-1,1) translate(-150,0)"' : '';
-  const nodeMap = Object.fromEntries(HAND_NODES.map(n => [n.id, n]));
+  const nodeMap = {};
+  HAND_NODES.forEach(function(n){ nodeMap[n.id] = n; });
   const bones = HAND_LINES.map(([a,b]) => {
     const A = nodeMap[a], B = nodeMap[b];
     return `<line class="bone" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;
@@ -1288,11 +1289,12 @@ function renderLog(){
   if(!entries.length){c.innerHTML='<p class="es">No entries yet.</p>';return;}
   let html='<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Time</th><th>Logged</th><th>Top temp diffs</th><th>Pain peaks</th><th>Triggers</th><th>Hand</th><th>Note</th></tr></thead><tbody>';
   entries.slice(0,80).forEach(e=>{
-    const getV = k => e[k] ?? '';
+    const getV = function(k){ var v = e[k]; return (v===undefined||v===null) ? '' : v; };
+    const pickV = function(k1,k2){ var v = e[k1]; if(v===undefined||v===null||v==='') v = e[k2]; return v; };
     const dKeys=[['D L knee','dLknee','L knee'],['D R knee','dRknee','R knee'],['D L hip','dLhip','L hip'],['D R hip','dRhip','R hip'],['D L elbow','dLelbow','L elbow'],['D R elbow','dRelbow','R elbow'],['D L hand','dLhand','L hand'],['D R hand','dRhand','R hand'],['D L jaw','dLjaw','L jaw'],['D R jaw','dRjaw','R jaw']];
-    const topDiffs=dKeys.map(([k1,k2,l])=>({l,v:parseFloat(e[k1]??e[k2])})).filter(x=>!isNaN(x.v)&&x.v>0.3).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.l+' +'+x.v.toFixed(1)).join(', ')||'—';
+    const topDiffs=dKeys.map(function(arr){var k1=arr[0],k2=arr[1],l=arr[2];return {l:l,v:parseFloat(pickV(k1,k2))};}).filter(function(x){return !isNaN(x.v)&&x.v>0.3;}).sort(function(a,b){return b.v-a.v;}).slice(0,3).map(function(x){return x.l+' +'+x.v.toFixed(1);}).join(', ')||'—';
     const painCfg=[['Pain head','pHead','head'],['Pain neck','pNeck','neck'],['Pain L shoulder','pLshoulder','L shoulder'],['Pain R shoulder','pRshoulder','R shoulder'],['Pain L hip','pLhip','L hip'],['Pain R hip','pRhip','R hip'],['Pain L knee','pLknee','L knee'],['Pain R knee','pRknee','R knee'],['Pain L wrist','pLwrist','L wrist'],['Pain R wrist','pRwrist','R wrist'],['Fatigue','pFatigue','fatigue']];
-    const painPeak=painCfg.map(([k1,k2,l])=>({l,v:parseInt(e[k1]??e[k2]??0)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.l+' '+x.v).join(', ')||'—';
+    const painPeak=painCfg.map(function(arr){var k1=arr[0],k2=arr[1],l=arr[2];return {l:l,v:parseInt(pickV(k1,k2)||0)};}).filter(function(x){return x.v>0;}).sort(function(a,b){return b.v-a.v;}).slice(0,3).map(function(x){return x.l+' '+x.v;}).join(', ')||'—';
     const trigs=[];
     const stress=parseInt(getV('Stress')||getV('stress')||0);
     const phys=parseInt(getV('Physical exertion')||getV('physExertion')||0);
