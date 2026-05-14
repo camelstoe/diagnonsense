@@ -169,93 +169,96 @@
     <div class="setup-step"><span class="step-num">3</span><span class="step-title">Paste the script</span>
       <div class="step-body">Copy the code below and paste into Apps Script, then save.</div>
       <div class="code-wrap" id="script-code">const SHEET_NAME = "Entries";
+
+// Single source of truth: [Header, payload key]. Order = column order.
+const COLUMNS = [
+  ["Date","date"],["Time slot","time"],["Logged at","loggedAt"],
+  ["Quick note only","quickNoteOnly"],
+  ["Pain head","pHead"],["Head location","headLoc"],["Head pain type","headType"],["Head area","headArea"],
+  ["Pain neck","pNeck"],["Neck pain types","ptNeck"],
+  ["Pain L shoulder","pLshoulder"],["Pain R shoulder","pRshoulder"],["Shoulder pain types","ptShoulders"],
+  ["Pain L elbow","pLelbow"],["Pain R elbow","pRelbow"],["Elbow pain types","ptElbows"],
+  ["Pain L wrist","pLwrist"],["Pain R wrist","pRwrist"],["Wrist pain types","ptWrists"],
+  ["Pain L hand","pLhand"],["Pain R hand","pRhand"],["Hand pain types","ptHands"],
+  ["Pain L jaw","pLjaw"],["Pain R jaw","pRjaw"],["Jaw pain types","ptJaw"],
+  ["Pain L hip","pLhip"],["Pain R hip","pRhip"],["Hip pain types","ptHips"],
+  ["Pain L knee","pLknee"],["Pain R knee","pRknee"],["Knee pain types","ptKnees"],
+  ["Pain L ankle","pLankle"],["Pain R ankle","pRankle"],["Ankle pain types","ptAnkles"],
+  ["Pain L foot","pLfoot"],["Pain R foot","pRfoot"],["Foot pain types","ptFeet"],
+  ["Ice wanted","iceWanted"],["Ice applied","iceApplied"],
+  ["Vertigo","vertigo"],["Nausea","nausea"],["Light sensitivity","lightSens"],
+  ["Morning stiffness (min)","morningStiff"],
+  ["Acid reflux","acidReflux"],["Fatigue","pFatigue"],
+  ["Mouth corner irritation","mouthCorner"],["Dry eyes","dryEyes"],["Angular cheilitis visible","cheilitisVisible"],
+  ["Physical exertion","physExertion"],["Stress","stress"],["Sleep score","sleepScore"],["Sleep duration (h)","sleepDuration"],["Weather","weather"],
+  ["Sun exposure","sunExp"],["Hours since sun","sunHours"],["Skin coverage","sunCoverage"],
+  ["Ring L thumb","cLthumb"],["Ring R thumb","cRthumb"],["Ring L index","cLindex"],["Ring R index","cRindex"],
+  ["Ring L middle","cLmiddle"],["Ring R middle","cRmiddle"],["Ring L ring","cLring"],["Ring R ring","cRring"],
+  ["Ring L little","cLlittle"],["Ring R little","cRlittle"],
+  ["Circ L knee (mm)","cLknee"],["Circ R knee (mm)","cRknee"],
+  ["Circ L elbow (mm)","cLelbow"],["Circ R elbow (mm)","cRelbow"],
+  ["Jaw opening (mm)","cJaw"],
+  ["Hand hottest point","handHot"],["Hand L hot temp","handLhotTemp"],["Hand R hot temp","handRhotTemp"],
+  ["Hand coldest point","handCold"],["Hand L cold temp","handLcoldTemp"],["Hand R cold temp","handRcoldTemp"],
+  ["Ctrl inner forearm","ctrlInnerArm"],["Ctrl calf","ctrlCalf"],["Ctrl forehead","ctrlForehead"],["Ctrl room temp","ctrlRoom"],["Ctrl other-person hand","ctrlOtherHand"],
+  ["T L knee","tLknee"],["T R knee","tRknee"],["D L knee","dLknee"],["D R knee","dRknee"],
+  ["T L hip","tLhip"],["T R hip","tRhip"],["D L hip","dLhip"],["D R hip","dRhip"],
+  ["T L elbow","tLelbow"],["T R elbow","tRelbow"],["D L elbow","dLelbow"],["D R elbow","dRelbow"],
+  ["T L hand","tLhand"],["T R hand","tRhand"],["D L hand","dLhand"],["D R hand","dRhand"],
+  ["T L jaw","tLjaw"],["T R jaw","tRjaw"],["D L jaw","dLjaw"],["D R jaw","dRjaw"],
+  ["Reference person initials","refInitials"],["Ref L hand","refLhand"],["Ref R hand","refRhand"],["Ref forehead","refForehead"],
+  ["Swelling visible","swelling"],["Photos taken of","photos"],
+  ["Medications","meds"],["Notes","notes"]
+];
+const HEADERS = COLUMNS.map(c => c[0]);
+const KEYS    = COLUMNS.map(c => c[1]);
+
+function getSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  return sheet;
+}
+
+// Ensures row 1 holds the current HEADERS. If row 1 is blank OR doesn't
+// match HEADERS exactly, inserts/overwrites it. Adds missing columns to
+// the right if HEADERS has grown since the sheet was first created.
+function ensureHeaders_(sheet) {
+  const lastCol = Math.max(sheet.getLastColumn(), 1);
+  const lastRow = sheet.getLastRow();
+  const firstRow = lastRow >= 1
+    ? sheet.getRange(1, 1, 1, lastCol).getValues()[0]
+    : [];
+  const firstBlank = firstRow.every(v => v === "" || v === null);
+
+  if (lastRow === 0 || firstBlank) {
+    // No data yet OR row 1 is blank — write fresh headers
+    if (firstBlank && lastRow >= 1) sheet.deleteRow(1);
+    sheet.insertRowBefore(1);
+    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+    sheet.setFrozenRows(1);
+    return;
+  }
+  // Sheet already has data with some row 1. Compare; if mismatched or missing
+  // columns, overwrite headers in place (data columns stay where they are —
+  // we only ever append new columns to the right, never reorder).
+  const same = firstRow.length >= HEADERS.length &&
+    HEADERS.every((h,i) => firstRow[i] === h);
+  if (!same) {
+    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+    sheet.setFrozenRows(1);
+  }
+}
+
 function doPost(e) {
   const lock = LockService.getScriptLock();
   lock.tryLock(10000);
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName(SHEET_NAME);
-    if (!sheet) {
-      sheet = ss.insertSheet(SHEET_NAME);
-      sheet.appendRow([
-        "Date","Time slot","Logged at",
-        "Quick note only",
-        "Pain head","Head location","Head pain type","Head area",
-        "Pain neck","Neck pain types",
-        "Pain L shoulder","Pain R shoulder","Shoulder pain types",
-        "Pain L elbow","Pain R elbow","Elbow pain types",
-        "Pain L wrist","Pain R wrist","Wrist pain types",
-        "Pain L hand","Pain R hand","Hand pain types",
-        "Pain L jaw","Pain R jaw","Jaw pain types",
-        "Pain L hip","Pain R hip","Hip pain types",
-        "Pain L knee","Pain R knee","Knee pain types",
-        "Pain L ankle","Pain R ankle","Ankle pain types",
-        "Pain L foot","Pain R foot","Foot pain types",
-        "Ice wanted","Ice applied",
-        "Vertigo","Nausea","Light sensitivity",
-        "Morning stiffness (min)",
-        "Acid reflux","Fatigue",
-        "Mouth corner irritation","Dry eyes","Angular cheilitis visible",
-        "Physical exertion","Stress","Sleep score","Sleep duration (h)","Weather",
-        "Sun exposure","Hours since sun","Skin coverage",
-        "Ring L thumb","Ring R thumb","Ring L index","Ring R index",
-        "Ring L middle","Ring R middle","Ring L ring","Ring R ring",
-        "Ring L little","Ring R little",
-        "Circ L knee (mm)","Circ R knee (mm)",
-        "Circ L elbow (mm)","Circ R elbow (mm)",
-        "Jaw opening (mm)",
-        "Hand hottest point","Hand L hot temp","Hand R hot temp",
-        "Hand coldest point","Hand L cold temp","Hand R cold temp",
-        "Ctrl inner forearm","Ctrl calf","Ctrl forehead","Ctrl room temp","Ctrl other-person hand",
-        "T L knee","T R knee","D L knee","D R knee",
-        "T L hip","T R hip","D L hip","D R hip",
-        "T L elbow","T R elbow","D L elbow","D R elbow",
-        "T L hand","T R hand","D L hand","D R hand",
-        "T L jaw","T R jaw","D L jaw","D R jaw",
-        "Reference person initials","Ref L hand","Ref R hand","Ref forehead",
-        "Swelling visible","Photos taken of",
-        "Medications","Notes"
-      ]);
-      sheet.setFrozenRows(1);
-    }
+    const sheet = getSheet_();
+    ensureHeaders_(sheet);
     const d = JSON.parse(e.postData.contents);
-    sheet.appendRow([
-      d.date, d.time, d.loggedAt,
-      d.quickNoteOnly,
-      d.pHead, d.headLoc, d.headType, d.headArea,
-      d.pNeck, d.ptNeck,
-      d.pLshoulder, d.pRshoulder, d.ptShoulders,
-      d.pLelbow, d.pRelbow, d.ptElbows,
-      d.pLwrist, d.pRwrist, d.ptWrists,
-      d.pLhand, d.pRhand, d.ptHands,
-      d.pLjaw, d.pRjaw, d.ptJaw,
-      d.pLhip, d.pRhip, d.ptHips,
-      d.pLknee, d.pRknee, d.ptKnees,
-      d.pLankle, d.pRankle, d.ptAnkles,
-      d.pLfoot, d.pRfoot, d.ptFeet,
-      d.iceWanted, d.iceApplied,
-      d.vertigo, d.nausea, d.lightSens,
-      d.morningStiff,
-      d.acidReflux, d.pFatigue,
-      d.mouthCorner, d.dryEyes, d.cheilitisVisible,
-      d.physExertion, d.stress, d.sleepScore, d.sleepDuration, d.weather,
-      d.sunExp, d.sunHours, d.sunCoverage,
-      d.cLthumb, d.cRthumb, d.cLindex, d.cRindex,
-      d.cLmiddle, d.cRmiddle, d.cLring, d.cRring,
-      d.cLlittle, d.cRlittle,
-      d.cLknee, d.cRknee, d.cLelbow, d.cRelbow, d.cJaw,
-      d.handHot, d.handLhotTemp, d.handRhotTemp,
-      d.handCold, d.handLcoldTemp, d.handRcoldTemp,
-      d.ctrlInnerArm, d.ctrlCalf, d.ctrlForehead, d.ctrlRoom, d.ctrlOtherHand,
-      d.tLknee, d.tRknee, d.dLknee, d.dRknee,
-      d.tLhip, d.tRhip, d.dLhip, d.dRhip,
-      d.tLelbow, d.tRelbow, d.dLelbow, d.dRelbow,
-      d.tLhand, d.tRhand, d.dLhand, d.dRhand,
-      d.tLjaw, d.tRjaw, d.dLjaw, d.dRjaw,
-      d.refInitials, d.refLhand, d.refRhand, d.refForehead,
-      d.swelling, d.photos,
-      d.meds, d.notes
-    ]);
+    const row = KEYS.map(k => (d[k] === undefined ? "" : d[k]));
+    sheet.appendRow(row);
     return buildResponse({status:"ok"});
   } catch(err) {
     return buildResponse({status:"error",message:err.toString()});
@@ -283,7 +286,7 @@ function buildResponse(data) {
     <div class="setup-step"><span class="step-num">4</span><span class="step-title">Deploy as web app</span>
       <div class="step-body">Deploy → New deployment → Web app → Execute as Me → Anyone → Deploy → copy URL.</div></div>
     <div class="setup-step"><span class="step-num">5</span><span class="step-title">Paste URL above and test</span>
-      <div class="step-body">On a second device, open this same file and paste the same URL.</div></div>
+      <div class="step-body">On a second device, open this same file and paste the same URL. <strong>Already have a sheet with no headers from a previous version?</strong> Just redeploy this newer script and submit any entry (even a quick note) — the script automatically inserts the header row above your existing data.</div></div>
   </div>
 </div>
 
