@@ -6,22 +6,23 @@
 <title>Project Diagnonsense</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:#f5f5f3;color:#1a1a1a;padding:16px;max-width:740px;margin:0 auto}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:#f5f5f3;color:#1a1a1a;padding:16px;max-width:760px;margin:0 auto}
   h1{font-size:18px;font-weight:500;margin-bottom:16px}
   .tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
   .tab{padding:6px 14px;font-size:13px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:none;color:#666}
   .tab.active{background:#eee;color:#1a1a1a;font-weight:500;border-color:#bbb}
   .sec{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:16px;margin-bottom:10px}
   .sec-title{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+  .sec-hint{font-size:12px;color:#888;margin-bottom:10px}
   .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
   .f{display:flex;flex-direction:column;gap:4px}
   .f label{font-size:12px;color:#666}
-  .f input,.f select,.f textarea{font-size:14px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;width:100%}
+  .f input,.f select,.f textarea{font-size:14px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;width:100%;font-family:inherit}
   .f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:#999}
   .ctrl-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding:12px;background:#f5f5f3;border-radius:8px;flex-wrap:wrap}
-  .ctrl-item{display:flex;flex-direction:column;gap:4px}
+  .ctrl-item{display:flex;flex-direction:column;gap:4px;min-width:140px}
   .ctrl-item label{font-size:12px;color:#666}
-  .ctrl-item input{width:90px;font-size:14px;padding:6px 10px;border:1px solid #ddd;border-radius:8px}
+  .ctrl-item input{width:100%;font-size:14px;padding:6px 10px;border:1px solid #ddd;border-radius:8px;font-family:inherit}
   .ctrl-item input.required-missing{border-color:#c0392b;background:#fff5f5}
   .diff-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
   .diff-pos{background:#faeeda;color:#854f0b}
@@ -32,7 +33,7 @@
   .pr{display:flex;align-items:center;gap:10px;margin-bottom:4px}
   .pr label{font-size:13px;color:#1a1a1a;min-width:30px}
   .pr input[type=range]{flex:1;accent-color:#555}
-  .pr .val{font-size:13px;font-weight:500;min-width:20px;color:#1a1a1a}
+  .pr .val{font-size:13px;font-weight:500;min-width:24px;color:#1a1a1a;text-align:right}
   .cb-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
   .cb-label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;padding:3px 9px;border:1px solid #e5e5e5;border-radius:7px;background:#fff}
   .cb-label input{width:13px;height:13px;accent-color:#555}
@@ -40,21 +41,24 @@
   .ice-cb{background:#eef4fc;border-color:#c5d9f0}
   .ice-cb:has(input:checked){background:#d0e6f7;border-color:#7ab0d9}
   .joint-block{border:1px solid #efefef;border-radius:10px;padding:12px;margin-bottom:8px}
-  .joint-title{font-size:13px;font-weight:500;margin-bottom:10px;color:#333}
-  .sun-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:12px}
+  .joint-title{font-size:13px;font-weight:500;margin-bottom:10px;color:#333;display:flex;justify-content:space-between;align-items:center}
+  .joint-title .both-score{font-size:11px;color:#888;font-weight:400}
   .add-med-btn{font-size:12px;color:#888;background:none;border:1px dashed #ccc;border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:6px}
   .med-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
   .med-row input[type=text]{flex:1;min-width:140px;font-size:13px;padding:6px 10px;border:1px solid #ddd;border-radius:8px}
-  .btn-p{background:#eee;border:1px solid #ccc;border-radius:8px;padding:9px 22px;font-size:14px;cursor:pointer;color:#1a1a1a;font-weight:500}
+  .btn-p{background:#eee;border:1px solid #ccc;border-radius:8px;padding:9px 22px;font-size:14px;cursor:pointer;color:#1a1a1a;font-weight:500;font-family:inherit}
   .btn-p:hover{background:#e0e0e0}
   .btn-p:disabled{opacity:.5;cursor:not-allowed}
-  .btn-s{background:none;border:1px solid #ddd;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:#888}
+  .btn-s{background:none;border:1px solid #ddd;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:#888;font-family:inherit}
   .btn-s:hover{color:#333}
+  .btn-accent{background:#1a1a1a;color:#fff;border:1px solid #1a1a1a}
+  .btn-accent:hover{background:#333}
   .status-bar{font-size:13px;padding:9px 13px;border-radius:8px;margin-top:10px;display:none}
   .status-ok{background:#e1f5ee;color:#0f6e56}
   .status-err{background:#fcebeb;color:#a32d2d}
   .status-pending{background:#faeeda;color:#854f0b}
   .warn{background:#faeeda;color:#854f0b;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:12px}
+  .logged-at{font-size:11px;color:#888;margin-top:6px}
   table{width:100%;border-collapse:collapse;font-size:12px}
   th{text-align:left;padding:7px 8px;border-bottom:1px solid #e5e5e5;color:#888;font-weight:500}
   td{padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#1a1a1a;vertical-align:top}
@@ -73,9 +77,64 @@
   .step-title{font-size:13px;font-weight:500}
   .step-body{font-size:13px;color:#666;margin:8px 0 0 30px;line-height:1.65}
   .step-body a{color:#185fa5}
-  .code-wrap{background:#f5f5f3;border:1px solid #e5e5e5;border-radius:8px;padding:11px 13px;font-family:monospace;font-size:11px;color:#1a1a1a;white-space:pre-wrap;word-break:break-all;max-height:140px;overflow-y:auto;margin:8px 0 0 30px;line-height:1.5}
-  .copy-btn{font-size:11px;background:none;border:1px solid #ccc;border-radius:6px;padding:3px 9px;cursor:pointer;color:#666;margin:5px 0 0 30px}
-  @media(max-width:480px){body{padding:10px}.tabs{gap:3px}.tab{padding:5px 10px;font-size:12px}.side-grid{grid-template-columns:1fr}}
+  .code-wrap{background:#f5f5f3;border:1px solid #e5e5e5;border-radius:8px;padding:11px 13px;font-family:monospace;font-size:11px;color:#1a1a1a;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;margin:8px 0 0 30px;line-height:1.5}
+  .copy-btn{font-size:11px;background:none;border:1px solid #ccc;border-radius:6px;padding:3px 9px;cursor:pointer;color:#666;margin:5px 0 0 30px;font-family:inherit}
+  .hands-wrap{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:6px 0 4px}
+  .hand-svg{width:170px;height:215px;touch-action:manipulation;user-select:none}
+  .hand-svg .bone{stroke:#d4d4d0;stroke-width:5;fill:none;stroke-linecap:round}
+  .hand-svg .zone{cursor:pointer;transition:fill .12s,stroke .12s}
+  .hand-svg .node{fill:#fff;stroke:#888;stroke-width:1.5}
+  .hand-svg .node:hover{fill:#f0e4cf;stroke:#444}
+  .hand-svg .node.hot{fill:#f0a04b;stroke:#a86a1f}
+  .hand-svg .node.cold{fill:#5e96cf;stroke:#2d6296}
+  .hand-svg .palm-zone{fill:#f0f0ee;stroke:#bbb;stroke-width:1}
+  .hand-svg .palm-zone:hover{fill:#e2e2dd}
+  .hand-svg .palm-zone.hot{fill:#f0a04b;stroke:#a86a1f}
+  .hand-svg .palm-zone.cold{fill:#5e96cf;stroke:#2d6296}
+  .hand-svg .label{font-size:9px;fill:#888;pointer-events:none;text-anchor:middle;font-family:-apple-system,sans-serif}
+  .hand-caption{font-size:12px;color:#666;margin-top:4px;text-align:center}
+  .hand-summary{font-size:12px;color:#333;background:#f5f5f3;border-radius:6px;padding:6px 10px;margin-top:8px;min-height:24px}
+  .hand-legend{display:flex;gap:14px;justify-content:center;font-size:11px;color:#666;margin-top:6px}
+  .hand-legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+  .hand-legend .lg-hot::before{background:#f0a04b}
+  .hand-legend .lg-cold::before{background:#5e96cf}
+  .chart-box{background:#fafaf8;border:1px solid #efefee;border-radius:8px;padding:12px;margin-bottom:10px}
+  .chart-title{font-size:12px;color:#666;font-weight:500;margin-bottom:6px}
+  .chart-svg{width:100%;height:170px;display:block}
+  .chart-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#666;margin-top:6px}
+  .chart-legend .lg{display:flex;align-items:center;gap:4px}
+  .chart-legend .lg::before{content:'';width:10px;height:2px;display:inline-block}
+  .qn-sec{background:#fef7e8;border:1px solid #f0d99f}
+  .qn-sec textarea{min-height:60px}
+  .person-ref{background:#fafaf8;border:1px dashed #d8d8d4;border-radius:10px;padding:12px;margin-top:12px}
+  .hands-section{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  .hand-col{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .hand-col .f{width:100%;max-width:220px}
+  .lr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .lr-col{display:flex;flex-direction:column;gap:10px}
+  .lr-col-label{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #efefee;padding-bottom:4px}
+  .spot-loc{font-weight:400;color:#888;font-size:11px}
+  .spot-loc.hot{color:#a86a1f}
+  .spot-loc.cold{color:#2d6296}
+  @media(max-width:600px){.hands-section,.lr-grid{grid-template-columns:1fr;gap:14px}}
+  @media(max-width:480px){body{padding:10px}.tabs{gap:3px}.tab{padding:5px 10px;font-size:12px}.side-grid{grid-template-columns:1fr}.hand-svg{width:150px;height:190px}}
+  /* Larger touch targets on phones, tablets, and Kindle (coarse pointer or narrow viewport). */
+  @media(max-width:760px),(pointer:coarse){
+    body{font-size:16px}
+    .f input,.f select,.f textarea,.ctrl-item input,.med-row input[type=text]{font-size:17px;padding:11px 12px}
+    .f label,.ctrl-item label{font-size:13px}
+    .pr label{font-size:14px}
+    .pr input[type=range]{height:34px}
+    .pr .val{font-size:15px;min-width:30px}
+    .cb-label{font-size:14px;padding:7px 12px}
+    .cb-label input{width:18px;height:18px}
+    .btn-p{font-size:16px;padding:13px 26px}
+    .btn-s{font-size:14px;padding:7px 12px}
+    .joint-title{font-size:15px}
+    .sec-title{font-size:12px}
+    #quick-note{font-size:16px;padding:11px 12px;min-height:80px}
+    .add-med-btn{font-size:14px;padding:9px 16px}
+  }
 </style>
 </head>
 <body>
@@ -88,7 +147,7 @@
   <button class="tab" onclick="showTab('about')">About</button>
 </div>
 
-<!-- SETUP -->
+<!-- ====================== SETUP ====================== -->
 <div id="tab-setup">
   <div class="sec">
     <p class="sec-title">Connect to Google Sheets</p>
@@ -119,58 +178,83 @@ function doPost(e) {
     if (!sheet) {
       sheet = ss.insertSheet(SHEET_NAME);
       sheet.appendRow([
-        "Date","Time slot",
-        "Inner forearm ctrl (°C)","Calf ctrl (°C)",
-        "L knee (°C)","R knee (°C)","L knee diff","R knee diff",
-        "L elbow (°C)","R elbow (°C)","L elbow diff","R elbow diff",
-        "L hand (°C)","R hand (°C)","L hand diff","R hand diff",
-        "L jaw (°C)","R jaw (°C)","L jaw diff","R jaw diff",
-        "Circ L knee (mm)","Circ R knee (mm)",
-        "Circ L elbow (mm)","Circ R elbow (mm)",
-        "Thumb L","Thumb R","Index L","Index R",
-        "Middle L","Middle R","Ring L","Ring R",
-        "Little L","Little R","Jaw opening (mm)",
+        "Date","Time slot","Logged at",
+        "Quick note only",
         "Pain head","Head location","Head pain type","Head area",
         "Pain neck","Neck pain types",
-        "Pain L hip","Pain R hip","Hip pain types",
-        "Pain L knee","Pain R knee","Knee pain types",
+        "Pain L shoulder","Pain R shoulder","Shoulder pain types",
         "Pain L elbow","Pain R elbow","Elbow pain types",
+        "Pain L wrist","Pain R wrist","Wrist pain types",
         "Pain L hand","Pain R hand","Hand pain types",
         "Pain L jaw","Pain R jaw","Jaw pain types",
+        "Pain L hip","Pain R hip","Hip pain types",
+        "Pain L knee","Pain R knee","Knee pain types",
+        "Pain L ankle","Pain R ankle","Ankle pain types",
         "Pain L foot","Pain R foot","Foot pain types",
-        "Fatigue",
         "Ice wanted","Ice applied",
-        "Sun exposure","UV index","Hours since sun","Skin coverage",
-        "Sicca dry mouth","Sicca dry eyes","Angular cheilitis","Lip dryness","Sticky mouth","Sicca observations","Saliva flow (ml/15min)","Schirmer (mm/5min)",
-        "Swelling visible","Photos taken of","Medications","Notes"
+        "Vertigo","Nausea","Light sensitivity",
+        "Morning stiffness (min)",
+        "Acid reflux","Fatigue",
+        "Mouth corner irritation","Dry eyes","Angular cheilitis visible",
+        "Physical exertion","Stress","Sleep score","Sleep duration (h)","Weather",
+        "Sun exposure","Hours since sun","Skin coverage",
+        "Ring L thumb","Ring R thumb","Ring L index","Ring R index",
+        "Ring L middle","Ring R middle","Ring L ring","Ring R ring",
+        "Ring L little","Ring R little",
+        "Circ L knee (mm)","Circ R knee (mm)",
+        "Circ L elbow (mm)","Circ R elbow (mm)",
+        "Jaw opening (mm)",
+        "Hand hottest point","Hand L hot temp","Hand R hot temp",
+        "Hand coldest point","Hand L cold temp","Hand R cold temp",
+        "Ctrl inner forearm","Ctrl calf","Ctrl forehead","Ctrl room temp","Ctrl other-person hand",
+        "T L knee","T R knee","D L knee","D R knee",
+        "T L hip","T R hip","D L hip","D R hip",
+        "T L elbow","T R elbow","D L elbow","D R elbow",
+        "T L hand","T R hand","D L hand","D R hand",
+        "T L jaw","T R jaw","D L jaw","D R jaw",
+        "Reference person initials","Ref L hand","Ref R hand","Ref forehead",
+        "Swelling visible","Photos taken of",
+        "Medications","Notes"
       ]);
       sheet.setFrozenRows(1);
     }
     const d = JSON.parse(e.postData.contents);
     sheet.appendRow([
-      d.date, d.time,
-      d.ctrlInnerArm, d.ctrlCalf,
+      d.date, d.time, d.loggedAt,
+      d.quickNoteOnly,
+      d.pHead, d.headLoc, d.headType, d.headArea,
+      d.pNeck, d.ptNeck,
+      d.pLshoulder, d.pRshoulder, d.ptShoulders,
+      d.pLelbow, d.pRelbow, d.ptElbows,
+      d.pLwrist, d.pRwrist, d.ptWrists,
+      d.pLhand, d.pRhand, d.ptHands,
+      d.pLjaw, d.pRjaw, d.ptJaw,
+      d.pLhip, d.pRhip, d.ptHips,
+      d.pLknee, d.pRknee, d.ptKnees,
+      d.pLankle, d.pRankle, d.ptAnkles,
+      d.pLfoot, d.pRfoot, d.ptFeet,
+      d.iceWanted, d.iceApplied,
+      d.vertigo, d.nausea, d.lightSens,
+      d.morningStiff,
+      d.acidReflux, d.pFatigue,
+      d.mouthCorner, d.dryEyes, d.cheilitisVisible,
+      d.physExertion, d.stress, d.sleepScore, d.sleepDuration, d.weather,
+      d.sunExp, d.sunHours, d.sunCoverage,
+      d.cLthumb, d.cRthumb, d.cLindex, d.cRindex,
+      d.cLmiddle, d.cRmiddle, d.cLring, d.cRring,
+      d.cLlittle, d.cRlittle,
+      d.cLknee, d.cRknee, d.cLelbow, d.cRelbow, d.cJaw,
+      d.handHot, d.handLhotTemp, d.handRhotTemp,
+      d.handCold, d.handLcoldTemp, d.handRcoldTemp,
+      d.ctrlInnerArm, d.ctrlCalf, d.ctrlForehead, d.ctrlRoom, d.ctrlOtherHand,
       d.tLknee, d.tRknee, d.dLknee, d.dRknee,
+      d.tLhip, d.tRhip, d.dLhip, d.dRhip,
       d.tLelbow, d.tRelbow, d.dLelbow, d.dRelbow,
       d.tLhand, d.tRhand, d.dLhand, d.dRhand,
       d.tLjaw, d.tRjaw, d.dLjaw, d.dRjaw,
-      d.cLknee, d.cRknee, d.cLelbow, d.cRelbow,
-      d.cLthumb, d.cRthumb, d.cLindex, d.cRindex,
-      d.cLmiddle, d.cRmiddle, d.cLring, d.cRring,
-      d.cLlittle, d.cRlittle, d.cJaw,
-      d.pHead, d.headLoc, d.headType, d.headArea,
-      d.pNeck, d.ptNeck,
-      d.pLhip, d.pRhip, d.ptHips,
-      d.pLknee, d.pRknee, d.ptKnees,
-      d.pLelbow, d.pRelbow, d.ptElbows,
-      d.pLhand, d.pRhand, d.ptHands,
-      d.pLjaw, d.pRjaw, d.ptJaw,
-      d.pLfoot, d.pRfoot, d.ptFeet,
-      d.pFatigue,
-      d.iceWanted, d.iceApplied,
-      d.sunExp, d.uvIndex, d.sunHours, d.sunCoverage,
-      d.siccaDryMouth, d.siccaDryEyes, d.siccaCheilitis, d.siccaLipDry, d.siccaStickyMouth, d.siccaObs, d.salivaFlow, d.schirmer,
-      d.swelling, d.photos, d.meds, d.notes
+      d.refInitials, d.refLhand, d.refRhand, d.refForehead,
+      d.swelling, d.photos,
+      d.meds, d.notes
     ]);
     return buildResponse({status:"ok"});
   } catch(err) {
@@ -203,12 +287,13 @@ function buildResponse(data) {
   </div>
 </div>
 
-<!-- ENTRY -->
+<!-- ====================== ENTRY ====================== -->
 <div id="tab-entry" style="display:none">
   <div class="warn" id="no-url-warn" style="display:none">No Google Sheets URL set — go to Setup first.</div>
 
+  <!-- DATE / TIME / LOGGED-AT -->
   <div class="sec">
-    <p class="sec-title">Date and time slot</p>
+    <p class="sec-title">Date &amp; time</p>
     <div class="fg">
       <div class="f"><label>Date</label><input type="date" id="entry-date"></div>
       <div class="f"><label>Time slot</label>
@@ -220,64 +305,27 @@ function buildResponse(data) {
         </select>
       </div>
     </div>
+    <div class="logged-at" id="logged-at-display">Logged at: —</div>
   </div>
 
-  <div class="sec">
-    <p class="sec-title">Temperature readings (°C)</p>
-    <p style="font-size:12px;color:#888;margin-bottom:10px">At least one control reading required. Differentials calculated automatically — raw temps saved regardless.</p>
-    <div class="ctrl-row">
-      <div class="ctrl-item">
-        <label>Inner forearm control* (mid-point, wrist to elbow)</label>
-        <input type="number" id="t-ctrl-innerarm" step="0.1" placeholder="e.g. 32.1" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-innerarm-display"></span>
-      </div>
-      <div class="ctrl-item">
-        <label>Calf control (mid-calf, lower body)</label>
-        <input type="number" id="t-ctrl-calf" step="0.1" placeholder="e.g. 31.8" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-calf-display"></span>
-      </div>
-    </div>
-    <div class="fg">
-      <div class="f"><label>Left knee</label><input type="number" id="t-lknee" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lknee">—</span></div>
-      <div class="f"><label>Right knee</label><input type="number" id="t-rknee" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rknee">—</span></div>
-      <div class="f"><label>Left elbow</label><input type="number" id="t-lelbow" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lelbow">—</span></div>
-      <div class="f"><label>Right elbow</label><input type="number" id="t-relbow" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-relbow">—</span></div>
-      <div class="f"><label>Left hand (dorsum)</label><input type="number" id="t-lhand" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhand">—</span></div>
-      <div class="f"><label>Right hand (dorsum)</label><input type="number" id="t-rhand" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhand">—</span></div>
-      <div class="f"><label>Left jaw</label><input type="number" id="t-ljaw" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
-      <div class="f"><label>Right jaw</label><input type="number" id="t-rjaw" step="0.1" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rjaw">—</span></div>
-    </div>
+  <!-- QUICK NOTE UPLOAD -->
+  <div class="sec qn-sec">
+    <p class="sec-title">Quick note</p>
+    <p style="font-size:12px;color:#854f0b;margin-bottom:8px">If detailed measurements aren't possible, just write a brief note and upload — everything else can be left blank.</p>
+    <textarea id="quick-note" rows="2" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid #d8c189;border-radius:8px;font-family:inherit" placeholder="e.g. flare today, both knees hot, can't measure"></textarea>
+    <button class="btn-p btn-accent" style="margin-top:8px" onclick="uploadQuickNote()">Upload quick note only</button>
+    <div class="status-bar" id="quick-note-status"></div>
   </div>
 
+  <!-- PAIN SCORES -->
   <div class="sec">
-    <p class="sec-title">Circumference — leave blank if not measured</p>
-    <div class="fg">
-      <div class="f"><label>L knee (mid-patella, mm)</label><input type="number" id="c-lknee" placeholder="mm"></div>
-      <div class="f"><label>R knee (mid-patella, mm)</label><input type="number" id="c-rknee" placeholder="mm"></div>
-      <div class="f"><label>L elbow (olecranon, mm)</label><input type="number" id="c-lelbow" placeholder="mm"></div>
-      <div class="f"><label>R elbow (olecranon, mm)</label><input type="number" id="c-relbow" placeholder="mm"></div>
-      <div class="f"><label>L thumb</label><input type="text" id="c-lthumb" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>R thumb</label><input type="text" id="c-rthumb" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>L index</label><input type="text" id="c-lindex" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>R index</label><input type="text" id="c-rindex" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>L middle</label><input type="text" id="c-lmiddle" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>R middle</label><input type="text" id="c-rmiddle" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>L ring</label><input type="text" id="c-lring" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>R ring</label><input type="text" id="c-rring" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>L little</label><input type="text" id="c-llittle" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>R little</label><input type="text" id="c-rlittle" placeholder="e.g. P or 19" style="font-size:14px"></div>
-      <div class="f"><label>Jaw opening (mm)</label><input type="number" id="c-jaw" placeholder="mm"></div>
-    </div>
-  </div>
-
-  <div class="sec">
-    <p class="sec-title">Pain and symptom scores (0 = none, 10 = worst)</p>
-    <p style="font-size:12px;color:#888;margin-bottom:12px">Tick pain types and ice for any joint scoring above 0.</p>
+    <p class="sec-title">Pain</p>
+    <p class="sec-hint">0 = none, 10 = worst. Tick pain types and ice for any joint scoring above 0.</p>
 
     <!-- HEAD -->
     <div class="joint-block">
       <div class="joint-title">Head</div>
-      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="head"><span class="val">0</span></div>
+      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="head"><span class="val">0</span></div>
       <p style="font-size:11px;color:#888;margin:8px 0 4px">Headache location</p>
       <div class="cb-group">
         <label class="cb-label"><input type="checkbox" class="head-loc" value="Both sides/band"> Both sides / band</label>
@@ -311,7 +359,7 @@ function buildResponse(data) {
     <!-- NECK -->
     <div class="joint-block">
       <div class="joint-title">Neck</div>
-      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="neck"><span class="val">0</span></div>
+      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="neck"><span class="val">0</span></div>
       <div class="cb-group" id="pt-neck"></div>
       <div class="cb-group" style="margin-top:6px">
         <label class="cb-label ice-cb"><input type="checkbox" class="ice-w" data-joint="neck"> Ice wanted</label>
@@ -319,103 +367,271 @@ function buildResponse(data) {
       </div>
     </div>
 
-    <!-- BILATERAL JOINTS -->
+    <!-- BILATERAL JOINTS (shoulders, elbows, wrists, hands, jaw, hips, knees, ankles, feet) -->
     <div id="bilateral-joints"></div>
 
-    <!-- FATIGUE -->
-    <div class="joint-block">
-      <div class="joint-title">Fatigue</div>
-      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="fatigue"><span class="val">0</span></div>
+    <!-- FATIGUE — note: also lives below in 'general' but fatigue is also a useful pain peer -->
+  </div>
+
+  <!-- VERTIGO / NAUSEA / LIGHT SENS -->
+  <div class="sec">
+    <p class="sec-title">Vertigo, nausea, light sensitivity</p>
+    <div class="pr"><label style="min-width:140px">Vertigo</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="vertigo"><span class="val">0</span></div>
+    <div class="pr"><label style="min-width:140px">Nausea</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="nausea"><span class="val">0</span></div>
+    <div class="pr"><label style="min-width:140px">Light sensitivity</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="lightSens"><span class="val">0</span></div>
+  </div>
+
+  <!-- MORNING STIFFNESS -->
+  <div class="sec">
+    <p class="sec-title">Morning stiffness</p>
+    <p class="sec-hint">Minutes of joint stiffness on waking before easing.</p>
+    <div class="pr"><label style="min-width:140px">Duration</label><input type="range" min="0" max="120" step="5" value="0" oninput="updPrMin(this)" data-joint="morningStiff"><span class="val">0 min</span></div>
+  </div>
+
+  <!-- GENERAL: acid reflux, fatigue -->
+  <div class="sec">
+    <p class="sec-title">General</p>
+    <div class="pr"><label style="min-width:140px">Acid reflux</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="acidReflux"><span class="val">0</span></div>
+    <div class="pr"><label style="min-width:140px">Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="fatigue"><span class="val">0</span></div>
+  </div>
+
+  <!-- MOUTH / EYES (simplified) -->
+  <div class="sec">
+    <p class="sec-title">Mouth and eyes</p>
+    <div class="pr"><label style="min-width:170px">Mouth corner irritation</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="mouthCorner"><span class="val">0</span></div>
+    <div class="pr"><label style="min-width:170px">Dry eyes</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="dryEyes"><span class="val">0</span></div>
+    <div class="cb-group" style="margin-top:8px">
+      <label class="cb-label"><input type="checkbox" id="cheilitis-visible"> Angular cheilitis visible</label>
     </div>
   </div>
 
+  <!-- RING SIZES -->
   <div class="sec">
-    <p class="sec-title">Visible swelling noted</p>
-    <div class="cb-group" id="swelling-checks">
-      <label class="cb-label"><input type="checkbox" value="L knee"> L knee</label>
-      <label class="cb-label"><input type="checkbox" value="R knee"> R knee</label>
-      <label class="cb-label"><input type="checkbox" value="L elbow"> L elbow</label>
-      <label class="cb-label"><input type="checkbox" value="R elbow"> R elbow</label>
-      <label class="cb-label"><input type="checkbox" value="L hand/fingers"> L hand/fingers</label>
-      <label class="cb-label"><input type="checkbox" value="R hand/fingers"> R hand/fingers</label>
-      <label class="cb-label"><input type="checkbox" value="L hip"> L hip</label>
-      <label class="cb-label"><input type="checkbox" value="R hip"> R hip</label>
-      <label class="cb-label"><input type="checkbox" value="L foot"> L foot</label>
-      <label class="cb-label"><input type="checkbox" value="R foot"> R foot</label>
-      <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
+    <p class="sec-title">Ring sizes</p>
+    <p class="sec-hint">Enter ring size (e.g. P, 19) or skip. Numeric values are charted in Summary.</p>
+    <div class="lr-grid">
+      <div class="lr-col">
+        <div class="lr-col-label">Left</div>
+        <div class="f"><label>Thumb</label><input type="text" id="c-lthumb" placeholder="P or 19"></div>
+        <div class="f"><label>Index</label><input type="text" id="c-lindex" placeholder="P or 19"></div>
+        <div class="f"><label>Middle</label><input type="text" id="c-lmiddle" placeholder="P or 19"></div>
+        <div class="f"><label>Ring</label><input type="text" id="c-lring" placeholder="P or 19"></div>
+        <div class="f"><label>Little</label><input type="text" id="c-llittle" placeholder="P or 19"></div>
+      </div>
+      <div class="lr-col">
+        <div class="lr-col-label">Right</div>
+        <div class="f"><label>Thumb</label><input type="text" id="c-rthumb" placeholder="P or 19"></div>
+        <div class="f"><label>Index</label><input type="text" id="c-rindex" placeholder="P or 19"></div>
+        <div class="f"><label>Middle</label><input type="text" id="c-rmiddle" placeholder="P or 19"></div>
+        <div class="f"><label>Ring</label><input type="text" id="c-rring" placeholder="P or 19"></div>
+        <div class="f"><label>Little</label><input type="text" id="c-rlittle" placeholder="P or 19"></div>
+      </div>
     </div>
   </div>
 
+  <!-- BODY CIRCUMFERENCE -->
   <div class="sec">
-    <p class="sec-title">Photos taken of — tick to flag, retrieve from photo library by date</p>
-    <div class="cb-group" id="photo-checks">
-      <label class="cb-label"><input type="checkbox" value="L knee"> L knee</label>
-      <label class="cb-label"><input type="checkbox" value="R knee"> R knee</label>
-      <label class="cb-label"><input type="checkbox" value="L elbow"> L elbow</label>
-      <label class="cb-label"><input type="checkbox" value="R elbow"> R elbow</label>
-      <label class="cb-label"><input type="checkbox" value="L hand/fingers"> L hand/fingers</label>
-      <label class="cb-label"><input type="checkbox" value="R hand/fingers"> R hand/fingers</label>
-      <label class="cb-label"><input type="checkbox" value="L hip"> L hip</label>
-      <label class="cb-label"><input type="checkbox" value="R hip"> R hip</label>
-      <label class="cb-label"><input type="checkbox" value="L foot"> L foot</label>
-      <label class="cb-label"><input type="checkbox" value="R foot"> R foot</label>
-      <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
-      <label class="cb-label"><input type="checkbox" value="Full body/other"> Full body / other</label>
+    <p class="sec-title">Body circumference</p>
+    <div class="lr-grid">
+      <div class="lr-col">
+        <div class="lr-col-label">Left</div>
+        <div class="f"><label>Knee (mm)</label><input type="text" id="c-lknee" placeholder="mm"></div>
+        <div class="f"><label>Elbow (mm)</label><input type="text" id="c-lelbow" placeholder="mm"></div>
+      </div>
+      <div class="lr-col">
+        <div class="lr-col-label">Right</div>
+        <div class="f"><label>Knee (mm)</label><input type="text" id="c-rknee" placeholder="mm"></div>
+        <div class="f"><label>Elbow (mm)</label><input type="text" id="c-relbow" placeholder="mm"></div>
+      </div>
+    </div>
+    <div class="f" style="margin-top:12px;max-width:240px"><label>Jaw opening (mm)</label><input type="text" id="c-jaw" placeholder="mm"></div>
+  </div>
+
+  <!-- CONTROL READINGS (+ reference person) -->
+  <div class="sec">
+    <p class="sec-title">Control readings</p>
+    <p class="sec-hint">At least one control reading required before saving. Enter raw thermometer values (e.g. 32.4).</p>
+    <div class="ctrl-row">
+      <div class="ctrl-item">
+        <label>Inner forearm *</label>
+        <input type="text" id="t-ctrl-innerarm" placeholder="°C" oninput="recalcDiffs()">
+        <span class="diff-badge diff-zero" id="ctrl-innerarm-display"></span>
+      </div>
+      <div class="ctrl-item">
+        <label>Calf</label>
+        <input type="text" id="t-ctrl-calf" placeholder="°C" oninput="recalcDiffs()">
+        <span class="diff-badge diff-zero" id="ctrl-calf-display"></span>
+      </div>
+      <div class="ctrl-item">
+        <label>Forehead</label>
+        <input type="text" id="t-ctrl-forehead" placeholder="°C" oninput="recalcDiffs()">
+        <span class="diff-badge diff-zero" id="ctrl-forehead-display"></span>
+      </div>
+      <div class="ctrl-item">
+        <label>Room</label>
+        <input type="text" id="t-ctrl-room" placeholder="°C">
+      </div>
+      <div class="ctrl-item">
+        <label>Other person's hand</label>
+        <input type="text" id="t-ctrl-otherhand" placeholder="°C">
+      </div>
+    </div>
+
+    <div class="person-ref">
+      <p style="font-size:12px;color:#666;margin-bottom:8px"><strong>Reference person</strong> — if someone else is present, log their readings as a same-room sanity check.</p>
+      <div class="lr-grid">
+        <div class="lr-col">
+          <div class="lr-col-label">Left</div>
+          <div class="f"><label>Their hand</label><input type="text" id="ref-lhand" placeholder="°C"></div>
+        </div>
+        <div class="lr-col">
+          <div class="lr-col-label">Right</div>
+          <div class="f"><label>Their hand</label><input type="text" id="ref-rhand" placeholder="°C"></div>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:12px">
+        <div class="f"><label>Initials</label><input type="text" id="ref-initials" placeholder="e.g. JM" maxlength="6"></div>
+        <div class="f"><label>Their forehead</label><input type="text" id="ref-forehead" placeholder="°C"></div>
+      </div>
     </div>
   </div>
 
+  <!-- HANDS — L palm + L temps on LEFT, R palm + R temps on RIGHT -->
   <div class="sec">
-    <p class="sec-title">Sicca symptoms (dryness)</p>
-    <p style="font-size:12px;color:#666;margin-bottom:10px">Log each time slot — these symptoms vary through the day.</p>
+    <p class="sec-title">Hands</p>
+    <p class="sec-hint">On each palm: tap once for hottest (orange), again for coldest (blue), third time clears. Then enter the temperature readings at each spot. All temperatures are raw values; differentials calculate automatically.</p>
+    <div class="hands-section">
+      <div class="hand-col">
+        <div class="lr-col-label">Left palm</div>
+        <div id="left-palm-mount"><!-- injected by JS --></div>
+        <div class="f"><label>Hand dorsum temperature</label><input type="text" id="t-lhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhand">—</span></div>
+        <div class="f"><label>Hottest spot temp <span class="spot-loc hot" id="loc-l-hot">— not marked —</span></label><input type="text" id="t-l-hot" placeholder="°C"></div>
+        <div class="f"><label>Coldest spot temp <span class="spot-loc cold" id="loc-l-cold">— not marked —</span></label><input type="text" id="t-l-cold" placeholder="°C"></div>
+      </div>
+      <div class="hand-col">
+        <div class="lr-col-label">Right palm</div>
+        <div id="right-palm-mount"><!-- injected by JS --></div>
+        <div class="f"><label>Hand dorsum temperature</label><input type="text" id="t-rhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhand">—</span></div>
+        <div class="f"><label>Hottest spot temp <span class="spot-loc hot" id="loc-r-hot">— not marked —</span></label><input type="text" id="t-r-hot" placeholder="°C"></div>
+        <div class="f"><label>Coldest spot temp <span class="spot-loc cold" id="loc-r-cold">— not marked —</span></label><input type="text" id="t-r-cold" placeholder="°C"></div>
+      </div>
+    </div>
+    <div class="hand-legend" style="margin-top:10px">
+      <span class="lg-hot">Hottest</span>
+      <span class="lg-cold">Coldest</span>
+    </div>
+  </div>
 
-    <div class="pr"><label style="min-width:160px">Morning dry mouth</label>
-      <input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="dryMouth">
-      <span class="val">0</span>
+  <!-- JOINT TEMPERATURES -->
+  <div class="sec">
+    <p class="sec-title">Joint temperatures</p>
+    <p class="sec-hint">Raw thermometer readings. Differential vs control shown next to each.</p>
+    <div class="lr-grid">
+      <div class="lr-col">
+        <div class="lr-col-label">Left</div>
+        <div class="f"><label>Knee</label><input type="text" id="t-lknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lknee">—</span></div>
+        <div class="f"><label>Hip</label><input type="text" id="t-lhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhip">—</span></div>
+        <div class="f"><label>Elbow</label><input type="text" id="t-lelbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lelbow">—</span></div>
+        <div class="f"><label>Jaw</label><input type="text" id="t-ljaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
+      </div>
+      <div class="lr-col">
+        <div class="lr-col-label">Right</div>
+        <div class="f"><label>Knee</label><input type="text" id="t-rknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rknee">—</span></div>
+        <div class="f"><label>Hip</label><input type="text" id="t-rhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhip">—</span></div>
+        <div class="f"><label>Elbow</label><input type="text" id="t-relbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-relbow">—</span></div>
+        <div class="f"><label>Jaw</label><input type="text" id="t-rjaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rjaw">—</span></div>
+      </div>
     </div>
-    <div class="pr"><label style="min-width:160px">Dry / gritty eyes</label>
-      <input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="dryEyes">
-      <span class="val">0</span>
-    </div>
-    <div class="pr"><label style="min-width:160px">Angular cheilitis pain</label>
-      <input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="cheilitis">
-      <span class="val">0</span>
-    </div>
-    <div class="pr"><label style="min-width:160px">Lip dryness</label>
-      <input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="lipDry">
-      <span class="val">0</span>
-    </div>
-    <div class="pr"><label style="min-width:160px">Sticky / tacky mouth</label>
-      <input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="stickyMouth">
-      <span class="val">0</span>
-    </div>
+  </div>
 
-    <p style="font-size:12px;color:#666;margin:10px 0 8px">Additional observations</p>
-    <div class="cb-group" id="sicca-checks">
-      <label class="cb-label"><input type="checkbox" value="Dry on waking"> Dry on waking</label>
-      <label class="cb-label"><input type="checkbox" value="Difficulty swallowing dry food"> Difficulty swallowing dry food</label>
-      <label class="cb-label"><input type="checkbox" value="Needed water to eat"> Needed water to eat</label>
-      <label class="cb-label"><input type="checkbox" value="Woke at night for water"> Woke at night for water</label>
-      <label class="cb-label"><input type="checkbox" value="Cracker test difficult"> Cracker test difficult</label>
-      <label class="cb-label"><input type="checkbox" value="Low saliva pooling observed"> Low saliva pooling observed</label>
-      <label class="cb-label"><input type="checkbox" value="Angular cheilitis visible"> Angular cheilitis visible</label>
-      <label class="cb-label"><input type="checkbox" value="Antifungal cream helped"> Antifungal cream helped</label>
+  <!-- SWELLING -->
+  <div class="sec">
+    <p class="sec-title">Swelling</p>
+    <div id="swelling-checks">
+      <div class="lr-grid">
+        <div class="lr-col">
+          <div class="lr-col-label">Left</div>
+          <div class="cb-group">
+            <label class="cb-label"><input type="checkbox" value="L knee"> Knee</label>
+            <label class="cb-label"><input type="checkbox" value="L elbow"> Elbow</label>
+            <label class="cb-label"><input type="checkbox" value="L wrist"> Wrist</label>
+            <label class="cb-label"><input type="checkbox" value="L hand/fingers"> Hand/fingers</label>
+            <label class="cb-label"><input type="checkbox" value="L hip"> Hip</label>
+            <label class="cb-label"><input type="checkbox" value="L ankle"> Ankle</label>
+            <label class="cb-label"><input type="checkbox" value="L foot"> Foot</label>
+          </div>
+        </div>
+        <div class="lr-col">
+          <div class="lr-col-label">Right</div>
+          <div class="cb-group">
+            <label class="cb-label"><input type="checkbox" value="R knee"> Knee</label>
+            <label class="cb-label"><input type="checkbox" value="R elbow"> Elbow</label>
+            <label class="cb-label"><input type="checkbox" value="R wrist"> Wrist</label>
+            <label class="cb-label"><input type="checkbox" value="R hand/fingers"> Hand/fingers</label>
+            <label class="cb-label"><input type="checkbox" value="R hip"> Hip</label>
+            <label class="cb-label"><input type="checkbox" value="R ankle"> Ankle</label>
+            <label class="cb-label"><input type="checkbox" value="R foot"> Foot</label>
+          </div>
+        </div>
+      </div>
+      <div class="cb-group" style="margin-top:10px">
+        <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
+      </div>
     </div>
+  </div>
 
+  <!-- PHOTOS -->
+  <div class="sec">
+    <p class="sec-title">Photos</p>
+    <div id="photo-checks">
+      <div class="lr-grid">
+        <div class="lr-col">
+          <div class="lr-col-label">Left</div>
+          <div class="cb-group">
+            <label class="cb-label"><input type="checkbox" value="L knee"> Knee</label>
+            <label class="cb-label"><input type="checkbox" value="L elbow"> Elbow</label>
+            <label class="cb-label"><input type="checkbox" value="L hand/fingers"> Hand/fingers</label>
+            <label class="cb-label"><input type="checkbox" value="L hip"> Hip</label>
+            <label class="cb-label"><input type="checkbox" value="L foot"> Foot</label>
+          </div>
+        </div>
+        <div class="lr-col">
+          <div class="lr-col-label">Right</div>
+          <div class="cb-group">
+            <label class="cb-label"><input type="checkbox" value="R knee"> Knee</label>
+            <label class="cb-label"><input type="checkbox" value="R elbow"> Elbow</label>
+            <label class="cb-label"><input type="checkbox" value="R hand/fingers"> Hand/fingers</label>
+            <label class="cb-label"><input type="checkbox" value="R hip"> Hip</label>
+            <label class="cb-label"><input type="checkbox" value="R foot"> Foot</label>
+          </div>
+        </div>
+      </div>
+      <div class="cb-group" style="margin-top:10px">
+        <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
+        <label class="cb-label"><input type="checkbox" value="Mouth corner"> Mouth corner</label>
+        <label class="cb-label"><input type="checkbox" value="Full body/other"> Full body / other</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXT — triggers + sun -->
+  <div class="sec">
+    <p class="sec-title">Context</p>
+    <div class="pr"><label style="min-width:170px">Physical exertion</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="physExertion"><span class="val">0</span></div>
+    <div class="pr"><label style="min-width:170px">Stress</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="stress"><span class="val">0</span></div>
     <div class="fg" style="margin-top:10px">
-      <div class="f">
-        <label>Salivary flow test (ml / 15 min) — if measured</label>
-        <input type="number" id="saliva-flow" step="0.1" placeholder="ml">
-      </div>
-      <div class="f">
-        <label>Schirmer test result — if done (mm / 5 min)</label>
-        <input type="number" id="schirmer" step="0.5" placeholder="mm">
-      </div>
+      <div class="f"><label>Sleep score</label><input type="text" id="sleep-score" placeholder="e.g. 78"></div>
+      <div class="f"><label>Sleep duration (hours)</label><input type="text" id="sleep-duration" placeholder="e.g. 7.5"></div>
     </div>
-  </div>
-
-  <div class="sec">
-    <p class="sec-title">Sun exposure</p>
-    <div class="sun-grid">
+    <p style="font-size:12px;color:#888;margin:12px 0 6px">Weather</p>
+    <div class="cb-group" id="weather-group">
+      <label class="cb-label"><input type="radio" name="weather" value="Sunny"> Sunny</label>
+      <label class="cb-label"><input type="radio" name="weather" value="Cloudy"> Cloudy</label>
+      <label class="cb-label"><input type="radio" name="weather" value="Rainy"> Rainy</label>
+      <label class="cb-label"><input type="radio" name="weather" value="Mixed"> Mixed</label>
+    </div>
+    <p style="font-size:12px;color:#888;margin:14px 0 6px">Sun exposure</p>
+    <div class="fg">
       <div class="f"><label>Duration</label>
         <select id="sun-exp">
           <option value="None">None today</option>
@@ -424,10 +640,9 @@ function buildResponse(data) {
           <option value="Prolonged >60min">Prolonged — over 60 min</option>
         </select>
       </div>
-      <div class="f"><label>UV index</label><input type="number" id="uv-index" min="0" max="12" step="1" placeholder="0–12"></div>
-      <div class="f"><label>Hours since exposure ended</label><input type="number" id="sun-hours" min="0" max="48" step="0.5" placeholder="hrs"></div>
+      <div class="f"><label>Hours since exposure ended</label><input type="text" id="sun-hours" placeholder="hrs"></div>
     </div>
-    <p style="font-size:12px;color:#888;margin-bottom:8px">Skin coverage during exposure</p>
+    <p style="font-size:12px;color:#888;margin:10px 0 6px">Skin coverage during exposure</p>
     <div class="cb-group">
       <label class="cb-label"><input type="checkbox" id="sun-arms"> Arms bare</label>
       <label class="cb-label"><input type="checkbox" id="sun-legs"> Legs bare</label>
@@ -439,22 +654,24 @@ function buildResponse(data) {
     </div>
   </div>
 
+  <!-- MEDS -->
   <div class="sec">
-    <p class="sec-title">Medication this time slot</p>
+    <p class="sec-title">Medication</p>
     <div id="med-rows"></div>
     <button class="add-med-btn" onclick="addMedRow()">+ add medication</button>
   </div>
 
+  <!-- NOTES -->
   <div class="sec">
     <p class="sec-title">Notes</p>
     <textarea id="entry-notes" rows="2" style="width:100%" placeholder="Anything else — new joints, triggers, how symptoms changed through the day..."></textarea>
   </div>
 
-  <button class="btn-p" id="save-btn" onclick="saveEntry()">Save and sync</button>
+  <button class="btn-p btn-accent" id="save-btn" onclick="saveEntry()">Save and sync</button>
   <div class="status-bar" id="save-status"></div>
 </div>
 
-<!-- HISTORY -->
+<!-- ====================== HISTORY ====================== -->
 <div id="tab-log" style="display:none">
   <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
     <button class="btn-p" onclick="loadFromSheets()">Refresh from Google Sheets</button>
@@ -463,109 +680,79 @@ function buildResponse(data) {
   <div id="log-container"><p class="es">No entries yet.</p></div>
 </div>
 
-<!-- SUMMARY -->
+<!-- ====================== SUMMARY ====================== -->
 <div id="tab-summary" style="display:none">
   <div style="margin-bottom:12px"><button class="btn-p" onclick="loadFromSheets()">Refresh from Google Sheets</button></div>
   <div id="summary-container"><p class="es">Log at least 3 entries to see summary.</p></div>
 </div>
 
-
-<!-- ABOUT -->
+<!-- ====================== ABOUT ====================== -->
 <div id="tab-about" style="display:none">
   <div class="sec">
     <p class="sec-title">What is this?</p>
     <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">Project Diagnonsense is a free symptom tracker for people navigating undiagnosed or early-stage inflammatory conditions — particularly where symptoms are episodic, bilateral, or hard to document at a clinical appointment.</p>
-    <p style="font-size:14px;line-height:1.7;color:#333">It tracks joint temperatures against control sites, circumference measurements, bilateral pain scores with type detail, headache patterns, sun exposure correlation, medications, and photo flagging. Everything is designed to produce objective, timestamped data that can be brought to a rheumatologist or specialist.</p>
+    <p style="font-size:14px;line-height:1.7;color:#333">It tracks joint temperatures against control sites, ring sizes, bilateral pain with type detail, headache patterns, sleep/stress/exertion triggers, weather and sun, medications, and photo flagging. Everything is designed to produce objective, timestamped data for a rheumatologist or specialist.</p>
   </div>
 
   <div class="sec">
     <p class="sec-title">How your data works — and why it's yours</p>
-    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">This app stores nothing on any server we control. When you fill in the form and press <strong>Save and sync</strong>, your entry is sent directly from your device to a Google Sheet that <strong>you created and own</strong>. No one else has access to it unless you share it.</p>
-    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">The connection works through a small script (Google Apps Script) that you paste into your own Google Sheet during setup. That script receives your data and writes it as a row in your sheet — it runs entirely within your own Google account.</p>
-    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">The app itself is a single HTML file. It runs locally in your browser. It has no analytics, no advertising, no tracking, and no back-end. Your health data never touches any third-party server.</p>
-    <p style="font-size:14px;line-height:1.7;color:#333"><strong>To export your data:</strong> open your Google Sheet at any time and download it as a CSV or Excel file. You can share it directly with a doctor, or delete it at any time by deleting the sheet.</p>
-  </div>
-
-  <div class="sec">
-    <p class="sec-title">Quick start</p>
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">1</div>
-        <div>
-          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Set up your Google Sheet</p>
-          <p style="font-size:13px;color:#666;line-height:1.6">Go to the <strong>Setup tab</strong>, follow the 5 steps. Takes about 5 minutes the first time. You'll need a free Google account.</p>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">2</div>
-        <div>
-          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Add to your home screen</p>
-          <p style="font-size:13px;color:#666;line-height:1.6">On iPhone: open in Safari → Share button → Add to Home Screen. On Android: open in Chrome → three dots → Add to Home Screen. It will open like an app.</p>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">3</div>
-        <div>
-          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Use on multiple devices</p>
-          <p style="font-size:13px;color:#666;line-height:1.6">Open the same URL on any device, paste the same Google Sheets URL in the Setup tab. All entries from all devices go into the same sheet.</p>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="min-width:28px;height:28px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">4</div>
-        <div>
-          <p style="font-size:13px;font-weight:500;margin-bottom:3px">Bring data to appointments</p>
-          <p style="font-size:13px;color:#666;line-height:1.6">Open your Google Sheet before an appointment. Download as CSV or share directly. The Summary tab in the app also gives an overview of patterns over time.</p>
-        </div>
-      </div>
-    </div>
+    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">This app stores nothing on any server we control. When you press <strong>Save and sync</strong>, your entry is sent directly to a Google Sheet that <strong>you created and own</strong>.</p>
+    <p style="font-size:14px;line-height:1.7;color:#333;margin-bottom:12px">The connection works through a small Google Apps Script you paste into your own Sheet during setup. The script runs entirely within your own Google account.</p>
+    <p style="font-size:14px;line-height:1.7;color:#333"><strong>To export:</strong> open your Google Sheet at any time and download as CSV or Excel. Share with a doctor, or delete the sheet to delete everything.</p>
   </div>
 
   <div class="sec">
     <p class="sec-title">Temperature protocol</p>
-    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:8px">Use an infrared non-contact thermometer (12:1 spot ratio, 0.1°C resolution — around €30–50). Always measure at the same time, from the same distance.</p>
-    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:8px"><strong>Inner forearm control</strong> — mid-point between wrist and elbow, soft tissue. Used as baseline for upper body joints (elbows, hands, jaw).</p>
-    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:8px"><strong>Calf control</strong> — mid-calf, soft tissue. Used as baseline for lower body joints (knees, hips, feet).</p>
-    <p style="font-size:13px;line-height:1.7;color:#666">The differential (joint minus control) is what matters clinically — not the absolute reading. A consistent pattern of +1.5°C or more at the same joint on waking is meaningful data.</p>
-  </div>
-
-  <div class="sec">
-    <p class="sec-title">Open source</p>
-    <p style="font-size:13px;line-height:1.7;color:#666">This project is free and open source. If you're a developer and want to improve it, fork the repository, make changes, and submit a pull request. All contributions welcome.</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:8px">Use an infrared non-contact thermometer (12:1 spot ratio, 0.1°C resolution). Always measure from the same distance, in the same room conditions.</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:6px"><strong>Inner forearm</strong> — baseline for elbows + hands.</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:6px"><strong>Calf</strong> — baseline for knees + hips.</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:6px"><strong>Forehead</strong> — baseline for jaw readings.</p>
+    <p style="font-size:13px;line-height:1.7;color:#666;margin-bottom:6px"><strong>Room temp</strong> — environmental context. Skin temp drifts with the room.</p>
+    <p style="font-size:13px;line-height:1.7;color:#666">The differential (joint minus control) is what matters clinically — not the absolute reading.</p>
   </div>
 </div>
 
 <script>
 const SHEET_URL_KEY = 'diagno_sheets_url';
-const ENTRIES_KEY = 'diagno_entries_v5';
+const ENTRIES_KEY = 'diagno_entries_v6';
 const PAIN_TYPES = ['Burning','Throbbing','Aching','Stabbing','Pressing','Dull','Stiff','Shooting'];
 const BILATERAL = [
-  {id:'hips', label:'Hips', ctrl:'ankle'},
-  {id:'knees', label:'Knees', ctrl:'ankle'},
-  {id:'elbows', label:'Elbows', ctrl:'forearm'},
-  {id:'hands', label:'Hands / fingers', ctrl:'forearm'},
-  {id:'jaw', label:'Jaw', ctrl:'forearm'},
-  {id:'feet', label:'Feet', ctrl:'ankle'}
+  {id:'shoulders', label:'Shoulders'},
+  {id:'elbows', label:'Elbows'},
+  {id:'wrists', label:'Wrists'},
+  {id:'hands', label:'Hands / fingers'},
+  {id:'jaw', label:'Jaw'},
+  {id:'hips', label:'Hips'},
+  {id:'knees', label:'Knees'},
+  {id:'ankles', label:'Ankles'},
+  {id:'feet', label:'Feet'}
 ];
 
 let entries = [], medRows = [], sheetsUrl = '';
+let handState = { lPalm: {hot:null, cold:null}, rPalm: {hot:null, cold:null} };
+
 try { sheetsUrl = localStorage.getItem(SHEET_URL_KEY)||''; } catch(e){}
 try { entries = JSON.parse(localStorage.getItem(ENTRIES_KEY)||'[]'); } catch(e){}
 
-// Build bilateral joint blocks
+// ---------- range slider helpers ----------
+function updPr(el){ el.nextElementSibling.textContent = el.value; }
+function updPrMin(el){ el.nextElementSibling.textContent = el.value + ' min'; }
+
+// ---------- BUILD BILATERAL JOINT BLOCKS ----------
 function buildBilateral() {
   const c = document.getElementById('bilateral-joints');
   c.innerHTML = BILATERAL.map(({id, label}) => {
     const ptCbs = PAIN_TYPES.map(t => `<label class="cb-label"><input type="checkbox" class="pt-${id}" value="${t}"> ${t}</label>`).join('');
     return `<div class="joint-block">
-      <div class="joint-title">${label}</div>
+      <div class="joint-title"><span>${label}</span></div>
       <div class="side-grid">
         <div>
           <div class="side-label">Left</div>
-          <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="${id}-l"><span class="val">0</span></div>
+          <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="${id}-l"><span class="val">0</span></div>
         </div>
         <div>
           <div class="side-label">Right</div>
-          <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="this.nextElementSibling.textContent=this.value" data-joint="${id}-r"><span class="val">0</span></div>
+          <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="${id}-r"><span class="val">0</span></div>
         </div>
       </div>
       <div class="cb-group">${ptCbs}</div>
@@ -575,14 +762,154 @@ function buildBilateral() {
       </div>
     </div>`;
   }).join('');
-
-  // neck pain types
   document.getElementById('pt-neck').innerHTML = PAIN_TYPES.map(t =>
     `<label class="cb-label"><input type="checkbox" class="pt-neck" value="${t}"> ${t}</label>`).join('');
 }
 buildBilateral();
 
+// ---------- HAND DIAGRAM ----------
+// Palm view with a node for every finger / thumb joint.
+// Fingers (index/middle/ring/little): tip → DIP → PIP → MCP.
+// Thumb: tip → IP → MCP → CMC (base).
+// Plus palm zones: thenar, palm centre, hypothenar, wrist.
+// Tap: 1st=hot, 2nd=cold, 3rd=clear both.
+const HAND_NODES = [
+  // index — tip, upper joint, lower joint, knuckle
+  {id:'index-tip',     name:'Index tip',           x:57, y:14},
+  {id:'index-upper',   name:'Index upper joint',   x:57, y:36},
+  {id:'index-lower',   name:'Index lower joint',   x:57, y:60},
+  {id:'index-knuckle', name:'Index knuckle',       x:57, y:88},
+  // middle
+  {id:'middle-tip',     name:'Middle tip',           x:78, y:6},
+  {id:'middle-upper',   name:'Middle upper joint',   x:78, y:30},
+  {id:'middle-lower',   name:'Middle lower joint',   x:78, y:56},
+  {id:'middle-knuckle', name:'Middle knuckle',       x:78, y:86},
+  // ring
+  {id:'ring-tip',     name:'Ring tip',           x:99, y:12},
+  {id:'ring-upper',   name:'Ring upper joint',   x:99, y:34},
+  {id:'ring-lower',   name:'Ring lower joint',   x:99, y:60},
+  {id:'ring-knuckle', name:'Ring knuckle',       x:99, y:88},
+  // little
+  {id:'little-tip',     name:'Little tip',           x:120, y:28},
+  {id:'little-upper',   name:'Little upper joint',   x:120, y:48},
+  {id:'little-lower',   name:'Little lower joint',   x:120, y:68},
+  {id:'little-knuckle', name:'Little knuckle',       x:120, y:92},
+  // thumb — tip, joint, knuckle, base
+  {id:'thumb-tip',     name:'Thumb tip',     x:18, y:62},
+  {id:'thumb-joint',   name:'Thumb joint',   x:28, y:82},
+  {id:'thumb-knuckle', name:'Thumb knuckle', x:40, y:100},
+  {id:'thumb-base',    name:'Thumb base',    x:52, y:118},
+  // palm zones
+  {id:'thumb-pad',   name:'Thumb pad',   x:62,  y:135, r:9,  palm:true},
+  {id:'palm-center', name:'Palm centre', x:86,  y:118, r:10, palm:true},
+  {id:'pinky-pad',   name:'Pinky pad',   x:118, y:120, r:9,  palm:true},
+  {id:'wrist',       name:'Wrist',       x:82,  y:170, r:11, palm:true}
+];
+
+// 'Bones' drawn behind nodes to give the hand shape.
+const HAND_LINES = [
+  ['index-tip','index-upper'],['index-upper','index-lower'],['index-lower','index-knuckle'],
+  ['middle-tip','middle-upper'],['middle-upper','middle-lower'],['middle-lower','middle-knuckle'],
+  ['ring-tip','ring-upper'],['ring-upper','ring-lower'],['ring-lower','ring-knuckle'],
+  ['little-tip','little-upper'],['little-upper','little-lower'],['little-lower','little-knuckle'],
+  ['thumb-tip','thumb-joint'],['thumb-joint','thumb-knuckle'],['thumb-knuckle','thumb-base'],
+  // palm spine
+  ['index-knuckle','middle-knuckle'],['middle-knuckle','ring-knuckle'],['ring-knuckle','little-knuckle'],
+  ['index-knuckle','thumb-base'],
+  // down to wrist
+  ['little-knuckle','wrist'],['thumb-base','wrist']
+];
+
+function buildHand(side){
+  // 'right' = palm view of right hand: thumb on left of SVG.
+  // 'left' = mirror the same drawing so thumb is on the right.
+  const mirror = side === 'left' ? ' transform="scale(-1,1) translate(-150,0)"' : '';
+  const nodeMap = Object.fromEntries(HAND_NODES.map(n => [n.id, n]));
+  const bones = HAND_LINES.map(([a,b]) => {
+    const A = nodeMap[a], B = nodeMap[b];
+    return `<line class="bone" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;
+  }).join('');
+  const nodes = HAND_NODES.map(n => {
+    const cls = n.palm ? 'zone palm-zone' : 'zone node';
+    const r = n.r || 4.6;
+    return `<circle class="${cls}" data-side="${side}" data-zone-id="${n.id}" data-zone-name="${n.name}" cx="${n.x}" cy="${n.y}" r="${r}" onclick="onHandTap(event,'${side}','${n.id}','${n.name}')"><title>${n.name}</title></circle>`;
+  }).join('');
+  return `<svg class="hand-svg" viewBox="0 0 150 200" xmlns="http://www.w3.org/2000/svg" data-hand="${side}">
+      <g${mirror}>${bones}${nodes}</g>
+    </svg>`;
+}
+
+function initHands(){
+  document.getElementById('left-palm-mount').innerHTML  = buildHand('left');
+  document.getElementById('right-palm-mount').innerHTML = buildHand('right');
+}
+initHands();
+
+function onHandTap(ev, side, zoneId, zoneName){
+  ev.stopPropagation();
+  const key = side === 'left' ? 'lPalm' : 'rPalm';
+  const s = handState[key];
+  if (s.hot === null) {
+    s.hot = {id:zoneId, name:zoneName};
+  } else if (s.cold === null) {
+    s.cold = {id:zoneId, name:zoneName};
+  } else {
+    // third tap: clear both, and clear the recorded temps for this palm
+    s.hot = null;
+    s.cold = null;
+    const sidePrefix = side === 'left' ? 'l' : 'r';
+    const hotEl  = document.getElementById('t-'+sidePrefix+'-hot');
+    const coldEl = document.getElementById('t-'+sidePrefix+'-cold');
+    if (hotEl)  hotEl.value  = '';
+    if (coldEl) coldEl.value = '';
+  }
+  renderHandState();
+}
+
+function renderHandState(){
+  ['left','right'].forEach(side => {
+    const key = side === 'left' ? 'lPalm' : 'rPalm';
+    const s = handState[key];
+    // recolor SVG nodes
+    document.querySelectorAll(`.zone[data-side="${side}"]`).forEach(el => {
+      el.classList.remove('hot','cold');
+      const id = el.dataset.zoneId;
+      if (s.hot  && s.hot.id  === id) el.classList.add('hot');
+      if (s.cold && s.cold.id === id) el.classList.add('cold');
+    });
+    // update inline location labels next to spot temp inputs
+    const sidePrefix = side === 'left' ? 'l' : 'r';
+    const locHotEl  = document.getElementById('loc-'+sidePrefix+'-hot');
+    const locColdEl = document.getElementById('loc-'+sidePrefix+'-cold');
+    if (locHotEl)  locHotEl.textContent  = s.hot  ? '· ' + s.hot.name  : '— not marked —';
+    if (locColdEl) locColdEl.textContent = s.cold ? '· ' + s.cold.name : '— not marked —';
+  });
+}
+
+function getHandHotString(){
+  const parts = [];
+  if (handState.lPalm.hot) parts.push('L: ' + handState.lPalm.hot.name);
+  if (handState.rPalm.hot) parts.push('R: ' + handState.rPalm.hot.name);
+  return parts.join(' | ');
+}
+function getHandColdString(){
+  const parts = [];
+  if (handState.lPalm.cold) parts.push('L: ' + handState.lPalm.cold.name);
+  if (handState.rPalm.cold) parts.push('R: ' + handState.rPalm.cold.name);
+  return parts.join(' | ');
+}
+
+// ---------- init date / url ----------
 document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+updateLoggedAtTicker();
+setInterval(updateLoggedAtTicker, 30000);
+function updateLoggedAtTicker(){
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  const el = document.getElementById('logged-at-display');
+  if (el) el.textContent = 'Will log at: ' + hh + ':' + mm + ' (auto, updates on save)';
+}
 if(sheetsUrl) { document.getElementById('sheets-url').value = sheetsUrl; showTab('entry'); }
 
 function saveUrl() {
@@ -608,26 +935,37 @@ async function testConnection() {
 
 function showStatus(el,type,msg){el.style.display='block';el.className='status-bar status-'+type;el.textContent=msg;}
 
-// Temperature — use ankle ctrl for knees/hips/feet, forearm for rest
-const UPPER = ['lelbow','relbow','lhand','rhand','ljaw','rjaw'];
-const LOWER = ['lknee','rknee'];
+// ---------- TEMPERATURE DIFFS ----------
+// Knees + hips → calf | elbows + hands → inner forearm | jaw → forehead
+const JOINT_CTRL = {
+  lknee:'calf', rknee:'calf', lhip:'calf', rhip:'calf',
+  lelbow:'arm', relbow:'arm', lhand:'arm', rhand:'arm',
+  ljaw:'forehead', rjaw:'forehead'
+};
+
+function parseDec(id){ const v=parseFloat(document.getElementById(id).value); return isNaN(v)?null:v; }
 
 function recalcDiffs() {
-  const forearm = parseFloat(document.getElementById('t-ctrl-innerarm').value);
-  const ankle = parseFloat(document.getElementById('t-ctrl-calf').value);
-  const fDisp = document.getElementById('ctrl-innerarm-display');
-  const aDisp = document.getElementById('ctrl-calf-display');
-  fDisp.textContent = isNaN(forearm)?'':'Inner forearm: '+forearm.toFixed(1)+'°C';
-  fDisp.className = 'diff-badge '+(isNaN(forearm)?'diff-zero':'diff-pos');
-  aDisp.textContent = isNaN(ankle)?'':'Calf: '+ankle.toFixed(1)+'°C';
-  aDisp.className = 'diff-badge '+(isNaN(ankle)?'diff-zero':'diff-pos');
+  const arm = parseDec('t-ctrl-innerarm');
+  const calf = parseDec('t-ctrl-calf');
+  const forehead = parseDec('t-ctrl-forehead');
+  const fA = document.getElementById('ctrl-innerarm-display');
+  const fC = document.getElementById('ctrl-calf-display');
+  const fF = document.getElementById('ctrl-forehead-display');
+  fA.textContent = arm===null?'':'Forearm: '+arm.toFixed(1)+'°C';
+  fA.className = 'diff-badge '+(arm===null?'diff-zero':'diff-pos');
+  fC.textContent = calf===null?'':'Calf: '+calf.toFixed(1)+'°C';
+  fC.className = 'diff-badge '+(calf===null?'diff-zero':'diff-pos');
+  fF.textContent = forehead===null?'':'Forehead: '+forehead.toFixed(1)+'°C';
+  fF.className = 'diff-badge '+(forehead===null?'diff-zero':'diff-pos');
 
-  ['lknee','rknee','lelbow','relbow','lhand','rhand','ljaw','rjaw'].forEach(j => {
-    const raw = parseFloat(document.getElementById('t-'+j).value);
-    const ctrl = LOWER.includes(j) ? ankle : forearm;
+  Object.keys(JOINT_CTRL).forEach(j => {
+    const raw = parseDec('t-'+j);
+    const ctrlKey = JOINT_CTRL[j];
+    const ctrl = ctrlKey==='arm'?arm : ctrlKey==='calf'?calf : forehead;
     const badge = document.getElementById('d-'+j);
-    if(isNaN(raw)){badge.textContent='—';badge.className='diff-badge diff-zero';return;}
-    if(isNaN(ctrl)){
+    if(raw===null){badge.textContent='—';badge.className='diff-badge diff-zero';return;}
+    if(ctrl===null){
       badge.textContent='Raw: '+raw.toFixed(1)+'°C';
       badge.className='diff-badge diff-zero';
       return;
@@ -638,33 +976,16 @@ function recalcDiffs() {
   });
 }
 
-function calcDiff(rawId, ctrl) {
-  const raw = parseFloat(document.getElementById(rawId).value);
-  if(isNaN(raw)) return null;
-  if(isNaN(ctrl)) return null;
-  return parseFloat((raw-ctrl).toFixed(2));
-}
-
+// ---------- form helpers ----------
 function getPainVal(joint) {
   const el = document.querySelector(`input[data-joint="${joint}"]`);
   return el ? parseInt(el.value) : 0;
 }
-
-function getPainTypes(cls) {
-  return Array.from(document.querySelectorAll('.'+cls+':checked')).map(el=>el.value).join('; ');
-}
-
-function getChecked(containerId) {
-  return Array.from(document.querySelectorAll('#'+containerId+' input:checked')).map(el=>el.value).join('; ');
-}
-
-function getGroupChecked(cls) {
-  return Array.from(document.querySelectorAll('.'+cls+':checked')).map(el=>el.value).join('; ');
-}
-
-function getIceJoints(cls) {
-  return Array.from(document.querySelectorAll('.'+cls+':checked')).map(el=>el.dataset.joint).join('; ');
-}
+function getPainTypes(cls) { return Array.from(document.querySelectorAll('.'+cls+':checked')).map(el=>el.value).join('; '); }
+function getChecked(containerId) { return Array.from(document.querySelectorAll('#'+containerId+' input:checked')).map(el=>el.value).join('; '); }
+function getGroupChecked(cls) { return Array.from(document.querySelectorAll('.'+cls+':checked')).map(el=>el.value).join('; '); }
+function getIceJoints(cls) { return Array.from(document.querySelectorAll('.'+cls+':checked')).map(el=>el.dataset.joint).join('; '); }
+function getRadio(name){ const el=document.querySelector(`input[name="${name}"]:checked`); return el?el.value:''; }
 
 function getSunCoverage() {
   const map={arms:'Arms bare',legs:'Legs bare',face:'Face exposed',hands:'Hands exposed',hat:'Hat worn',spf:'SPF',shade:'Mostly in shade'};
@@ -685,120 +1006,219 @@ function renderMedRows(){
   </div>`).join('');
 }
 
+function nowClockString(){
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+// ---------- QUICK-NOTE-ONLY UPLOAD ----------
+async function uploadQuickNote(){
+  const bar = document.getElementById('quick-note-status');
+  const note = document.getElementById('quick-note').value.trim();
+  if(!note){ showStatus(bar,'err','Write a note first.'); return; }
+  const payload = blankPayload();
+  payload.date = document.getElementById('entry-date').value;
+  payload.time = document.getElementById('entry-time').value;
+  payload.loggedAt = nowClockString();
+  payload.quickNoteOnly = note;
+  payload.notes = note;
+  await pushEntry(payload, bar, 'Quick note uploaded.');
+  document.getElementById('quick-note').value = '';
+}
+
+function blankPayload(){
+  // Every field expected by the Apps Script, defaulted to '' / 0
+  return {
+    date:'', time:'', loggedAt:'', quickNoteOnly:'',
+    pHead:0, headLoc:'', headType:'', headArea:'',
+    pNeck:0, ptNeck:'',
+    pLshoulder:0, pRshoulder:0, ptShoulders:'',
+    pLelbow:0, pRelbow:0, ptElbows:'',
+    pLwrist:0, pRwrist:0, ptWrists:'',
+    pLhand:0, pRhand:0, ptHands:'',
+    pLjaw:0, pRjaw:0, ptJaw:'',
+    pLhip:0, pRhip:0, ptHips:'',
+    pLknee:0, pRknee:0, ptKnees:'',
+    pLankle:0, pRankle:0, ptAnkles:'',
+    pLfoot:0, pRfoot:0, ptFeet:'',
+    iceWanted:'', iceApplied:'',
+    vertigo:0, nausea:0, lightSens:0,
+    morningStiff:0,
+    acidReflux:0, pFatigue:0,
+    mouthCorner:0, dryEyes:0, cheilitisVisible:false,
+    physExertion:0, stress:0, sleepScore:'', sleepDuration:'', weather:'',
+    sunExp:'None', sunHours:'', sunCoverage:'',
+    cLthumb:'', cRthumb:'', cLindex:'', cRindex:'',
+    cLmiddle:'', cRmiddle:'', cLring:'', cRring:'',
+    cLlittle:'', cRlittle:'',
+    cLknee:'', cRknee:'', cLelbow:'', cRelbow:'', cJaw:'',
+    handHot:'', handLhotTemp:null, handRhotTemp:null,
+    handCold:'', handLcoldTemp:null, handRcoldTemp:null,
+    ctrlInnerArm:null, ctrlCalf:null, ctrlForehead:null, ctrlRoom:null, ctrlOtherHand:null,
+    tLknee:null, tRknee:null, dLknee:null, dRknee:null,
+    tLhip:null, tRhip:null, dLhip:null, dRhip:null,
+    tLelbow:null, tRelbow:null, dLelbow:null, dRelbow:null,
+    tLhand:null, tRhand:null, dLhand:null, dRhand:null,
+    tLjaw:null, tRjaw:null, dLjaw:null, dRjaw:null,
+    refInitials:'', refLhand:null, refRhand:null, refForehead:null,
+    swelling:'', photos:'',
+    meds:'', notes:''
+  };
+}
+
+async function pushEntry(payload, statusEl, okMsg){
+  const local={id:Date.now(),...payload,synced:false};
+  entries.unshift(local);
+  try{localStorage.setItem(ENTRIES_KEY,JSON.stringify(entries));}catch(e){}
+  if(!sheetsUrl){ showStatus(statusEl,'pending','Saved locally — add Sheets URL in Setup to sync.'); return; }
+  showStatus(statusEl,'pending','Syncing...');
+  try{
+    const res=await fetch(sheetsUrl,{method:'POST',body:JSON.stringify(payload)});
+    const j=await res.json();
+    if(j.status==='ok'){
+      entries[0].synced=true;
+      try{localStorage.setItem(ENTRIES_KEY,JSON.stringify(entries));}catch(e){}
+      showStatus(statusEl,'ok',okMsg);
+    } else {
+      showStatus(statusEl,'err','Saved locally. Sheet error: '+(j.message||'unknown'));
+    }
+  } catch(err){
+    showStatus(statusEl,'err','Saved locally — could not reach Google Sheets.');
+  }
+}
+
+// ---------- MAIN SAVE ----------
 async function saveEntry() {
   const btn=document.getElementById('save-btn');
   const bar=document.getElementById('save-status');
 
-  const forearm=parseFloat(document.getElementById('t-ctrl-innerarm').value);
-  const ankle=parseFloat(document.getElementById('t-ctrl-calf').value);
+  const arm=parseDec('t-ctrl-innerarm');
+  const calf=parseDec('t-ctrl-calf');
+  const forehead=parseDec('t-ctrl-forehead');
+  const room=parseDec('t-ctrl-room');
+  const otherHand=parseDec('t-ctrl-otherhand');
 
-  if(isNaN(forearm) && isNaN(ankle)){
+  // require at least one control reading (any of the 5)
+  if(arm===null && calf===null && forehead===null && room===null && otherHand===null){
     document.getElementById('t-ctrl-innerarm').classList.add('required-missing');
-    showStatus(bar,'err','Please enter at least one control temperature (forearm or ankle) before saving.');
+    showStatus(bar,'err','Please enter at least one control temperature before saving (or use Quick note above).');
     return;
   }
   document.getElementById('t-ctrl-innerarm').classList.remove('required-missing');
 
-  const raw = id => { const v=parseFloat(document.getElementById('t-'+id).value); return isNaN(v)?null:v; };
-  const diff = (rawId, ctrl) => { const r=raw(rawId); if(r===null) return null; if(ctrl===null||isNaN(ctrl)) return null; return parseFloat((r-ctrl).toFixed(2)); };
+  const tRaw = id => parseDec('t-'+id);
+  const diff = (id, ctrl) => { const r=tRaw(id); if(r===null||ctrl===null) return null; return parseFloat((r-ctrl).toFixed(2)); };
+
+  const loggedAt = nowClockString();
+  document.getElementById('logged-at-display').textContent = 'Logged at: ' + loggedAt;
 
   const payload = {
     date: document.getElementById('entry-date').value,
     time: document.getElementById('entry-time').value,
-    ctrlInnerArm: isNaN(forearm)?null:forearm,
-    ctrlCalf: isNaN(ankle)?null:ankle,
-    tLknee: raw('lknee'), tRknee: raw('rknee'),
-    dLknee: diff('lknee',ankle), dRknee: diff('rknee',ankle),
-    tLelbow: raw('lelbow'), tRelbow: raw('relbow'),
-    dLelbow: diff('lelbow',forearm), dRelbow: diff('relbow',forearm),
-    tLhand: raw('lhand'), tRhand: raw('rhand'),
-    dLhand: diff('lhand',forearm), dRhand: diff('rhand',forearm),
-    tLjaw: raw('ljaw'), tRjaw: raw('rjaw'),
-    dLjaw: diff('ljaw',forearm), dRjaw: diff('rjaw',forearm),
-    cLknee: document.getElementById('c-lknee').value||null,
-    cRknee: document.getElementById('c-rknee').value||null,
-    cLelbow: document.getElementById('c-lelbow').value||null,
-    cRelbow: document.getElementById('c-relbow').value||null,
-    cLthumb: document.getElementById('c-lthumb').value||null,
-    cRthumb: document.getElementById('c-rthumb').value||null,
-    cLindex: document.getElementById('c-lindex').value||null,
-    cRindex: document.getElementById('c-rindex').value||null,
-    cLmiddle: document.getElementById('c-lmiddle').value||null,
-    cRmiddle: document.getElementById('c-rmiddle').value||null,
-    cLring: document.getElementById('c-lring').value||null,
-    cRring: document.getElementById('c-rring').value||null,
-    cLlittle: document.getElementById('c-llittle').value||null,
-    cRlittle: document.getElementById('c-rlittle').value||null,
-    cJaw: document.getElementById('c-jaw').value||null,
-    pHead: getPainVal('head'), pNeck: getPainVal('neck'),
-    pLhip: getPainVal('hips-l'), pRhip: getPainVal('hips-r'), ptHips: getPainTypes('pt-hips'),
-    pLknee: getPainVal('knees-l'), pRknee: getPainVal('knees-r'), ptKnees: getPainTypes('pt-knees'),
-    pLelbow: getPainVal('elbows-l'), pRelbow: getPainVal('elbows-r'), ptElbows: getPainTypes('pt-elbows'),
-    pLhand: getPainVal('hands-l'), pRhand: getPainVal('hands-r'), ptHands: getPainTypes('pt-hands'),
-    pLjaw: getPainVal('jaw-l'), pRjaw: getPainVal('jaw-r'), ptJaw: getPainTypes('pt-jaw'),
-    pLfoot: getPainVal('feet-l'), pRfoot: getPainVal('feet-r'), ptFeet: getPainTypes('pt-feet'),
-    pFatigue: getPainVal('fatigue'),
-    ptHead: getGroupChecked('head-type'),
+    loggedAt: loggedAt,
+    quickNoteOnly: '',
+    pHead: getPainVal('head'),
     headLoc: getGroupChecked('head-loc'),
     headType: getGroupChecked('head-type'),
     headArea: getGroupChecked('head-area'),
+    pNeck: getPainVal('neck'),
     ptNeck: getPainTypes('pt-neck'),
+    pLshoulder: getPainVal('shoulders-l'), pRshoulder: getPainVal('shoulders-r'), ptShoulders: getPainTypes('pt-shoulders'),
+    pLelbow: getPainVal('elbows-l'), pRelbow: getPainVal('elbows-r'), ptElbows: getPainTypes('pt-elbows'),
+    pLwrist: getPainVal('wrists-l'), pRwrist: getPainVal('wrists-r'), ptWrists: getPainTypes('pt-wrists'),
+    pLhand: getPainVal('hands-l'), pRhand: getPainVal('hands-r'), ptHands: getPainTypes('pt-hands'),
+    pLjaw: getPainVal('jaw-l'), pRjaw: getPainVal('jaw-r'), ptJaw: getPainTypes('pt-jaw'),
+    pLhip: getPainVal('hips-l'), pRhip: getPainVal('hips-r'), ptHips: getPainTypes('pt-hips'),
+    pLknee: getPainVal('knees-l'), pRknee: getPainVal('knees-r'), ptKnees: getPainTypes('pt-knees'),
+    pLankle: getPainVal('ankles-l'), pRankle: getPainVal('ankles-r'), ptAnkles: getPainTypes('pt-ankles'),
+    pLfoot: getPainVal('feet-l'), pRfoot: getPainVal('feet-r'), ptFeet: getPainTypes('pt-feet'),
     iceWanted: getIceJoints('ice-w'),
     iceApplied: getIceJoints('ice-a'),
+    vertigo: getPainVal('vertigo'),
+    nausea: getPainVal('nausea'),
+    lightSens: getPainVal('lightSens'),
+    morningStiff: getPainVal('morningStiff'),
+    acidReflux: getPainVal('acidReflux'),
+    pFatigue: getPainVal('fatigue'),
+    mouthCorner: getPainVal('mouthCorner'),
+    dryEyes: getPainVal('dryEyes'),
+    cheilitisVisible: document.getElementById('cheilitis-visible').checked,
+    physExertion: getPainVal('physExertion'),
+    stress: getPainVal('stress'),
+    sleepScore: document.getElementById('sleep-score').value||'',
+    sleepDuration: document.getElementById('sleep-duration').value||'',
+    weather: getRadio('weather'),
     sunExp: document.getElementById('sun-exp').value,
-    uvIndex: document.getElementById('uv-index').value||null,
-    sunHours: document.getElementById('sun-hours').value||null,
+    sunHours: document.getElementById('sun-hours').value||'',
     sunCoverage: getSunCoverage(),
+    cLthumb: document.getElementById('c-lthumb').value||'',
+    cRthumb: document.getElementById('c-rthumb').value||'',
+    cLindex: document.getElementById('c-lindex').value||'',
+    cRindex: document.getElementById('c-rindex').value||'',
+    cLmiddle: document.getElementById('c-lmiddle').value||'',
+    cRmiddle: document.getElementById('c-rmiddle').value||'',
+    cLring: document.getElementById('c-lring').value||'',
+    cRring: document.getElementById('c-rring').value||'',
+    cLlittle: document.getElementById('c-llittle').value||'',
+    cRlittle: document.getElementById('c-rlittle').value||'',
+    cLknee: document.getElementById('c-lknee').value||'',
+    cRknee: document.getElementById('c-rknee').value||'',
+    cLelbow: document.getElementById('c-lelbow').value||'',
+    cRelbow: document.getElementById('c-relbow').value||'',
+    cJaw: document.getElementById('c-jaw').value||'',
+    handHot: getHandHotString(),
+    handLhotTemp: parseDec('t-l-hot'),
+    handRhotTemp: parseDec('t-r-hot'),
+    handCold: getHandColdString(),
+    handLcoldTemp: parseDec('t-l-cold'),
+    handRcoldTemp: parseDec('t-r-cold'),
+    ctrlInnerArm: arm, ctrlCalf: calf, ctrlForehead: forehead, ctrlRoom: room, ctrlOtherHand: otherHand,
+    tLknee: tRaw('lknee'), tRknee: tRaw('rknee'), dLknee: diff('lknee',calf), dRknee: diff('rknee',calf),
+    tLhip: tRaw('lhip'), tRhip: tRaw('rhip'), dLhip: diff('lhip',calf), dRhip: diff('rhip',calf),
+    tLelbow: tRaw('lelbow'), tRelbow: tRaw('relbow'), dLelbow: diff('lelbow',arm), dRelbow: diff('relbow',arm),
+    tLhand: tRaw('lhand'), tRhand: tRaw('rhand'), dLhand: diff('lhand',arm), dRhand: diff('rhand',arm),
+    tLjaw: tRaw('ljaw'), tRjaw: tRaw('rjaw'), dLjaw: diff('ljaw',forehead), dRjaw: diff('rjaw',forehead),
+    refInitials: document.getElementById('ref-initials').value||'',
+    refLhand: parseDec('ref-lhand'),
+    refRhand: parseDec('ref-rhand'),
+    refForehead: parseDec('ref-forehead'),
     swelling: getChecked('swelling-checks'),
-    siccaDryMouth: getPainVal('dryMouth'),
-    siccaDryEyes: getPainVal('dryEyes'),
-    siccaCheilitis: getPainVal('cheilitis'),
-    siccaLipDry: getPainVal('lipDry'),
-    siccaStickyMouth: getPainVal('stickyMouth'),
-    siccaObs: getChecked('sicca-checks'),
-    salivaFlow: document.getElementById('saliva-flow').value||null,
-    schirmer: document.getElementById('schirmer').value||null,
     photos: getChecked('photo-checks'),
     meds: medRows.filter(r=>r.name.trim()).map(m=>(m.taken?'[taken] ':'[not taken] ')+m.name).join('; '),
     notes: document.getElementById('entry-notes').value
   };
 
-  const local={id:Date.now(),...payload,synced:false};
-  entries.unshift(local);
-  try{localStorage.setItem(ENTRIES_KEY,JSON.stringify(entries));}catch(e){}
-
-  if(!sheetsUrl){showStatus(bar,'pending','Saved locally — add Sheets URL in Setup to sync.');resetForm();return;}
-
   btn.disabled=true;
-  showStatus(bar,'pending','Syncing...');
-  try{
-    const res=await fetch(sheetsUrl,{method:'POST',body:JSON.stringify(payload)});
-    const j=await res.json();
-    if(j.status==='ok'){entries[0].synced=true;try{localStorage.setItem(ENTRIES_KEY,JSON.stringify(entries));}catch(e){}showStatus(bar,'ok','Saved and synced to Google Sheets.');}
-    else{showStatus(bar,'err','Saved locally. Sheet error: '+(j.message||'unknown'));}
-  }catch(err){showStatus(bar,'err','Saved locally — could not reach Google Sheets.');}
+  await pushEntry(payload, bar, 'Saved and synced to Google Sheets.');
   btn.disabled=false;
   resetForm();
 }
 
 function resetForm(){
-  document.querySelectorAll('#tab-entry input[type=range]').forEach(el=>{el.value=0;el.nextElementSibling.textContent='0';});
+  document.querySelectorAll('#tab-entry input[type=range]').forEach(el=>{
+    el.value=0;
+    const v = el.nextElementSibling;
+    if(v) v.textContent = (el.dataset.joint==='morningStiff') ? '0 min' : '0';
+  });
   document.querySelectorAll('#swelling-checks input,#photo-checks input').forEach(el=>el.checked=false);
   ['arms','legs','face','hands','hat','spf','shade'].forEach(f=>document.getElementById('sun-'+f).checked=false);
   document.getElementById('entry-notes').value='';
-  document.getElementById('uv-index').value='';
+  document.getElementById('quick-note').value='';
   document.getElementById('sun-hours').value='';
   document.getElementById('sun-exp').value='None';
-  document.getElementById('t-ctrl-innerarm').value='';
-  document.getElementById('t-ctrl-calf').value='';
-  document.getElementById('ctrl-innerarm-display').textContent='';
-  document.getElementById('ctrl-calf-display').textContent='';
-  ['lknee','rknee','lelbow','relbow','lhand','rhand','ljaw','rjaw'].forEach(j=>{
+  document.getElementById('sleep-score').value='';
+  document.getElementById('sleep-duration').value='';
+  document.querySelectorAll('input[name="weather"]').forEach(el=>el.checked=false);
+  document.getElementById('cheilitis-visible').checked=false;
+  ['t-ctrl-innerarm','t-ctrl-calf','t-ctrl-forehead','t-ctrl-room','t-ctrl-otherhand'].forEach(id=>document.getElementById(id).value='');
+  ['ctrl-innerarm-display','ctrl-calf-display','ctrl-forehead-display'].forEach(id=>{
+    const e=document.getElementById(id); e.textContent=''; e.className='diff-badge diff-zero';
+  });
+  Object.keys(JOINT_CTRL).forEach(j=>{
     document.getElementById('t-'+j).value='';
     const b=document.getElementById('d-'+j);b.textContent='—';b.className='diff-badge diff-zero';
   });
-  document.querySelectorAll('#sicca-checks input').forEach(el=>el.checked=false);
-  ['saliva-flow','schirmer'].forEach(id=>document.getElementById(id).value='');
+  ['ref-initials','ref-lhand','ref-rhand','ref-forehead','t-l-hot','t-l-cold','t-r-hot','t-r-cold'].forEach(id=>document.getElementById(id).value='');
   ['c-lknee','c-rknee','c-lelbow','c-relbow','c-jaw',
    'c-lthumb','c-rthumb','c-lindex','c-rindex','c-lmiddle','c-rmiddle',
    'c-lring','c-rring','c-llittle','c-rlittle'].forEach(id=>document.getElementById(id).value='');
@@ -808,20 +1228,23 @@ function resetForm(){
   });
   document.querySelectorAll('.pt-neck').forEach(el=>el.checked=false);
   medRows=[];renderMedRows();
+  handState = { lPalm: {hot:null, cold:null}, rPalm: {hot:null, cold:null} };
+  renderHandState();
 }
 
+// ---------- LOAD / RENDER ----------
 async function loadFromSheets(){
   const status=document.getElementById('refresh-status');
-  if(!sheetsUrl){status.textContent='No URL in Setup.';return;}
-  status.textContent='Loading...';
+  if(!sheetsUrl){if(status)status.textContent='No URL in Setup.';return;}
+  if(status)status.textContent='Loading...';
   try{
     const r=await fetch(sheetsUrl);const j=await r.json();
     if(j.rows&&j.rows.length){
       entries=j.rows.reverse().map((row,i)=>({id:i,...row,synced:true}));
       try{localStorage.setItem(ENTRIES_KEY,JSON.stringify(entries));}catch(e){}
-      status.textContent=entries.length+' entries loaded.';
-    }else{status.textContent='No entries in sheet yet.';}
-  }catch(e){status.textContent='Could not reach Google Sheets.';}
+      if(status)status.textContent=entries.length+' entries loaded.';
+    }else{if(status)status.textContent='No entries in sheet yet.';}
+  }catch(e){if(status)status.textContent='Could not reach Google Sheets.';}
   renderLog();renderSummary();
 }
 
@@ -840,61 +1263,268 @@ function showTab(t){
 function renderLog(){
   const c=document.getElementById('log-container');
   if(!entries.length){c.innerHTML='<p class="es">No entries yet.</p>';return;}
-  let html='<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Time</th><th>Top temp diffs</th><th>Pain peaks</th><th>Swelling</th><th>Photos</th><th>Sun</th></tr></thead><tbody>';
-  entries.slice(0,60).forEach(e=>{
-    const dKeys=[['dLknee','L knee'],['dRknee','R knee'],['dLelbow','L elbow'],['dRelbow','R elbow'],['dLhand','L hand'],['dRhand','R hand'],['dLjaw','L jaw'],['dRjaw','R jaw']];
-    const topDiffs=dKeys.map(([k,l])=>({l,v:parseFloat(e[k])})).filter(x=>!isNaN(x.v)&&x.v>0.3).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.l+' +'+x.v.toFixed(1)).join(', ')||'—';
-    const painCfg=[['pHead','head'],['pNeck','neck'],['pLhip','L hip'],['pRhip','R hip'],['pLknee','L knee'],['pRknee','R knee'],['pLelbow','L elbow'],['pRelbow','R elbow'],['pFatigue','fatigue']];
-    const painPeak=painCfg.map(([k,l])=>({l,v:parseInt(e[k]||0)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.l+' '+x.v).join(', ')||'—';
-    const sw=(e['Swelling visible']||e.swelling||'');
-    const swT=sw?sw.split(';').map(s=>`<span class="tag">${s.trim()}</span>`).join(''):'—';
-    const ph=(e['Photos taken of']||e.photos||'');
-    const phT=ph?ph.split(';').map(s=>`<span class="tag photo">${s.trim()}</span>`).join(''):'—';
-    const sunV=e['Sun exposure']||e.sunExp||'None';
-    const uvV=e['UV index']||e.uvIndex||'';
-    const sunT=(sunV&&sunV!=='None')?`<span class="tag sun">UV${uvV} · ${sunV.split(' ')[0]}</span>`:'—';
-    html+=`<tr><td style="white-space:nowrap">${e['Date']||e.date||''}</td><td style="white-space:nowrap;font-size:11px">${e['Time slot']||e.time||''}</td><td style="font-size:11px">${topDiffs}</td><td style="font-size:11px">${painPeak}</td><td>${swT}</td><td>${phT}</td><td>${sunT}</td></tr>`;
+  let html='<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Time</th><th>Logged</th><th>Top temp diffs</th><th>Pain peaks</th><th>Triggers</th><th>Hand</th><th>Note</th></tr></thead><tbody>';
+  entries.slice(0,80).forEach(e=>{
+    const getV = k => e[k] ?? '';
+    const dKeys=[['D L knee','dLknee','L knee'],['D R knee','dRknee','R knee'],['D L hip','dLhip','L hip'],['D R hip','dRhip','R hip'],['D L elbow','dLelbow','L elbow'],['D R elbow','dRelbow','R elbow'],['D L hand','dLhand','L hand'],['D R hand','dRhand','R hand'],['D L jaw','dLjaw','L jaw'],['D R jaw','dRjaw','R jaw']];
+    const topDiffs=dKeys.map(([k1,k2,l])=>({l,v:parseFloat(e[k1]??e[k2])})).filter(x=>!isNaN(x.v)&&x.v>0.3).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.l+' +'+x.v.toFixed(1)).join(', ')||'—';
+    const painCfg=[['Pain head','pHead','head'],['Pain neck','pNeck','neck'],['Pain L shoulder','pLshoulder','L shoulder'],['Pain R shoulder','pRshoulder','R shoulder'],['Pain L hip','pLhip','L hip'],['Pain R hip','pRhip','R hip'],['Pain L knee','pLknee','L knee'],['Pain R knee','pRknee','R knee'],['Pain L wrist','pLwrist','L wrist'],['Pain R wrist','pRwrist','R wrist'],['Fatigue','pFatigue','fatigue']];
+    const painPeak=painCfg.map(([k1,k2,l])=>({l,v:parseInt(e[k1]??e[k2]??0)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.l+' '+x.v).join(', ')||'—';
+    const trigs=[];
+    const stress=parseInt(getV('Stress')||getV('stress')||0);
+    const phys=parseInt(getV('Physical exertion')||getV('physExertion')||0);
+    const sleep=getV('Sleep score')||getV('sleepScore')||'';
+    const weather=getV('Weather')||getV('weather')||'';
+    const sun=getV('Sun exposure')||getV('sunExp')||'';
+    if(stress>0)trigs.push(`<span class="tag">stress ${stress}</span>`);
+    if(phys>0)trigs.push(`<span class="tag">exertion ${phys}</span>`);
+    if(sleep)trigs.push(`<span class="tag">sleep ${sleep}</span>`);
+    if(weather)trigs.push(`<span class="tag sun">${weather}</span>`);
+    if(sun && sun!=='None')trigs.push(`<span class="tag sun">${String(sun).split(' ')[0]}</span>`);
+    const hot=getV('Hand hottest point')||getV('handHot')||'';
+    const cold=getV('Hand coldest point')||getV('handCold')||'';
+    const handCell=(hot||cold)?(hot?`<div style="color:#854f0b">${hot}</div>`:'')+(cold?`<div style="color:#185fa5">${cold}</div>`:''):'—';
+    const qn=getV('Quick note only')||getV('quickNoteOnly')||'';
+    const note=qn?`<span class="tag" style="background:#fef0d8;color:#854f0b">quick: ${escapeHTML(qn).slice(0,40)}</span>`:(getV('Notes')||getV('notes')||'').toString().slice(0,40);
+    html+=`<tr><td style="white-space:nowrap">${getV('Date')||getV('date')||''}</td><td style="white-space:nowrap;font-size:11px">${getV('Time slot')||getV('time')||''}</td><td style="white-space:nowrap;font-size:11px;color:#888">${getV('Logged at')||getV('loggedAt')||''}</td><td style="font-size:11px">${topDiffs}</td><td style="font-size:11px">${painPeak}</td><td>${trigs.join('')||'—'}</td><td style="font-size:11px">${handCell}</td><td style="font-size:11px">${note||'—'}</td></tr>`;
   });
   html+='</tbody></table></div>';
   c.innerHTML=html;
 }
 
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// ---------- SUMMARY (with charts) ----------
+function getV(e,keys){for(const k of keys){const v=e[k];if(v!==undefined&&v!==''&&v!==null)return v;}return null;}
+
+// Parse a ring size to a number where possible. Numeric strings ("19") parse;
+// letter sizes ("P") map to UK alpha sequence index (A=1, B=2, ...) for charting.
+function parseRing(v){
+  if(v==null||v==='')return null;
+  const s=String(v).trim();
+  const num=parseFloat(s);
+  if(!isNaN(num))return num;
+  // Take the first letter A-Z as alpha index
+  const m=s.toUpperCase().match(/[A-Z]/);
+  if(m){return m[0].charCodeAt(0)-64;}
+  return null;
+}
+
+// Build a simple line chart SVG.
+// series = [{label, color, points: [{x:number, y:number}], yLabel:fn}]
+// xLabels = array of strings positioned at integer x values
+function lineChartSVG(series, xLabels, opts={}){
+  const W=opts.width||640, H=opts.height||170;
+  const padL=36, padR=10, padT=10, padB=26;
+  const allY=series.flatMap(s=>s.points.map(p=>p.y));
+  if(!allY.length) return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}"><text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#aaa" font-size="11">No data yet</text></svg>`;
+  let ymin=Math.min(...allY), ymax=Math.max(...allY);
+  if(opts.ymin!==undefined)ymin=Math.min(ymin,opts.ymin);
+  if(opts.ymax!==undefined)ymax=Math.max(ymax,opts.ymax);
+  if(ymax===ymin){ymax=ymin+1;}
+  const allX=series.flatMap(s=>s.points.map(p=>p.x));
+  const xmin=Math.min(...allX), xmax=Math.max(...allX);
+  const xr=Math.max(1,xmax-xmin);
+  const xp=x=>padL+(x-xmin)/xr*(W-padL-padR);
+  const yp=y=>padT+(1-(y-ymin)/(ymax-ymin))*(H-padT-padB);
+
+  // y-axis ticks (3)
+  const ticks=[ymin,(ymin+ymax)/2,ymax].map(v=>{
+    const y=yp(v);
+    return `<line x1="${padL}" x2="${W-padR}" y1="${y}" y2="${y}" stroke="#eee" stroke-width="1"/><text x="${padL-4}" y="${y+3}" text-anchor="end" fill="#aaa" font-size="9">${(opts.yFmt||(v=>v.toFixed(1)))(v)}</text>`;
+  }).join('');
+
+  // zero line if 0 in range
+  let zeroLine='';
+  if(ymin<0 && ymax>0){
+    const yz=yp(0);
+    zeroLine=`<line x1="${padL}" x2="${W-padR}" y1="${yz}" y2="${yz}" stroke="#bbb" stroke-dasharray="3,2"/>`;
+  }
+
+  // x labels (up to 6 evenly spaced)
+  const nxl=Math.min(6,xLabels.length);
+  const step=Math.max(1,Math.floor(xLabels.length/nxl));
+  const xLabsSVG=xLabels.map((lbl,i)=>{
+    if(i%step!==0 && i!==xLabels.length-1) return '';
+    const x=xp(i);
+    return `<text x="${x}" y="${H-8}" text-anchor="middle" fill="#aaa" font-size="9">${lbl}</text>`;
+  }).join('');
+
+  const lines=series.map(s=>{
+    if(!s.points.length)return '';
+    const d=s.points.map((p,i)=>(i?'L':'M')+xp(p.x).toFixed(1)+','+yp(p.y).toFixed(1)).join(' ');
+    const dots=s.points.map(p=>`<circle cx="${xp(p.x).toFixed(1)}" cy="${yp(p.y).toFixed(1)}" r="2.2" fill="${s.color}"/>`).join('');
+    return `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>${dots}`;
+  }).join('');
+
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${ticks}${zeroLine}${lines}${xLabsSVG}</svg>`;
+}
+
 function renderSummary(){
   const c=document.getElementById('summary-container');
   if(entries.length<3){c.innerHTML='<p class="es">Log at least 3 entries to see summary.</p>';return;}
-  const getV=(e,keys)=>{for(const k of keys){const v=e[k];if(v!==undefined&&v!=='')return v;}return null;};
+
+  // Order chronologically (oldest first) for charts
+  const ordered=[...entries].slice().reverse();
+  const xLabels=ordered.map(e=>{
+    const d=getV(e,['Date','date'])||''; return String(d).slice(5); // MM-DD
+  });
+
+  // ----- KPI -----
   const sunDays=entries.filter(e=>{const v=getV(e,['Sun exposure','sunExp']);return v&&v!=='None';}).length;
-  const dKeys=['dLknee','dRknee','dLelbow','dRelbow','dLhand','dRhand','dLjaw','dRjaw'];
-  const dLabels=['L knee','R knee','L elbow','R elbow','L hand','R hand','L jaw','R jaw'];
-  const allDiffs=dKeys.flatMap(k=>entries.map(e=>parseFloat(e[k])).filter(v=>!isNaN(v)&&v>0));
+  const dKeys=['D L knee','D R knee','D L hip','D R hip','D L elbow','D R elbow','D L hand','D R hand','D L jaw','D R jaw'];
+  const dCamel=['dLknee','dRknee','dLhip','dRhip','dLelbow','dRelbow','dLhand','dRhand','dLjaw','dRjaw'];
+  const allDiffs=entries.flatMap(e=>dKeys.map((k,i)=>parseFloat(getV(e,[k,dCamel[i]])))).filter(v=>!isNaN(v)&&v>0);
   const avgDiff=allDiffs.length?(allDiffs.reduce((a,b)=>a+b,0)/allDiffs.length).toFixed(1):'—';
-  const jointRows=dKeys.map((key,i)=>{
-    const vals=entries.map(e=>parseFloat(e[key])).filter(v=>!isNaN(v));
-    if(!vals.length)return null;
-    return {label:dLabels[i],avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1),max:Math.max(...vals).toFixed(1),n:vals.length};
-  }).filter(Boolean);
-  const painCfg=[{l:'Head',k:'pHead'},{l:'Neck',k:'pNeck'},{l:'L hip',k:'pLhip'},{l:'R hip',k:'pRhip'},{l:'L knee',k:'pLknee'},{l:'R knee',k:'pRknee'},{l:'L elbow',k:'pLelbow'},{l:'R elbow',k:'pRelbow'},{l:'L hand',k:'pLhand'},{l:'R hand',k:'pRhand'},{l:'L jaw',k:'pLjaw'},{l:'R jaw',k:'pRjaw'},{l:'L foot',k:'pLfoot'},{l:'R foot',k:'pRfoot'},{l:'Fatigue',k:'pFatigue'}];
-  const avgPain=painCfg.map(({l,k})=>{const vals=entries.map(e=>parseInt(e[k]||0)).filter(v=>v>0);return vals.length?{label:l,avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1)}:null;}).filter(Boolean);
 
   let html=`<div class="sg">
     <div class="mc"><p class="ml">Total entries</p><p class="mv">${entries.length}</p></div>
-    <div class="mc"><p class="ml">Sun exposure days</p><p class="mv">${sunDays}</p></div>
-    <div class="mc"><p class="ml">Avg temp differential</p><p class="mv">+${avgDiff}°C</p></div>
+    <div class="mc"><p class="ml">Sun days</p><p class="mv">${sunDays}</p></div>
+    <div class="mc"><p class="ml">Avg +diff</p><p class="mv">+${avgDiff}°C</p></div>
   </div>`;
-  if(avgPain.length){
-    html+='<div class="sec"><p class="sec-title">Average pain scores</p>';
-    avgPain.forEach(({label,avg})=>{
-      html+=`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px"><span>${label}</span><span style="font-weight:500">${avg}/10</span></div><div style="height:6px;background:#f0f0ee;border-radius:3px"><div style="height:6px;width:${parseFloat(avg)*10}%;background:#888;border-radius:3px"></div></div></div>`;
+
+  // ----- TEMP DIFF CHART -----
+  const tempSeries=[
+    {label:'L knee', color:'#c0392b', keys:['D L knee','dLknee']},
+    {label:'R knee', color:'#e67e22', keys:['D R knee','dRknee']},
+    {label:'L elbow', color:'#16a085', keys:['D L elbow','dLelbow']},
+    {label:'R elbow', color:'#27ae60', keys:['D R elbow','dRelbow']},
+    {label:'L hand', color:'#2980b9', keys:['D L hand','dLhand']},
+    {label:'R hand', color:'#8e44ad', keys:['D R hand','dRhand']},
+  ].map(s=>({
+    label:s.label, color:s.color,
+    points: ordered.map((e,i)=>{const v=parseFloat(getV(e,s.keys));return isNaN(v)?null:{x:i,y:v};}).filter(Boolean)
+  })).filter(s=>s.points.length);
+  if(tempSeries.length){
+    html+=`<div class="chart-box">
+      <div class="chart-title">Temperature differentials over time (°C above control)</div>
+      ${lineChartSVG(tempSeries, xLabels, {yFmt:v=>(v>=0?'+':'')+v.toFixed(1), ymin:-1, ymax:2})}
+      <div class="chart-legend">${tempSeries.map(s=>`<span class="lg" style="color:${s.color}"><span style="background:${s.color}"></span>${s.label}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  // ----- RING SIZE CHART -----
+  const ringSeriesDef=[
+    {label:'L index', color:'#c0392b', keys:['Ring L index','cLindex']},
+    {label:'R index', color:'#e67e22', keys:['Ring R index','cRindex']},
+    {label:'L middle', color:'#16a085', keys:['Ring L middle','cLmiddle']},
+    {label:'R middle', color:'#27ae60', keys:['Ring R middle','cRmiddle']},
+    {label:'L ring', color:'#2980b9', keys:['Ring L ring','cLring']},
+    {label:'R ring', color:'#8e44ad', keys:['Ring R ring','cRring']},
+  ];
+  const ringSeries=ringSeriesDef.map(s=>({
+    label:s.label, color:s.color,
+    points: ordered.map((e,i)=>{const v=parseRing(getV(e,s.keys));return v===null?null:{x:i,y:v};}).filter(Boolean)
+  })).filter(s=>s.points.length>=2);
+  if(ringSeries.length){
+    html+=`<div class="chart-box">
+      <div class="chart-title">Ring sizes over time (numeric / alpha A=1 .. Z=26)</div>
+      ${lineChartSVG(ringSeries, xLabels, {yFmt:v=>v.toFixed(0)})}
+      <div class="chart-legend">${ringSeries.map(s=>`<span class="lg" style="color:${s.color}"><span style="background:${s.color}"></span>${s.label}</span>`).join('')}</div>
+    </div>`;
+  } else {
+    html+=`<div class="chart-box"><div class="chart-title">Ring sizes over time</div><svg class="chart-svg" viewBox="0 0 640 170"><text x="320" y="85" text-anchor="middle" fill="#aaa" font-size="11">Need at least 2 ring readings on the same finger</text></svg></div>`;
+  }
+
+  // ----- PAIN OVER TIME -----
+  const painDef=[
+    {label:'Head', color:'#c0392b', keys:['Pain head','pHead']},
+    {label:'Knees max', color:'#e67e22', keysAB:[['Pain L knee','pLknee'],['Pain R knee','pRknee']]},
+    {label:'Hands max', color:'#2980b9', keysAB:[['Pain L hand','pLhand'],['Pain R hand','pRhand']]},
+    {label:'Fatigue', color:'#8e44ad', keys:['Fatigue','pFatigue']},
+    {label:'Light sens.', color:'#f39c12', keys:['Light sensitivity','lightSens']},
+  ];
+  const painSeries=painDef.map(s=>{
+    let pts;
+    if(s.keysAB){
+      pts=ordered.map((e,i)=>{
+        const a=parseFloat(getV(e,s.keysAB[0]));
+        const b=parseFloat(getV(e,s.keysAB[1]));
+        const vals=[a,b].filter(v=>!isNaN(v));
+        return vals.length?{x:i,y:Math.max(...vals)}:null;
+      }).filter(Boolean);
+    } else {
+      pts=ordered.map((e,i)=>{const v=parseFloat(getV(e,s.keys));return isNaN(v)?null:{x:i,y:v};}).filter(Boolean);
+    }
+    return {label:s.label, color:s.color, points:pts};
+  }).filter(s=>s.points.length);
+  if(painSeries.length){
+    html+=`<div class="chart-box">
+      <div class="chart-title">Pain / fatigue over time (0–10)</div>
+      ${lineChartSVG(painSeries, xLabels, {yFmt:v=>v.toFixed(0), ymin:0, ymax:10})}
+      <div class="chart-legend">${painSeries.map(s=>`<span class="lg" style="color:${s.color}"><span style="background:${s.color}"></span>${s.label}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  // ----- SLEEP vs FATIGUE/PAIN -----
+  const sleepPoints=ordered.map((e,i)=>{
+    const sl=parseFloat(getV(e,['Sleep score','sleepScore']));
+    const fat=parseFloat(getV(e,['Fatigue','pFatigue']));
+    return (!isNaN(sl)&&!isNaN(fat))?{x:i,y:sl,fat}:null;
+  }).filter(Boolean);
+  if(sleepPoints.length>=3){
+    const sleepSeries=[
+      {label:'Sleep score', color:'#27ae60', points:sleepPoints.map(p=>({x:p.x,y:p.y}))},
+      {label:'Fatigue (×10)', color:'#c0392b', points:sleepPoints.map(p=>({x:p.x,y:p.fat*10}))}
+    ];
+    html+=`<div class="chart-box">
+      <div class="chart-title">Sleep score vs fatigue (fatigue scaled ×10)</div>
+      ${lineChartSVG(sleepSeries, xLabels, {yFmt:v=>v.toFixed(0), ymin:0, ymax:100})}
+      <div class="chart-legend">${sleepSeries.map(s=>`<span class="lg" style="color:${s.color}"><span style="background:${s.color}"></span>${s.label}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  // ----- TABLE: temp diff per joint -----
+  const tempTable=[
+    ['L knee',['D L knee','dLknee']],['R knee',['D R knee','dRknee']],
+    ['L hip',['D L hip','dLhip']],['R hip',['D R hip','dRhip']],
+    ['L elbow',['D L elbow','dLelbow']],['R elbow',['D R elbow','dRelbow']],
+    ['L hand',['D L hand','dLhand']],['R hand',['D R hand','dRhand']],
+    ['L jaw',['D L jaw','dLjaw']],['R jaw',['D R jaw','dRjaw']]
+  ].map(([label,keys])=>{
+    const vals=entries.map(e=>parseFloat(getV(e,keys))).filter(v=>!isNaN(v));
+    if(!vals.length)return null;
+    return {label, avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1), max:Math.max(...vals).toFixed(1), n:vals.length};
+  }).filter(Boolean);
+  if(tempTable.length){
+    html+='<div class="sec"><p class="sec-title">Temperature differentials by joint</p><table><thead><tr><th>Joint</th><th>Average</th><th>Peak</th><th>n</th></tr></thead><tbody>';
+    tempTable.forEach(({label,avg,max,n})=>{html+=`<tr><td>${label}</td><td>${parseFloat(avg)>=0?'+':''}${avg}°C</td><td>+${max}°C</td><td>${n}</td></tr>`;});
+    html+='</tbody></table></div>';
+  }
+
+  // ----- AVG PAIN TABLE -----
+  const painTbl=[
+    {l:'Head',k:['Pain head','pHead']},{l:'Neck',k:['Pain neck','pNeck']},
+    {l:'L shoulder',k:['Pain L shoulder','pLshoulder']},{l:'R shoulder',k:['Pain R shoulder','pRshoulder']},
+    {l:'L wrist',k:['Pain L wrist','pLwrist']},{l:'R wrist',k:['Pain R wrist','pRwrist']},
+    {l:'L knee',k:['Pain L knee','pLknee']},{l:'R knee',k:['Pain R knee','pRknee']},
+    {l:'L hip',k:['Pain L hip','pLhip']},{l:'R hip',k:['Pain R hip','pRhip']},
+    {l:'L ankle',k:['Pain L ankle','pLankle']},{l:'R ankle',k:['Pain R ankle','pRankle']},
+    {l:'L hand',k:['Pain L hand','pLhand']},{l:'R hand',k:['Pain R hand','pRhand']},
+    {l:'L jaw',k:['Pain L jaw','pLjaw']},{l:'R jaw',k:['Pain R jaw','pRjaw']},
+    {l:'Fatigue',k:['Fatigue','pFatigue']},{l:'Morning stiffness (min)',k:['Morning stiffness (min)','morningStiff']},
+    {l:'Light sensitivity',k:['Light sensitivity','lightSens']},
+    {l:'Acid reflux',k:['Acid reflux','acidReflux']},{l:'Stress',k:['Stress','stress']},{l:'Physical exertion',k:['Physical exertion','physExertion']}
+  ].map(({l,k})=>{
+    const vals=entries.map(e=>parseFloat(getV(e,k))).filter(v=>!isNaN(v)&&v>0);
+    return vals.length?{label:l,avg:(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1),max:Math.max(...vals)}:null;
+  }).filter(Boolean);
+  if(painTbl.length){
+    html+='<div class="sec"><p class="sec-title">Average scores (entries where score > 0)</p>';
+    painTbl.forEach(({label,avg,max})=>{
+      const isMin = label.includes('min');
+      const pctMax = isMin?120:10;
+      const pct = Math.min(100, (parseFloat(avg)/pctMax)*100);
+      html+=`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px"><span>${label}</span><span style="font-weight:500">${avg}${isMin?' min':'/10'} · peak ${max}${isMin?'':''}</span></div><div style="height:6px;background:#f0f0ee;border-radius:3px"><div style="height:6px;width:${pct}%;background:#888;border-radius:3px"></div></div></div>`;
     });
     html+='</div>';
   }
-  if(jointRows.length){
-    html+='<div class="sec"><p class="sec-title">Temperature differentials by joint</p><table><thead><tr><th>Joint</th><th>Average</th><th>Peak</th><th>Readings</th></tr></thead><tbody>';
-    jointRows.forEach(({label,avg,max,n})=>{html+=`<tr><td>${label}</td><td>${parseFloat(avg)>=0?'+':''}${avg}°C</td><td>+${max}°C</td><td>${n}</td></tr>`;});
-    html+='</tbody></table></div>';
-  }
+
   c.innerHTML=html;
 }
+
+// init
+renderHandState();
 </script>
 </body>
 </html>
