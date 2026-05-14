@@ -257,8 +257,13 @@ function doPost(e) {
   try {
     const sheet = getSheet_();
     ensureHeaders_(sheet);
-    const d = JSON.parse(e.postData.contents);
-    const row = KEYS.map(k => (d[k] === undefined ? "" : d[k]));
+    // Accept JSON either as the raw POST body (modern fetch) or in a
+    // "payload" form field (old browsers like Kindle that submit via iframe).
+    var raw = (e.parameter && e.parameter.payload) ? e.parameter.payload
+              : (e.postData && e.postData.contents) || '{}';
+    const d = JSON.parse(raw);
+    if (d && d.ping) return buildResponse({status:"ok",ping:true});
+    const row = KEYS.map(function(k){ return (d[k] === undefined) ? "" : d[k]; });
     sheet.appendRow(row);
     return buildResponse({status:"ok"});
   } catch(err) {
@@ -950,11 +955,71 @@ async function testConnection() {
   const bar = document.getElementById('test-status');
   if(!sheetsUrl){showStatus(bar,'err','No URL entered.');return;}
   showStatus(bar,'pending','Testing...');
-  try { const r=await fetch(sheetsUrl); await r.json(); showStatus(bar,'ok','Connected!'); }
-  catch(e){showStatus(bar,'err','Could not connect. Check URL and deployment settings.');}
+  try {
+    const r=await fetch(sheetsUrl); await r.json();
+    showStatus(bar,'ok','Connected!');
+    return;
+  } catch(e){}
+  // Fallback path for older browsers (e.g. Kindle): post a small ping via
+  // hidden iframe. If it completes the URL is reachable.
+  try {
+    await submitViaForm(sheetsUrl, {ping:true});
+    showStatus(bar,'ok','Reachable (limited mode — your browser cannot read responses, but saves will still go through).');
+  } catch(e2){
+    showStatus(bar,'err','Could not connect. Check URL and deployment settings.');
+  }
 }
 
 function showStatus(el,type,msg){el.style.display='block';el.className='status-bar status-'+type;el.textContent=msg;}
+
+// ---------- KINDLE-FRIENDLY SUBMIT FALLBACK ----------
+// Some old browsers (e.g. Kindle Experimental) won't follow Apps Script's
+// cross-origin redirect with fetch + CORS, even though the actual URL is
+// reachable. This sends the payload via an old-school hidden iframe form
+// POST. We can't read the server response that way, but the data lands in
+// the sheet, which is what matters. Apps Script parses `payload` parameter.
+function submitViaForm(url, payload){
+  return new Promise(function(resolve, reject){
+    var iframeName = '__diagno_submit_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+    var iframe = document.createElement('iframe');
+    iframe.name = iframeName;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.target = iframeName;
+    form.enctype = 'application/x-www-form-urlencoded';
+    form.acceptCharset = 'UTF-8';
+    form.style.display = 'none';
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+    document.body.appendChild(form);
+    var done = false;
+    var timer = setTimeout(function(){
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error('form submit timeout'));
+    }, 20000);
+    iframe.onload = function(){
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      // give the iframe a moment to settle, then clean up
+      setTimeout(cleanup, 200);
+      resolve();
+    };
+    function cleanup(){
+      try { document.body.removeChild(form); } catch(e){}
+      try { document.body.removeChild(iframe); } catch(e){}
+    }
+    form.submit();
+  });
+}
 
 // ---------- TEMPERATURE DIFFS ----------
 // Knees + hips → calf | elbows + hands → inner forearm | jaw → forehead
@@ -1104,7 +1169,15 @@ async function pushEntry(payload, statusEl, okMsg){
     } else {
       showStatus(statusEl,'err','Saved locally. Sheet error: '+(j.message||'unknown'));
     }
-  } catch(err){
+    return;
+  } catch(err){}
+  // Fallback for older browsers (e.g. Kindle) where fetch + CORS fails.
+  try {
+    await submitViaForm(sheetsUrl, payload);
+    entries[0].synced = true;
+    try{localStorage.setItem(ENTRIES_KEY,JSON.stringify(entries));}catch(e){}
+    showStatus(statusEl,'ok', okMsg + ' (limited mode — sent without server confirmation).');
+  } catch(e2){
     showStatus(statusEl,'err','Saved locally — could not reach Google Sheets.');
   }
 }
