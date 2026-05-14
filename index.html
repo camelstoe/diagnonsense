@@ -158,6 +158,8 @@
       <div id="url-saved-msg" class="url-saved" style="display:none">URL saved</div>
     </div>
     <button class="btn-p" onclick="testConnection()">Test connection</button>
+    <button class="btn-p" onclick="downloadBaked()" style="margin-left:6px">Download Kindle copy</button>
+    <p style="font-size:12px;color:#666;margin-top:8px">Once your URL is saved and tested, click <strong>Download Kindle copy</strong> to get an HTML file with the URL pre-baked in. Email it to your Kindle (or sideload via USB) and it will work without any typing.</p>
     <div class="status-bar" id="test-status"></div>
   </div>
   <div class="sec">
@@ -739,6 +741,10 @@ function buildResponse(data) {
 
 <script>
 const SHEET_URL_KEY = 'diagno_sheets_url';
+// If you want the URL baked in (e.g. for a Kindle copy where typing is painful),
+// edit the line below. The Setup tab also has a one-click button to generate
+// a baked copy from a working device — you don't need to edit this by hand.
+const BAKED_URL = ''; /*BAKED_URL*/
 const ENTRIES_KEY = 'diagno_entries_v6';
 const PAIN_TYPES = ['Burning','Throbbing','Aching','Stabbing','Pressing','Dull','Stiff','Shooting'];
 const BILATERAL = [
@@ -757,6 +763,10 @@ let entries = [], medRows = [], sheetsUrl = '';
 let handState = { lPalm: {hot:null, cold:null}, rPalm: {hot:null, cold:null} };
 
 try { sheetsUrl = localStorage.getItem(SHEET_URL_KEY)||''; } catch(e){}
+if (BAKED_URL && !sheetsUrl) {
+  sheetsUrl = BAKED_URL;
+  try { localStorage.setItem(SHEET_URL_KEY, sheetsUrl); } catch(e){}
+}
 try { entries = JSON.parse(localStorage.getItem(ENTRIES_KEY)||'[]'); } catch(e){}
 
 // ---------- range slider helpers ----------
@@ -971,6 +981,56 @@ async function testConnection() {
 }
 
 function showStatus(el,type,msg){el.style.display='block';el.className='status-bar status-'+type;el.textContent=msg;}
+
+// ---------- DOWNLOAD KINDLE-READY COPY ----------
+// Generates a copy of this very HTML file with the user's Apps Script URL
+// baked into the BAKED_URL constant. Tries fetch() of the current page
+// first (works when served over http(s)://); falls back to a file picker
+// for file:// origins where fetch is blocked.
+async function downloadBaked(){
+  if (!sheetsUrl) { alert('Save (and ideally test) your URL first — the field above.'); return; }
+  var html;
+  try {
+    var r = await fetch(window.location.href);
+    html = await r.text();
+    bakeAndDownload(html);
+  } catch(e){
+    // file:// origin: prompt for the source file
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.html,text/html';
+    inp.style.display = 'none';
+    inp.onchange = function(ev){
+      var f = ev.target.files && ev.target.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function(){ bakeAndDownload(reader.result); };
+      reader.readAsText(f);
+    };
+    document.body.appendChild(inp);
+    inp.click();
+    setTimeout(function(){ document.body.removeChild(inp); }, 5000);
+  }
+}
+function bakeAndDownload(html){
+  var stamped = html.replace(/const BAKED_URL = ['\"][^'\"]*['\"]; \/\*BAKED_URL\*\//,
+    'const BAKED_URL = ' + JSON.stringify(sheetsUrl) + '; /*BAKED_URL*/');
+  if (stamped === html) {
+    alert('Could not find the BAKED_URL marker in the source HTML. Make sure you are downloading from a current version of the app.');
+    return;
+  }
+  var blob = new Blob([stamped], {type:'text/html'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'diagnonsense-kindle.html';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 200);
+}
 
 // ---------- KINDLE-FRIENDLY SUBMIT FALLBACK ----------
 // Some old browsers (e.g. Kindle Experimental) won't follow Apps Script's
