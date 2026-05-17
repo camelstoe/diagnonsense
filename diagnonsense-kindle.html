@@ -7,7 +7,10 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:#f5f5f3;color:#1a1a1a;padding:16px;max-width:760px;margin:0 auto}
-  h1{font-size:18px;font-weight:500;margin-bottom:16px}
+  h1{font-size:18px;font-weight:500;margin-bottom:6px}
+  .ver-tag{font-size:11px;color:#888;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .ver-tag .ver-pill{background:#eee;color:#1a1a1a;padding:2px 9px;border-radius:99px;font-weight:500;letter-spacing:.04em}
+  .ver-tag .ver-time{color:#666}
   .tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
   .tab{padding:6px 14px;font-size:13px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:none;color:#666}
   .tab.active{background:#eee;color:#1a1a1a;font-weight:500;border-color:#bbb}
@@ -116,7 +119,18 @@
   .spot-loc{font-weight:400;color:#888;font-size:11px}
   .spot-loc.hot{color:#a86a1f}
   .spot-loc.cold{color:#2d6296}
-  @media(max-width:600px){.hands-section,.lr-grid{grid-template-columns:1fr;gap:14px}}
+  .lr-row{display:grid;grid-template-columns:130px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px}
+  .lr-row > .lr-row-label{font-size:13px;color:#1a1a1a;font-weight:500}
+  .lr-row .lr-cell{display:flex;flex-direction:column;gap:3px}
+  .lr-row .lr-cell .lr-sub{font-size:10px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+  .lr-row input[type=text]{width:100%;font-size:14px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;font-family:inherit}
+  .lr-row input[type=text]:focus{outline:none;border-color:#999}
+  .body-sec{border-left:3px solid #efefee;padding-left:12px;margin-bottom:18px}
+  .body-sec h4{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+  .ctrl-inline{background:#f5f5f3;border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .ctrl-inline label{font-size:12px;color:#666;display:flex;flex-direction:column;gap:3px;min-width:160px}
+  .ctrl-inline input{width:100%;font-size:14px;padding:6px 10px;border:1px solid #ddd;border-radius:8px;font-family:inherit}
+  @media(max-width:600px){.hands-section,.lr-grid{grid-template-columns:1fr;gap:14px}.lr-row{grid-template-columns:1fr;gap:4px}.lr-row > .lr-row-label{font-weight:600;margin-top:6px}}
   @media(max-width:480px){body{padding:10px}.tabs{gap:3px}.tab{padding:5px 10px;font-size:12px}.side-grid{grid-template-columns:1fr}.hand-svg{width:150px;height:190px}}
   /* Larger touch targets on phones, tablets, and Kindle (coarse pointer or narrow viewport). */
   @media(max-width:760px),(pointer:coarse){
@@ -139,6 +153,7 @@
 </head>
 <body>
 <h1>Project Diagnonsense</h1>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 2.1</span><span class="ver-time" id="net-time-info">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -209,6 +224,11 @@ const COLUMNS = [
   ["T L elbow","tLelbow"],["T R elbow","tRelbow"],["D L elbow","dLelbow"],["D R elbow","dRelbow"],
   ["T L hand","tLhand"],["T R hand","tRhand"],["D L hand","dLhand"],["D R hand","dRhand"],
   ["T L jaw","tLjaw"],["T R jaw","tRjaw"],["D L jaw","dLjaw"],["D R jaw","dRjaw"],
+  ["T L foot","tLfoot"],["T R foot","tRfoot"],["D L foot","dLfoot"],["D R foot","dRfoot"],
+  ["Circ L foot (mm)","cLfoot"],["Circ R foot (mm)","cRfoot"],
+  ["Circ L ankle (mm)","cLankle"],["Circ R ankle (mm)","cRankle"],
+  ["Tinnitus","tinnitus"],
+  ["Jaw opening difficulty","jawOpening"],
   ["Reference person initials","refInitials"],["Ref L hand","refLhand"],["Ref R hand","refRhand"],["Ref forehead","refForehead"],
   ["Swelling visible","swelling"],["Photos taken of","photos"],
   ["Medications","meds"],["Notes","notes"]
@@ -276,13 +296,14 @@ function doGet(e) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName(SHEET_NAME);
-    if (!sheet) return buildResponse({rows:[]});
+    const now = new Date().toISOString();
+    if (!sheet) return buildResponse({rows:[], now: now});
     const data = sheet.getDataRange().getValues();
     const headers = data[0];
     const rows = data.slice(1).map(r => {
       const obj = {}; headers.forEach((h,i) => obj[h]=r[i]); return obj;
     });
-    return buildResponse({rows});
+    return buildResponse({rows: rows, now: now});
   } catch(err) { return buildResponse({status:"error",message:err.toString()}); }
 }
 function buildResponse(data) {
@@ -306,7 +327,7 @@ function buildResponse(data) {
   <div class="sec">
     <p class="sec-title">Date &amp; time</p>
     <div class="fg">
-      <div class="f"><label>Date</label><input type="date" id="entry-date"></div>
+      <div class="f"><label>Date (dd/mm/yyyy)</label><input type="text" id="entry-date" placeholder="dd/mm/yyyy" maxlength="10"></div>
       <div class="f"><label>Time slot</label>
         <select id="entry-time">
           <option value="Waking">Waking</option>
@@ -381,14 +402,21 @@ function buildResponse(data) {
     <!-- BILATERAL JOINTS (shoulders, elbows, wrists, hands, jaw, hips, knees, ankles, feet) -->
     <div id="bilateral-joints"></div>
 
+    <!-- JAW OPENING DIFFICULTY (single, not bilateral) -->
+    <div class="joint-block">
+      <div class="joint-title"><span>Jaw opening difficulty</span></div>
+      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="jawOpening"><span class="val">0</span></div>
+    </div>
+
     <!-- FATIGUE — note: also lives below in 'general' but fatigue is also a useful pain peer -->
   </div>
 
   <!-- VERTIGO / NAUSEA / LIGHT SENS -->
   <div class="sec">
-    <p class="sec-title">Vertigo, nausea, light sensitivity</p>
+    <p class="sec-title">Vertigo, nausea, tinnitus, light sensitivity</p>
     <div class="pr"><label style="min-width:140px">Vertigo</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="vertigo"><span class="val">0</span></div>
     <div class="pr"><label style="min-width:140px">Nausea</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="nausea"><span class="val">0</span></div>
+    <div class="pr"><label style="min-width:140px">Tinnitus</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="tinnitus"><span class="val">0</span></div>
     <div class="pr"><label style="min-width:140px">Light sensitivity</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="lightSens"><span class="val">0</span></div>
   </div>
 
@@ -416,158 +444,171 @@ function buildResponse(data) {
     </div>
   </div>
 
-  <!-- RING SIZES -->
+  <!-- RING SIZES (own section, before any temperature work) -->
   <div class="sec">
     <p class="sec-title">Ring sizes</p>
-    <p class="sec-hint">Enter ring size (e.g. P, 19) or skip. Numeric values are charted in Summary.</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Thumb</label><input type="text" id="c-lthumb" placeholder="P or 19"></div>
-        <div class="f"><label>Index</label><input type="text" id="c-lindex" placeholder="P or 19"></div>
-        <div class="f"><label>Middle</label><input type="text" id="c-lmiddle" placeholder="P or 19"></div>
-        <div class="f"><label>Ring</label><input type="text" id="c-lring" placeholder="P or 19"></div>
-        <div class="f"><label>Little</label><input type="text" id="c-llittle" placeholder="P or 19"></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Thumb</label><input type="text" id="c-rthumb" placeholder="P or 19"></div>
-        <div class="f"><label>Index</label><input type="text" id="c-rindex" placeholder="P or 19"></div>
-        <div class="f"><label>Middle</label><input type="text" id="c-rmiddle" placeholder="P or 19"></div>
-        <div class="f"><label>Ring</label><input type="text" id="c-rring" placeholder="P or 19"></div>
-        <div class="f"><label>Little</label><input type="text" id="c-rlittle" placeholder="P or 19"></div>
-      </div>
+    <p class="sec-hint">Enter ring size (e.g. P, 19) or skip.</p>
+    <div class="lr-row">
+      <div class="lr-row-label">Thumb</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lthumb" placeholder="P or 19"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rthumb" placeholder="P or 19"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Index</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lindex" placeholder="P or 19"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rindex" placeholder="P or 19"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Middle</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lmiddle" placeholder="P or 19"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rmiddle" placeholder="P or 19"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Ring</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lring" placeholder="P or 19"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rring" placeholder="P or 19"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Little</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-llittle" placeholder="P or 19"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rlittle" placeholder="P or 19"></div>
     </div>
   </div>
 
-  <!-- GRIP STRENGTH -->
+  <!-- CIRCUMFERENCES (own section, separated from temperatures) -->
   <div class="sec">
-    <p class="sec-title">Grip strength</p>
-    <p class="sec-hint">Raw value from your dynamometer (e.g. kg or lbs — use the same unit every time).</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Grip strength</label><input type="text" id="grip-l" placeholder="e.g. 24"></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Grip strength</label><input type="text" id="grip-r" placeholder="e.g. 26"></div>
-      </div>
+    <p class="sec-title">Circumferences</p>
+    <p class="sec-hint">Measure consistently at the same anatomical landmark each time.</p>
+    <div class="lr-row">
+      <div class="lr-row-label">Elbow (mm)</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lelbow" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-relbow" placeholder="mm"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Knee (mm)</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lknee" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rknee" placeholder="mm"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Ankle (mm)</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lankle" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rankle" placeholder="mm"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Foot (mm)</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lfoot" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rfoot" placeholder="mm"></div>
     </div>
   </div>
 
-  <!-- BODY CIRCUMFERENCE -->
+  <!-- AMBIENT CONTROLS -->
   <div class="sec">
-    <p class="sec-title">Body circumference</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Knee (mm)</label><input type="text" id="c-lknee" placeholder="mm"></div>
-        <div class="f"><label>Elbow (mm)</label><input type="text" id="c-lelbow" placeholder="mm"></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Knee (mm)</label><input type="text" id="c-rknee" placeholder="mm"></div>
-        <div class="f"><label>Elbow (mm)</label><input type="text" id="c-relbow" placeholder="mm"></div>
-      </div>
+    <p class="sec-title">Ambient controls</p>
+    <p class="sec-hint">At least one control reading required before saving. Enter raw thermometer values.</p>
+    <div class="ctrl-inline">
+      <label>Room temperature <input type="text" id="t-ctrl-room" placeholder="°C"></label>
     </div>
-    <div class="f" style="margin-top:12px;max-width:240px"><label>Jaw opening (mm)</label><input type="text" id="c-jaw" placeholder="mm"></div>
-  </div>
-
-  <!-- CONTROL READINGS (+ reference person) -->
-  <div class="sec">
-    <p class="sec-title">Control readings</p>
-    <p class="sec-hint">At least one control reading required before saving. Enter raw thermometer values (e.g. 32.4).</p>
-    <div class="ctrl-row">
-      <div class="ctrl-item">
-        <label>Inner forearm *</label>
-        <input type="text" id="t-ctrl-innerarm" placeholder="°C" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-innerarm-display"></span>
-      </div>
-      <div class="ctrl-item">
-        <label>Calf</label>
-        <input type="text" id="t-ctrl-calf" placeholder="°C" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-calf-display"></span>
-      </div>
-      <div class="ctrl-item">
-        <label>Forehead</label>
-        <input type="text" id="t-ctrl-forehead" placeholder="°C" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-forehead-display"></span>
-      </div>
-      <div class="ctrl-item">
-        <label>Room</label>
-        <input type="text" id="t-ctrl-room" placeholder="°C">
-      </div>
-      <div class="ctrl-item">
-        <label>Other person's hand</label>
-        <input type="text" id="t-ctrl-otherhand" placeholder="°C">
-      </div>
-    </div>
-
     <div class="person-ref">
-      <p style="font-size:12px;color:#666;margin-bottom:8px"><strong>Reference person</strong> — if someone else is present, log their readings as a same-room sanity check.</p>
-      <div class="lr-grid">
-        <div class="lr-col">
-          <div class="lr-col-label">Left</div>
-          <div class="f"><label>Their hand</label><input type="text" id="ref-lhand" placeholder="°C"></div>
-        </div>
-        <div class="lr-col">
-          <div class="lr-col-label">Right</div>
-          <div class="f"><label>Their hand</label><input type="text" id="ref-rhand" placeholder="°C"></div>
-        </div>
+      <p style="font-size:12px;color:#666;margin-bottom:10px"><strong>Reference person</strong> — if someone else is present, log their readings as a same-room sanity check.</p>
+      <div class="f" style="max-width:240px;margin-bottom:10px"><label>Initials</label><input type="text" id="ref-initials" placeholder="e.g. JM" maxlength="6"></div>
+      <div class="lr-row">
+        <div class="lr-row-label">Their hand</div>
+        <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="ref-lhand" placeholder="°C"></div>
+        <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="ref-rhand" placeholder="°C"></div>
       </div>
-      <div class="fg" style="margin-top:12px">
-        <div class="f"><label>Initials</label><input type="text" id="ref-initials" placeholder="e.g. JM" maxlength="6"></div>
-        <div class="f"><label>Their forehead</label><input type="text" id="ref-forehead" placeholder="°C"></div>
-      </div>
+      <div class="f" style="max-width:240px;margin-top:6px"><label>Their forehead</label><input type="text" id="ref-forehead" placeholder="°C"></div>
     </div>
   </div>
 
-  <!-- HANDS — L palm + L temps on LEFT, R palm + R temps on RIGHT -->
+  <!-- HEAD / JAW -->
   <div class="sec">
-    <p class="sec-title">Hands</p>
-    <p class="sec-hint">On each palm: tap once for hottest (orange), again for coldest (blue), third time clears. Then enter the temperature readings at each spot. All temperatures are raw values; differentials calculate automatically.</p>
+    <p class="sec-title">Head &amp; jaw</p>
+    <div class="ctrl-inline">
+      <label>Forehead control <input type="text" id="t-ctrl-forehead" placeholder="°C" oninput="recalcDiffs()"></label>
+      <span class="diff-badge diff-zero" id="ctrl-forehead-display"></span>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Jaw temperature</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-ljaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rjaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rjaw">—</span></div>
+    </div>
+  </div>
+
+  <!-- ELBOWS -->
+  <div class="sec">
+    <p class="sec-title">Elbows</p>
+    <div class="ctrl-inline">
+      <label>Inner forearm control <input type="text" id="t-ctrl-innerarm" placeholder="°C" oninput="recalcDiffs()"></label>
+      <span class="diff-badge diff-zero" id="ctrl-innerarm-display"></span>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Elbow temperature</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lelbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lelbow">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-relbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-relbow">—</span></div>
+    </div>
+  </div>
+
+  <!-- HANDS / FINGERS -->
+  <div class="sec">
+    <p class="sec-title">Hands &amp; fingers</p>
+    <p class="sec-hint">Hand temps compare to the inner forearm control above. On each palm: tap once for hottest (orange), again for coldest (blue), third time clears the dots only — entered temperatures are kept.</p>
     <div class="hands-section">
       <div class="hand-col">
         <div class="lr-col-label">Left palm</div>
         <div id="left-palm-mount"><!-- injected by JS --></div>
-        <div class="f"><label>Hand dorsum temperature</label><input type="text" id="t-lhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhand">—</span></div>
-        <div class="f"><label>Hottest spot temp <span class="spot-loc hot" id="loc-l-hot">— not marked —</span></label><input type="text" id="t-l-hot" placeholder="°C"></div>
-        <div class="f"><label>Coldest spot temp <span class="spot-loc cold" id="loc-l-cold">— not marked —</span></label><input type="text" id="t-l-cold" placeholder="°C"></div>
       </div>
       <div class="hand-col">
         <div class="lr-col-label">Right palm</div>
         <div id="right-palm-mount"><!-- injected by JS --></div>
-        <div class="f"><label>Hand dorsum temperature</label><input type="text" id="t-rhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhand">—</span></div>
-        <div class="f"><label>Hottest spot temp <span class="spot-loc hot" id="loc-r-hot">— not marked —</span></label><input type="text" id="t-r-hot" placeholder="°C"></div>
-        <div class="f"><label>Coldest spot temp <span class="spot-loc cold" id="loc-r-cold">— not marked —</span></label><input type="text" id="t-r-cold" placeholder="°C"></div>
       </div>
     </div>
-    <div class="hand-legend" style="margin-top:10px">
+    <div class="hand-legend" style="margin:8px 0 12px">
       <span class="lg-hot">Hottest</span>
       <span class="lg-cold">Coldest</span>
     </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Hand dorsum</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhand">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhand">—</span></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Hottest spot temp</div>
+      <div class="lr-cell"><span class="lr-sub" id="loc-l-hot">Left — not marked</span><input type="text" id="t-l-hot" placeholder="°C"></div>
+      <div class="lr-cell"><span class="lr-sub" id="loc-r-hot">Right — not marked</span><input type="text" id="t-r-hot" placeholder="°C"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Coldest spot temp</div>
+      <div class="lr-cell"><span class="lr-sub" id="loc-l-cold">Left — not marked</span><input type="text" id="t-l-cold" placeholder="°C"></div>
+      <div class="lr-cell"><span class="lr-sub" id="loc-r-cold">Right — not marked</span><input type="text" id="t-r-cold" placeholder="°C"></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Grip strength</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="grip-l" placeholder="e.g. 24"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="grip-r" placeholder="e.g. 26"></div>
+    </div>
   </div>
 
-  <!-- JOINT TEMPERATURES -->
+  <!-- HIPS, KNEES, ANKLES, FEET -->
   <div class="sec">
-    <p class="sec-title">Joint temperatures</p>
-    <p class="sec-hint">Raw thermometer readings. Differential vs control shown next to each.</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Knee</label><input type="text" id="t-lknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lknee">—</span></div>
-        <div class="f"><label>Hip</label><input type="text" id="t-lhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhip">—</span></div>
-        <div class="f"><label>Elbow</label><input type="text" id="t-lelbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lelbow">—</span></div>
-        <div class="f"><label>Jaw</label><input type="text" id="t-ljaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Knee</label><input type="text" id="t-rknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rknee">—</span></div>
-        <div class="f"><label>Hip</label><input type="text" id="t-rhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhip">—</span></div>
-        <div class="f"><label>Elbow</label><input type="text" id="t-relbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-relbow">—</span></div>
-        <div class="f"><label>Jaw</label><input type="text" id="t-rjaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rjaw">—</span></div>
-      </div>
+    <p class="sec-title">Lower body</p>
+    <div class="ctrl-inline">
+      <label>Calf control <input type="text" id="t-ctrl-calf" placeholder="°C" oninput="recalcDiffs()"></label>
+      <span class="diff-badge diff-zero" id="ctrl-calf-display"></span>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Hip temperature</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhip">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhip">—</span></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Knee temperature</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lknee">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rknee">—</span></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Foot temperature</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lfoot" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lfoot">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rfoot" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rfoot">—</span></div>
     </div>
   </div>
 
@@ -601,9 +642,6 @@ function buildResponse(data) {
           </div>
         </div>
       </div>
-      <div class="cb-group" style="margin-top:10px">
-        <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
-      </div>
     </div>
   </div>
 
@@ -634,9 +672,7 @@ function buildResponse(data) {
         </div>
       </div>
       <div class="cb-group" style="margin-top:10px">
-        <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
         <label class="cb-label"><input type="checkbox" value="Mouth corner"> Mouth corner</label>
-        <label class="cb-label"><input type="checkbox" value="Full body/other"> Full body / other</label>
       </div>
     </div>
   </div>
@@ -856,9 +892,11 @@ const HAND_LINES = [
 ];
 
 function buildHand(side){
-  // 'right' = palm view of right hand: thumb on left of SVG.
-  // 'left' = mirror the same drawing so thumb is on the right.
-  const mirror = side === 'left' ? ' transform="scale(-1,1) translate(-150,0)"' : '';
+  // Hand mirroring: we want palms PALM-UP with thumbs OUTER (away from body).
+  // The base drawing has the thumb on the LEFT of the SVG, so:
+  //  - LEFT  palm: render as-is  (thumb stays on left of SVG → outer side)
+  //  - RIGHT palm: mirror        (thumb moves to right of SVG → outer side)
+  const mirror = side === 'right' ? ' transform="scale(-1,1) translate(-150,0)"' : '';
   const nodeMap = {};
   HAND_NODES.forEach(function(n){ nodeMap[n.id] = n; });
   const bones = HAND_LINES.map(([a,b]) => {
@@ -890,14 +928,10 @@ function onHandTap(ev, side, zoneId, zoneName){
   } else if (s.cold === null) {
     s.cold = {id:zoneId, name:zoneName};
   } else {
-    // third tap: clear both, and clear the recorded temps for this palm
+    // third tap: clear the dots only — leave any entered spot temperatures
+    // intact so the user doesn't lose data they typed.
     s.hot = null;
     s.cold = null;
-    const sidePrefix = side === 'left' ? 'l' : 'r';
-    const hotEl  = document.getElementById('t-'+sidePrefix+'-hot');
-    const coldEl = document.getElementById('t-'+sidePrefix+'-cold');
-    if (hotEl)  hotEl.value  = '';
-    if (coldEl) coldEl.value = '';
   }
   renderHandState();
 }
@@ -915,10 +949,11 @@ function renderHandState(){
     });
     // update inline location labels next to spot temp inputs
     const sidePrefix = side === 'left' ? 'l' : 'r';
+    const sideTitle  = side === 'left' ? 'Left' : 'Right';
     const locHotEl  = document.getElementById('loc-'+sidePrefix+'-hot');
     const locColdEl = document.getElementById('loc-'+sidePrefix+'-cold');
-    if (locHotEl)  locHotEl.textContent  = s.hot  ? '· ' + s.hot.name  : '— not marked —';
-    if (locColdEl) locColdEl.textContent = s.cold ? '· ' + s.cold.name : '— not marked —';
+    if (locHotEl)  locHotEl.textContent  = sideTitle + (s.hot  ? ' · ' + s.hot.name  : ' — not marked');
+    if (locColdEl) locColdEl.textContent = sideTitle + (s.cold ? ' · ' + s.cold.name : ' — not marked');
   });
 }
 
@@ -935,16 +970,83 @@ function getHandColdString(){
   return parts.join(' | ');
 }
 
+// ---------- DATE / TIME (with optional internet sync) ----------
+// We try to get the current date+time from an internet source on load so the
+// log isn't at the mercy of a wrong device clock. The Apps Script (your own
+// sheet) is always tried first because it works in fewer cases than other
+// public APIs but it's always reachable in modern browsers when the URL is
+// configured. We fall back to a public timeapi, then to the device clock.
+// On Kindle (limited browser) we end up on device clock — it's still recorded
+// correctly as long as the Kindle's clock is right.
+var __netOffsetMs = 0;       // network-time − device-time, in ms
+var __netTimeSource = 'device';
+
+function netNow(){ return new Date(Date.now() + __netOffsetMs); }
+function pad2(n){ return (n<10?'0':'')+n; }
+
+// dd/mm/yyyy <-> yyyy-mm-dd helpers
+function toUKDate(d){ return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear(); }
+function parseUKDate(s){
+  if(!s) return null;
+  var m = String(s).match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+  if(!m) return null;
+  var dd = parseInt(m[1],10), mm = parseInt(m[2],10), yy = parseInt(m[3],10);
+  if(yy < 100) yy += 2000;
+  var d = new Date(yy, mm-1, dd);
+  return isNaN(d.getTime()) ? null : d;
+}
+function ukDateToISO(s){
+  var d = parseUKDate(s); if(!d) return '';
+  return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+}
+
+async function syncInternetTime(){
+  var info = document.getElementById('net-time-info');
+  function apply(serverDateMs, source){
+    __netOffsetMs = serverDateMs - Date.now();
+    __netTimeSource = source;
+    document.getElementById('entry-date').value = toUKDate(netNow());
+    if (info) info.textContent = source + ' time';
+    updateLoggedAtTicker();
+  }
+  // try 1: Apps Script (returns ISO `now` field). Works on devices that can
+  // fetch cross-origin with CORS (desktop, iOS).
+  if (sheetsUrl){
+    try {
+      var r = await fetch(sheetsUrl);
+      var j = await r.json();
+      if (j && j.now){
+        var t = new Date(j.now).getTime();
+        if (!isNaN(t)) { apply(t, 'sheet'); return; }
+      }
+    } catch(e){}
+  }
+  // try 2: public time API with CORS
+  try {
+    var r2 = await fetch('https://worldtimeapi.org/api/ip');
+    var j2 = await r2.json();
+    if (j2 && j2.utc_datetime){
+      var t2 = new Date(j2.utc_datetime).getTime();
+      if (!isNaN(t2)) { apply(t2, 'internet'); return; }
+    }
+  } catch(e){}
+  // fallback: device clock
+  document.getElementById('entry-date').value = toUKDate(new Date());
+  if (info) info.textContent = 'device time';
+  updateLoggedAtTicker();
+}
+
 // ---------- init date / url ----------
-document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+document.getElementById('entry-date').value = toUKDate(new Date());
+syncInternetTime();
 updateLoggedAtTicker();
 setInterval(updateLoggedAtTicker, 30000);
 function updateLoggedAtTicker(){
-  const d = new Date();
-  const hh = String(d.getHours()).padStart(2,'0');
-  const mm = String(d.getMinutes()).padStart(2,'0');
-  const el = document.getElementById('logged-at-display');
-  if (el) el.textContent = 'Will log at: ' + hh + ':' + mm + ' (auto, updates on save)';
+  var d = netNow();
+  var hh = pad2(d.getHours());
+  var mm = pad2(d.getMinutes());
+  var el = document.getElementById('logged-at-display');
+  if (el) el.textContent = 'Will log at: ' + hh + ':' + mm + ' (' + __netTimeSource + ' time, updates on save)';
 }
 if(sheetsUrl) { document.getElementById('sheets-url').value = sheetsUrl; showTab('entry'); }
 
@@ -1085,6 +1187,7 @@ function submitViaForm(url, payload){
 // Knees + hips → calf | elbows + hands → inner forearm | jaw → forehead
 const JOINT_CTRL = {
   lknee:'calf', rknee:'calf', lhip:'calf', rhip:'calf',
+  lfoot:'calf', rfoot:'calf',
   lelbow:'arm', relbow:'arm', lhand:'arm', rhand:'arm',
   ljaw:'forehead', rjaw:'forehead'
 };
@@ -1153,8 +1256,8 @@ function renderMedRows(){
 }
 
 function nowClockString(){
-  const d = new Date();
-  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  var d = netNow();
+  return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
 }
 
 // ---------- QUICK-NOTE-ONLY UPLOAD ----------
@@ -1163,7 +1266,7 @@ async function uploadQuickNote(){
   const note = document.getElementById('quick-note').value.trim();
   if(!note){ showStatus(bar,'err','Write a note first.'); return; }
   const payload = blankPayload();
-  payload.date = document.getElementById('entry-date').value;
+  payload.date = ukDateToISO(document.getElementById('entry-date').value);
   payload.time = document.getElementById('entry-time').value;
   payload.loggedAt = nowClockString();
   payload.quickNoteOnly = note;
@@ -1188,7 +1291,8 @@ function blankPayload(){
     pLankle:0, pRankle:0, ptAnkles:'',
     pLfoot:0, pRfoot:0, ptFeet:'',
     iceWanted:'', iceApplied:'',
-    vertigo:0, nausea:0, lightSens:0,
+    vertigo:0, nausea:0, tinnitus:0, lightSens:0,
+    jawOpening:0,
     morningStiff:0,
     acidReflux:0, pFatigue:0,
     mouthCorner:0, dryEyes:0, cheilitisVisible:false,
@@ -1207,6 +1311,8 @@ function blankPayload(){
     tLelbow:null, tRelbow:null, dLelbow:null, dRelbow:null,
     tLhand:null, tRhand:null, dLhand:null, dRhand:null,
     tLjaw:null, tRjaw:null, dLjaw:null, dRjaw:null,
+    tLfoot:null, tRfoot:null, dLfoot:null, dRfoot:null,
+    cLfoot:'', cRfoot:'', cLankle:'', cRankle:'',
     refInitials:'', refLhand:null, refRhand:null, refForehead:null,
     swelling:'', photos:'',
     meds:'', notes:''
@@ -1251,10 +1357,9 @@ async function saveEntry() {
   const calf=parseDec('t-ctrl-calf');
   const forehead=parseDec('t-ctrl-forehead');
   const room=parseDec('t-ctrl-room');
-  const otherHand=parseDec('t-ctrl-otherhand');
 
-  // require at least one control reading (any of the 5)
-  if(arm===null && calf===null && forehead===null && room===null && otherHand===null){
+  // require at least one control reading (any of the 4)
+  if(arm===null && calf===null && forehead===null && room===null){
     document.getElementById('t-ctrl-innerarm').classList.add('required-missing');
     showStatus(bar,'err','Please enter at least one control temperature before saving (or use Quick note above).');
     return;
@@ -1268,7 +1373,7 @@ async function saveEntry() {
   document.getElementById('logged-at-display').textContent = 'Logged at: ' + loggedAt;
 
   const payload = {
-    date: document.getElementById('entry-date').value,
+    date: ukDateToISO(document.getElementById('entry-date').value),
     time: document.getElementById('entry-time').value,
     loggedAt: loggedAt,
     quickNoteOnly: '',
@@ -1291,7 +1396,9 @@ async function saveEntry() {
     iceApplied: getIceJoints('ice-a'),
     vertigo: getPainVal('vertigo'),
     nausea: getPainVal('nausea'),
+    tinnitus: getPainVal('tinnitus'),
     lightSens: getPainVal('lightSens'),
+    jawOpening: getPainVal('jawOpening'),
     morningStiff: getPainVal('morningStiff'),
     acidReflux: getPainVal('acidReflux'),
     pFatigue: getPainVal('fatigue'),
@@ -1322,19 +1429,24 @@ async function saveEntry() {
     cRknee: document.getElementById('c-rknee').value||'',
     cLelbow: document.getElementById('c-lelbow').value||'',
     cRelbow: document.getElementById('c-relbow').value||'',
-    cJaw: document.getElementById('c-jaw').value||'',
+    cJaw: '',
     handHot: getHandHotString(),
     handLhotTemp: parseDec('t-l-hot'),
     handRhotTemp: parseDec('t-r-hot'),
     handCold: getHandColdString(),
     handLcoldTemp: parseDec('t-l-cold'),
     handRcoldTemp: parseDec('t-r-cold'),
-    ctrlInnerArm: arm, ctrlCalf: calf, ctrlForehead: forehead, ctrlRoom: room, ctrlOtherHand: otherHand,
+    ctrlInnerArm: arm, ctrlCalf: calf, ctrlForehead: forehead, ctrlRoom: room, ctrlOtherHand: null,
     tLknee: tRaw('lknee'), tRknee: tRaw('rknee'), dLknee: diff('lknee',calf), dRknee: diff('rknee',calf),
     tLhip: tRaw('lhip'), tRhip: tRaw('rhip'), dLhip: diff('lhip',calf), dRhip: diff('rhip',calf),
     tLelbow: tRaw('lelbow'), tRelbow: tRaw('relbow'), dLelbow: diff('lelbow',arm), dRelbow: diff('relbow',arm),
     tLhand: tRaw('lhand'), tRhand: tRaw('rhand'), dLhand: diff('lhand',arm), dRhand: diff('rhand',arm),
     tLjaw: tRaw('ljaw'), tRjaw: tRaw('rjaw'), dLjaw: diff('ljaw',forehead), dRjaw: diff('rjaw',forehead),
+    tLfoot: tRaw('lfoot'), tRfoot: tRaw('rfoot'), dLfoot: diff('lfoot',calf), dRfoot: diff('rfoot',calf),
+    cLfoot: document.getElementById('c-lfoot').value||'',
+    cRfoot: document.getElementById('c-rfoot').value||'',
+    cLankle: document.getElementById('c-lankle').value||'',
+    cRankle: document.getElementById('c-rankle').value||'',
     refInitials: document.getElementById('ref-initials').value||'',
     refLhand: parseDec('ref-lhand'),
     refRhand: parseDec('ref-rhand'),
@@ -1367,7 +1479,7 @@ function resetForm(){
   document.getElementById('sleep-duration').value='';
   document.querySelectorAll('input[name="weather"]').forEach(el=>el.checked=false);
   document.getElementById('cheilitis-visible').checked=false;
-  ['t-ctrl-innerarm','t-ctrl-calf','t-ctrl-forehead','t-ctrl-room','t-ctrl-otherhand'].forEach(id=>document.getElementById(id).value='');
+  ['t-ctrl-innerarm','t-ctrl-calf','t-ctrl-forehead','t-ctrl-room'].forEach(id=>document.getElementById(id).value='');
   ['ctrl-innerarm-display','ctrl-calf-display','ctrl-forehead-display'].forEach(id=>{
     const e=document.getElementById(id); e.textContent=''; e.className='diff-badge diff-zero';
   });
@@ -1375,8 +1487,8 @@ function resetForm(){
     document.getElementById('t-'+j).value='';
     const b=document.getElementById('d-'+j);b.textContent='—';b.className='diff-badge diff-zero';
   });
-  ['ref-initials','ref-lhand','ref-rhand','ref-forehead','t-l-hot','t-l-cold','t-r-hot','t-r-cold'].forEach(id=>document.getElementById(id).value='');
-  ['c-lknee','c-rknee','c-lelbow','c-relbow','c-jaw',
+  ['ref-initials','ref-lhand','ref-rhand','ref-forehead','t-l-hot','t-l-cold','t-r-hot','t-r-cold','c-lfoot','c-rfoot','c-lankle','c-rankle'].forEach(id=>document.getElementById(id).value='');
+  ['c-lknee','c-rknee','c-lelbow','c-relbow',
    'c-lthumb','c-rthumb','c-lindex','c-rindex','c-lmiddle','c-rmiddle',
    'c-lring','c-rring','c-llittle','c-rlittle','grip-l','grip-r'].forEach(id=>document.getElementById(id).value='');
   document.querySelectorAll('.head-loc,.head-type,.head-area,.ice-w,.ice-a').forEach(el=>el.checked=false);
