@@ -22,7 +22,7 @@
     --text:#f0f0ee;--text2:#ccc;--muted:#888;--hint:#666;
     --ctrl-bg:#1f1f1f;--badge-pos-bg:#3d2e10;--badge-pos-fg:#f0c060;
     --badge-neg-bg:#1b2e12;--badge-neg-fg:#8ecf60;--badge-zero-bg:#2a2a2a;--badge-zero-fg:#888;
-    --ok-bg:#0f2e22;--ok-fg:#4fd4a4;--err-bg:#2e1212;--err-fg:#f07070;--pend-bg:#2e2010;--pend-fg:#f0c060;
+    --ok-bg:#0f2e22;--ok-fg:#3aaa84;--err-bg:#2e1212;--err-fg:#c46060;--pend-bg:#2e2010;--pend-fg:#c09040;
     --warn-bg:#2e2010;--warn-fg:#f0c060;--qn-bg:#1f1c10;--qn-border:#4a3e10;
     --hot-fill:#c06020;--hot-stroke:#f0a04b;--cold-fill:#2d6296;--cold-stroke:#5e96cf;
     --ice-bg:#0e1e2e;--ice-border:#1e3e5e;--ice-checked-bg:#1a3050;--ice-checked-border:#3a70a0;
@@ -52,19 +52,14 @@ h1{font-size:18px;font-weight:500;margin-bottom:6px}
 .diff-pos{background:var(--badge-pos-bg);color:var(--badge-pos-fg)}
 .diff-neg{background:var(--badge-neg-bg);color:var(--badge-neg-fg)}
 .diff-zero{background:var(--badge-zero-bg);color:var(--badge-zero-fg)}
-.side-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.side-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;min-width:0}
 .side-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-.pr{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.pr{display:flex;align-items:center;gap:10px;margin-bottom:4px}
 .pr label{font-size:13px;color:var(--text);min-width:30px}
+.side-grid .pr{overflow:hidden}
+.side-grid .pr label{min-width:0;width:22px;flex-shrink:0;font-size:12px;color:var(--muted)}
 .pr input[type=range]{flex:1;accent-color:var(--muted)}
-.pr .val{font-size:13px;font-weight:500;min-width:28px;color:var(--text);text-align:right}
-/* slider unfilled = grey, only show value when >0 */
-.pr-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;padding:6px 8px;border-radius:8px;transition:background .15s}
-.pr-row.has-val{background:var(--badge-pos-bg)}
-.pr-row label{font-size:13px;color:var(--text);min-width:140px}
-.pr-row input[type=range]{flex:1;accent-color:#888}
-.pr-row .val{font-size:13px;font-weight:500;min-width:28px;text-align:right;color:var(--muted)}
-.pr-row.has-val .val{color:var(--badge-pos-fg)}
+.pr .val{font-size:13px;font-weight:500;min-width:24px;color:var(--text);text-align:right}
 .cb-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .cb-label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;padding:3px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text)}
 .cb-label input{width:13px;height:13px;accent-color:#555}
@@ -85,6 +80,10 @@ h1{font-size:18px;font-weight:500;margin-bottom:6px}
 .status-ok{background:var(--ok-bg);color:var(--ok-fg)}
 .status-err{background:var(--err-bg);color:var(--err-fg)}
 .status-pending{background:var(--pend-bg);color:var(--pend-fg)}
+.status-bar#save-status,.status-bar#quick-note-status{border:1px solid transparent}
+.status-ok{border-color:var(--ok-fg)}
+.status-err{border-color:var(--err-fg)}
+.status-pending{border-color:var(--pend-fg)}
 .warn{background:var(--warn-bg);color:var(--warn-fg);border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:12px}
 .qn-sec{background:var(--qn-bg);border:1px solid var(--qn-border)}
 table{width:100%;border-collapse:collapse;font-size:12px}
@@ -108,7 +107,8 @@ tr:last-child td{border-bottom:none}
 /* Hand SVG */
 .hands-section{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
 .hand-col{display:flex;flex-direction:column;align-items:center;gap:8px}
-.hand-svg{width:180px;height:230px;touch-action:manipulation;user-select:none;display:block}
+.hand-svg{width:220px;height:280px;touch-action:manipulation;user-select:none;display:block}
+.hand-svg .bone{stroke:var(--border);stroke-width:4;fill:none;stroke-linecap:round}
 .hand-svg .node{fill:var(--surface);stroke:#888;stroke-width:1.5;cursor:pointer;transition:fill .12s,stroke .12s}
 .hand-svg .node:hover{fill:var(--border)}
 .hand-svg .node.hot{fill:var(--hot-fill);stroke:var(--hot-stroke)}
@@ -148,9 +148,9 @@ tr:last-child td{border-bottom:none}
   body{font-size:16px}
   .f input,.f select,.f textarea,.ctrl-inline input,.med-row input[type=text]{font-size:17px;padding:11px 12px}
   .f label,.ctrl-item label{font-size:13px}
-  .pr label,.pr-row label{font-size:14px;min-width:150px}
-  .pr input[type=range],.pr-row input[type=range]{height:36px}
-  .pr .val,.pr-row .val{font-size:15px;min-width:30px}
+  .pr label{font-size:14px}
+  .pr input[type=range],.pr-row input[type=range]{height:34px}
+  .pr .val,.pr-row .val{font-size:15px;min-width:28px}
   .cb-label{font-size:14px;padding:7px 12px}
   .cb-label input{width:18px;height:18px}
   .btn-p{font-size:16px;padding:13px 26px}
@@ -158,7 +158,7 @@ tr:last-child td{border-bottom:none}
   .joint-title{font-size:15px}
   .sec-title{font-size:12px}
   .add-med-btn{font-size:14px;padding:9px 16px}
-  .hand-svg{width:160px;height:200px}
+  .hand-svg{width:200px;height:255px}
   .lr-row input[type=text]{font-size:16px;padding:10px 12px}
   .kindle-nav{display:flex}
 }
@@ -170,7 +170,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.1</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.6</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -237,7 +237,6 @@ const COLUMNS = [
   ["Circ L knee (mm)","cLknee"],["Circ R knee (mm)","cRknee"],
   ["Circ L ankle (mm)","cLankle"],["Circ R ankle (mm)","cRankle"],
   ["Circ L foot (mm)","cLfoot"],["Circ R foot (mm)","cRfoot"],
-  ["Jaw opening (mm)","cJaw"],
   ["Ctrl inner forearm","ctrlInnerArm"],["Ctrl calf","ctrlCalf"],
   ["Ctrl forehead","ctrlForehead"],["Ctrl room temp","ctrlRoom"],
   ["Ref initials","refInitials"],["Ref forehead","refForehead"],["Ref dorsum L","refLhand"],["Ref dorsum R","refRhand"],["Ref palm L","refLpalm"],["Ref palm R","refRpalm"],
@@ -352,7 +351,7 @@ function buildResponse(data){
     <!-- HEAD -->
     <div class="joint-block">
       <div class="joint-title">Head</div>
-      <div class="pr-row" data-pr="head"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="head"><span class="val">—</span></div>
+      <div class="pr" data-pr="head"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="head"><span class="val">0</span></div>
       <div class="cb-group">
         <label class="cb-label"><input type="checkbox" class="head-loc" value="Both sides/band"> Both sides</label>
         <label class="cb-label"><input type="checkbox" class="head-loc" value="One side"> One side</label>
@@ -383,7 +382,7 @@ function buildResponse(data){
     <!-- NECK -->
     <div class="joint-block">
       <div class="joint-title">Neck</div>
-      <div class="pr-row" data-pr="neck"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="neck"><span class="val">—</span></div>
+      <div class="pr" data-pr="neck"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="neck"><span class="val">0</span></div>
       <div class="cb-group" id="pt-neck"></div>
       <div class="cb-group" style="margin-top:6px">
         <label class="cb-label ice-cb"><input type="checkbox" class="ice-w" data-joint="neck"> Ice wanted</label>
@@ -397,35 +396,35 @@ function buildResponse(data){
     <!-- JAW OPENING DIFFICULTY -->
     <div class="joint-block">
       <div class="joint-title">Jaw opening difficulty</div>
-      <div class="pr-row" data-pr="jawOpening"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="jawOpening"><span class="val">—</span></div>
+      <div class="pr" data-pr="jawOpening"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="jawOpening"><span class="val">0</span></div>
     </div>
   </div>
 
   <!-- NEUROLOGICAL / SYSTEMIC -->
   <div class="sec">
     <p class="sec-title">Neurological &amp; systemic symptoms</p>
-    <div class="pr-row" data-pr="vertigo"><label>Vertigo</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="vertigo"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="nausea"><label>Nausea</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="nausea"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="tinnitus"><label>Tinnitus</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="tinnitus"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="lightSens"><label>Light sensitivity</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="lightSens"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="chestHeaviness"><label>Chest heaviness</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="chestHeaviness"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="brainFog"><label>Brain fog</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="brainFog"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="speechClumsy"><label>Speech clumsiness</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="speechClumsy"><span class="val">—</span></div>
+    <div class="pr" data-pr="vertigo"><label style="min-width:140px">Vertigo</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="vertigo"><span class="val">0</span></div>
+    <div class="pr" data-pr="nausea"><label style="min-width:140px">Nausea</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="nausea"><span class="val">0</span></div>
+    <div class="pr" data-pr="tinnitus"><label style="min-width:140px">Tinnitus</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="tinnitus"><span class="val">0</span></div>
+    <div class="pr" data-pr="lightSens"><label style="min-width:140px">Light sensitivity</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="lightSens"><span class="val">0</span></div>
+    <div class="pr" data-pr="chestHeaviness"><label style="min-width:140px">Chest heaviness</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="chestHeaviness"><span class="val">0</span></div>
+    <div class="pr" data-pr="brainFog"><label style="min-width:140px">Brain fog</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="brainFog"><span class="val">0</span></div>
+    <div class="pr" data-pr="speechClumsy"><label style="min-width:140px">Speech clumsiness</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="speechClumsy"><span class="val">0</span></div>
   </div>
 
   <!-- GENERAL -->
   <div class="sec">
     <p class="sec-title">General</p>
-    <div class="pr-row" data-pr="morningStiff"><label>Morning stiffness</label><input type="range" min="0" max="120" step="5" value="0" oninput="updPrRowMin(this)" data-joint="morningStiff"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="acidReflux"><label>Acid reflux</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="acidReflux"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="pFatigue"><label>Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="fatigue"><span class="val">—</span></div>
+    <div class="pr" data-pr="morningStiff"><label style="min-width:140px">Morning stiffness</label><input type="range" min="0" max="120" step="5" value="0" oninput="updPrMin(this)" data-joint="morningStiff"><span class="val">0</span></div>
+    <div class="pr" data-pr="acidReflux"><label style="min-width:140px">Acid reflux</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="acidReflux"><span class="val">0</span></div>
+    <div class="pr" data-pr="pFatigue"><label style="min-width:140px">Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="fatigue"><span class="val">0</span></div>
   </div>
 
   <!-- MOUTH / EYES -->
   <div class="sec">
     <p class="sec-title">Mouth and eyes</p>
-    <div class="pr-row" data-pr="mouthCorner"><label>Mouth corner irritation</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="mouthCorner"><span class="val">—</span></div>
-    <div class="pr-row" data-pr="dryEyes"><label>Dry eyes</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="dryEyes"><span class="val">—</span></div>
+    <div class="pr" data-pr="mouthCorner"><label style="min-width:170px">Mouth corner irritation</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="mouthCorner"><span class="val">0</span></div>
+    <div class="pr" data-pr="dryEyes"><label style="min-width:170px">Dry eyes</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="dryEyes"><span class="val">0</span></div>
     <div class="cb-group" style="margin-top:8px">
       <label class="cb-label"><input type="checkbox" id="cheilitis-visible"> Angular cheilitis visible today</label>
     </div>
@@ -486,7 +485,6 @@ function buildResponse(data){
       <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lfoot" placeholder="mm"></div>
       <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rfoot" placeholder="mm"></div>
     </div>
-    <div class="f" style="max-width:200px;margin-top:8px"><label>Jaw opening (mm)</label><input type="text" id="c-jaw" placeholder="mm"></div>
   </div>
 
   <!-- TEMPERATURES: CONTROLS -->
@@ -494,21 +492,23 @@ function buildResponse(data){
     <p class="sec-title">Temperature — controls (enter before joint readings)</p>
     <p class="sec-hint">Enter at least one control. Differentials are calculated automatically.</p>
     <div class="ctrl-inline">
-      <label>Forehead (jaw / facial control) <input type="text" id="t-ctrl-forehead" placeholder="°C" oninput="recalcDiffs()"></label>
-      <span class="diff-badge diff-zero" id="ctrl-forehead-display"></span>
-    </div>
-    <div class="ctrl-inline">
       <label>Room temperature <input type="text" id="t-ctrl-room" placeholder="°C"></label>
     </div>
     <div class="person-ref">
-      <p style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>Reference person</strong> — if someone is present, log their readings as a same-room comparison.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:6px">
-        <div class="f"><label>Initials</label><input type="text" id="ref-initials" placeholder="e.g. HW" maxlength="6"></div>
-        <div class="f"><label>Their forehead</label><input type="text" id="ref-forehead" placeholder="°C"></div>
-        <div class="f"><label>Their dorsum L</label><input type="text" id="ref-lhand" placeholder="°C"></div>
-        <div class="f"><label>Their dorsum R</label><input type="text" id="ref-rhand" placeholder="°C"></div>
-        <div class="f"><label>Their palm L</label><input type="text" id="ref-lpalm" placeholder="°C"></div>
-        <div class="f"><label>Their palm R</label><input type="text" id="ref-rpalm" placeholder="°C"></div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>Reference person</strong> — same-room comparison. Fill in whatever you measure.</p>
+      <div style="display:grid;grid-template-columns:80px 140px;gap:8px;align-items:end;margin-bottom:8px">
+        <div class="f"><label>Initials</label><input type="text" id="ref-initials" placeholder="HW" maxlength="6"></div>
+        <div class="f"><label>Their forehead (°C)</label><input type="text" id="ref-forehead" placeholder="°C"></div>
+      </div>
+      <div class="lr-row" style="margin-bottom:6px">
+        <div class="lr-row-label">Their dorsum</div>
+        <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="ref-lhand" placeholder="°C"></div>
+        <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="ref-rhand" placeholder="°C"></div>
+      </div>
+      <div class="lr-row">
+        <div class="lr-row-label">Their palm</div>
+        <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="ref-lpalm" placeholder="°C"></div>
+        <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="ref-rpalm" placeholder="°C"></div>
       </div>
     </div>
   </div>
@@ -516,6 +516,10 @@ function buildResponse(data){
   <!-- TEMPERATURES: JAW -->
   <div class="sec">
     <p class="sec-title">Head &amp; jaw temperature</p>
+    <div class="ctrl-inline" style="margin-bottom:12px">
+      <label>Forehead control <input type="text" id="t-ctrl-forehead" placeholder="°C" oninput="recalcDiffs()"></label>
+      <span class="diff-badge diff-zero" id="ctrl-forehead-display"></span>
+    </div>
     <div class="lr-row">
       <div class="lr-row-label">Jaw</div>
       <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-ljaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
@@ -530,7 +534,7 @@ function buildResponse(data){
       <label>Inner forearm control (upper body) <input type="text" id="t-ctrl-innerarm" placeholder="°C" oninput="recalcDiffs()"></label>
       <span class="diff-badge diff-zero" id="ctrl-innerarm-display"></span>
     </div>
-    <p class="sec-hint">Enter dorsum readings, then hottest and coolest points for each hand. Tap the palm to mark locations. Enter dorsum readings, then hottest and coldest points. Tap the palm to mark locations.</p>
+    <p class="sec-hint">Enter dorsum readings, then hottest and coolest points for each hand. Tap the palm diagram to mark where those points are.</p>
 
     <!-- Dorsum -->
     <div class="lr-row" style="margin-bottom:14px">
@@ -541,7 +545,6 @@ function buildResponse(data){
 
     <!-- Left hand: hot/cold + palm -->
     <div style="border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:12px">
-      <div style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Left hand detail</div>
       <div class="lr-row">
         <div class="lr-row-label">Hottest spot</div>
         <div class="lr-cell"><span class="lr-sub" id="loc-l-hot" style="color:var(--hot-stroke)">not marked</span><input type="text" id="t-l-hot" placeholder="°C"></div>
@@ -553,7 +556,6 @@ function buildResponse(data){
         <div class="lr-cell"></div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;margin-top:10px">
-        <div class="lr-col-label" style="margin-bottom:6px">Left palm — tap to mark</div>
         <div id="left-palm-mount"></div>
         <div class="hand-summary" id="lp-summary">Tap once = hottest, again = coolest, third = clear</div>
       </div>
@@ -561,7 +563,6 @@ function buildResponse(data){
 
     <!-- Right hand: hot/cold + palm -->
     <div style="border:1px solid var(--border2);border-radius:10px;padding:12px">
-      <div style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Right hand detail</div>
       <div class="lr-row">
         <div class="lr-row-label">Hottest spot</div>
         <div class="lr-cell"><span class="lr-sub" id="loc-r-hot" style="color:var(--hot-stroke)">not marked</span><input type="text" id="t-r-hot" placeholder="°C"></div>
@@ -573,7 +574,6 @@ function buildResponse(data){
         <div class="lr-cell"></div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;margin-top:10px">
-        <div class="lr-col-label" style="margin-bottom:6px">Right palm — tap to mark</div>
         <div id="right-palm-mount"></div>
         <div class="hand-summary" id="rp-summary">Tap once = hottest, again = coolest, third = clear</div>
       </div>
@@ -799,7 +799,7 @@ const BILATERAL     = [
 // STATE
 // ============================================================
 let entries=[], medRows=[], sheetsUrl='';
-let handState = { lPalm:{hot:null,cold:null,clicks:0}, rPalm:{hot:null,cold:null,clicks:0} };
+let handState = { lPalm:{hot:null,cold:null}, rPalm:{hot:null,cold:null} };
 
 try{ sheetsUrl=localStorage.getItem(SHEET_URL_KEY)||''; }catch(e){}
 if(BAKED_URL && !sheetsUrl){ sheetsUrl=BAKED_URL; try{localStorage.setItem(SHEET_URL_KEY,sheetsUrl);}catch(e){} }
@@ -811,8 +811,7 @@ try{ entries=JSON.parse(localStorage.getItem(ENTRIES_KEY)||'[]'); }catch(e){}
 window.addEventListener('DOMContentLoaded', function(){
   buildBilateral();
   buildPainTypeCbs('pt-neck');
-  buildPalmSVG('left-palm-mount','lPalm');
-  buildPalmSVG('right-palm-mount','rPalm');
+  initHands();
   setTodayDate();
   updateLoggedAt();
   if(sheetsUrl){ document.getElementById('sheets-url').value=sheetsUrl; }
@@ -857,10 +856,10 @@ function buildBilateral(){
       <div class="joint-title">${label}</div>
       <div class="side-grid">
         <div><div class="side-label">Left</div>
-          <div class="pr-row" data-pr="${id}-l"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="${id}-l"><span class="val">—</span></div>
+          <div class="pr" data-pr="${id}-l"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="${id}-l"><span class="val">0</span></div>
         </div>
         <div><div class="side-label">Right</div>
-          <div class="pr-row" data-pr="${id}-r"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPrRow(this)" data-joint="${id}-r"><span class="val">—</span></div>
+          <div class="pr" data-pr="${id}-r"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="${id}-r"><span class="val">0</span></div>
         </div>
       </div>
       <div class="cb-group">${ptCbs}</div>
@@ -880,153 +879,117 @@ function buildPainTypeCbs(containerId){
 // ============================================================
 // SLIDER: 0 shows dash, >0 shows value and highlights
 // ============================================================
-function updPrRow(el){
-  const row=el.closest('.pr-row');
-  const span=row.querySelector('.val');
-  const v=parseInt(el.value);
-  if(v===0){ span.textContent='—'; row.classList.remove('has-val'); }
-  else{ span.textContent=v; row.classList.add('has-val'); }
-}
-function updPrRowMin(el){
-  const row=el.closest('.pr-row');
-  const span=row.querySelector('.val');
-  const v=parseInt(el.value);
-  if(v===0){ span.textContent='—'; row.classList.remove('has-val'); }
-  else{ span.textContent=v+' min'; row.classList.add('has-val'); }
-}
+function updPr(el){ el.nextElementSibling.textContent = el.value; }
+function updPrMin(el){ el.nextElementSibling.textContent = el.value + ' min'; }
 
 // ============================================================
-// PALM SVG
+// HAND DIAGRAM — v2 system with larger nodes for Kindle
 // ============================================================
-function buildPalmSVG(mountId, stateKey){
-  const isLeft = stateKey==='lPalm';
-  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox','0 0 170 220');
-  svg.setAttribute('class','hand-svg');
-  svg.style.display='block';
+const HAND_NODES = [
+  {id:'index-tip',      name:'Index tip',           x:57,  y:14},
+  {id:'index-upper',    name:'Index upper joint',   x:57,  y:36},
+  {id:'index-lower',    name:'Index lower joint',   x:57,  y:60},
+  {id:'index-knuckle',  name:'Index knuckle',       x:57,  y:88},
+  {id:'middle-tip',     name:'Middle tip',           x:78,  y:6},
+  {id:'middle-upper',   name:'Middle upper joint',   x:78,  y:30},
+  {id:'middle-lower',   name:'Middle lower joint',   x:78,  y:56},
+  {id:'middle-knuckle', name:'Middle knuckle',       x:78,  y:86},
+  {id:'ring-tip',       name:'Ring tip',             x:99,  y:12},
+  {id:'ring-upper',     name:'Ring upper joint',     x:99,  y:34},
+  {id:'ring-lower',     name:'Ring lower joint',     x:99,  y:60},
+  {id:'ring-knuckle',   name:'Ring knuckle',         x:99,  y:88},
+  {id:'little-tip',     name:'Little tip',           x:120, y:28},
+  {id:'little-upper',   name:'Little upper joint',   x:120, y:48},
+  {id:'little-lower',   name:'Little lower joint',   x:120, y:68},
+  {id:'little-knuckle', name:'Little knuckle',       x:120, y:92},
+  {id:'thumb-tip',      name:'Thumb tip',            x:18,  y:62},
+  {id:'thumb-joint',    name:'Thumb joint',          x:28,  y:82},
+  {id:'thumb-knuckle',  name:'Thumb knuckle',        x:40,  y:100},
+  {id:'thumb-base',     name:'Thumb base',           x:52,  y:118},
+  {id:'thumb-pad',      name:'Thumb pad',            x:62,  y:135, r:11, palm:true},
+  {id:'palm-center',    name:'Palm centre',          x:86,  y:118, r:12, palm:true},
+  {id:'pinky-pad',      name:'Pinky pad',            x:118, y:120, r:11, palm:true},
+  {id:'wrist',          name:'Wrist',                x:82,  y:170, r:13, palm:true}
+];
+const HAND_LINES = [
+  ['index-tip','index-upper'],['index-upper','index-lower'],['index-lower','index-knuckle'],
+  ['middle-tip','middle-upper'],['middle-upper','middle-lower'],['middle-lower','middle-knuckle'],
+  ['ring-tip','ring-upper'],['ring-upper','ring-lower'],['ring-lower','ring-knuckle'],
+  ['little-tip','little-upper'],['little-upper','little-lower'],['little-lower','little-knuckle'],
+  ['thumb-tip','thumb-joint'],['thumb-joint','thumb-knuckle'],['thumb-knuckle','thumb-base'],
+  ['index-knuckle','middle-knuckle'],['middle-knuckle','ring-knuckle'],['ring-knuckle','little-knuckle'],
+  ['index-knuckle','thumb-base'],
+  ['little-knuckle','wrist'],['thumb-base','wrist']
+];
 
-  function mkEl(tag,attrs){
-    const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
-    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
-    return el;
-  }
-
-  // Palm skin background (non-interactive)
-  if(isLeft){
-    svg.appendChild(mkEl('ellipse',{cx:'85',cy:'148',rx:'52',ry:'58',class:'skin'}));
-    // Thumb area skin
-    svg.appendChild(mkEl('ellipse',{cx:'138',cy:'120',rx:'22',ry:'35',class:'skin',transform:'rotate(20,138,120)'}));
-  } else {
-    svg.appendChild(mkEl('ellipse',{cx:'85',cy:'148',rx:'52',ry:'58',class:'skin'}));
-    svg.appendChild(mkEl('ellipse',{cx:'32',cy:'120',rx:'22',ry:'35',class:'skin',transform:'rotate(-20,32,120)'}));
-  }
-
-  // Named palm zones (clickable rectangles/circles over the palm)
-  // Left hand palm-up: thumb on RIGHT side
-  const palmZonesL = [
-    {name:'Thenar (thumb mound)',  d:'M118,110 Q140,100 148,118 Q150,138 138,148 Q122,155 112,142 Q106,128 118,110 Z'},
-    {name:'Hypothenar (little mound)', d:'M38,118 Q50,108 58,118 Q62,138 56,152 Q46,162 36,155 Q28,142 30,128 Z'},
-    {name:'Palm centre',           d:'M68,120 Q85,112 102,120 Q110,138 102,155 Q85,162 68,155 Q60,138 68,120 Z'},
-    {name:'Palm upper (knuckle base)', d:'M60,100 Q85,92 110,100 Q114,114 102,120 Q85,124 68,120 Q56,114 60,100 Z'},
-    {name:'Palm lower (wrist)',    d:'M56,156 Q85,164 114,156 Q120,172 110,185 Q85,192 60,185 Q50,172 56,156 Z'},
-    {name:'Thumb base',            d:'M108,105 Q120,95 132,100 Q140,112 134,124 Q122,130 112,122 Q104,114 108,105 Z'},
-  ];
-  const palmZonesR = [
-    {name:'Thenar (thumb mound)',  d:'M52,110 Q30,100 22,118 Q20,138 32,148 Q48,155 58,142 Q64,128 52,110 Z'},
-    {name:'Hypothenar (little mound)', d:'M132,118 Q120,108 112,118 Q108,138 114,152 Q124,162 134,155 Q142,142 140,128 Z'},
-    {name:'Palm centre',           d:'M68,120 Q85,112 102,120 Q110,138 102,155 Q85,162 68,155 Q60,138 68,120 Z'},
-    {name:'Palm upper (knuckle base)', d:'M60,100 Q85,92 110,100 Q114,114 102,120 Q85,124 68,120 Q56,114 60,100 Z'},
-    {name:'Palm lower (wrist)',    d:'M56,156 Q85,164 114,156 Q120,172 110,185 Q85,192 60,185 Q50,172 56,156 Z'},
-    {name:'Thumb base',            d:'M62,105 Q50,95 38,100 Q30,112 36,124 Q48,130 58,122 Q66,114 62,105 Z'},
-  ];
-  const palmZones = isLeft ? palmZonesL : palmZonesR;
-  palmZones.forEach(z=>{
-    const p=mkEl('path',{d:z.d,class:'palm-zone','data-name':z.name,'data-key':stateKey});
-    p.addEventListener('click',handlePalmClick);
-    svg.appendChild(p);
-    // Small label in centre of zone — skip for now as zones are labelled by name on tap
-  });
-
-  // Finger joint circles — left hand palm-up: thumb RIGHT, little LEFT
-  const fingersL=[
-    {name:'Little tip',     cx:35,  cy:24},
-    {name:'Little mid',     cx:37,  cy:52},
-    {name:'Little knuckle', cx:42,  cy:82},
-    {name:'Ring tip',       cx:60,  cy:16},
-    {name:'Ring mid',       cx:62,  cy:46},
-    {name:'Ring knuckle',   cx:66,  cy:78},
-    {name:'Middle tip',     cx:85,  cy:12},
-    {name:'Middle mid',     cx:85,  cy:42},
-    {name:'Middle knuckle', cx:85,  cy:76},
-    {name:'Index tip',      cx:110, cy:18},
-    {name:'Index mid',      cx:108, cy:48},
-    {name:'Index knuckle',  cx:104, cy:80},
-    {name:'Thumb tip',      cx:148, cy:70},
-    {name:'Thumb mid',      cx:140, cy:92},
-  ];
-  const fingersR=[
-    {name:'Thumb tip',      cx:22,  cy:70},
-    {name:'Thumb mid',      cx:30,  cy:92},
-    {name:'Index tip',      cx:60,  cy:18},
-    {name:'Index mid',      cx:62,  cy:48},
-    {name:'Index knuckle',  cx:66,  cy:80},
-    {name:'Middle tip',     cx:85,  cy:12},
-    {name:'Middle mid',     cx:85,  cy:42},
-    {name:'Middle knuckle', cx:85,  cy:76},
-    {name:'Ring tip',       cx:110, cy:16},
-    {name:'Ring mid',       cx:108, cy:46},
-    {name:'Ring knuckle',   cx:104, cy:78},
-    {name:'Little tip',     cx:135, cy:24},
-    {name:'Little mid',     cx:133, cy:52},
-    {name:'Little knuckle', cx:128, cy:82},
-  ];
-
-  const fingers = isLeft ? fingersL : fingersR;
-  fingers.forEach(f=>{
-    const c=mkEl('circle',{cx:f.cx,cy:f.cy,r:'13',class:'node','data-name':f.name,'data-key':stateKey});
-    c.addEventListener('click',handlePalmClick);
-    svg.appendChild(c);
-    const lbl=mkEl('text',{x:f.cx,y:f.cy+4,class:'label'});
-    lbl.textContent=f.name.split(' ')[0].slice(0,2);
-    svg.appendChild(lbl);
-  });
-
-  document.getElementById(mountId).appendChild(svg);
+function buildHand(side){
+  const mirror = side==='right' ? ' transform="scale(-1,1) translate(-150,0)"' : '';
+  const nodeMap={};
+  HAND_NODES.forEach(n=>nodeMap[n.id]=n);
+  const bones=HAND_LINES.map(([a,b])=>{
+    const A=nodeMap[a],B=nodeMap[b];
+    return `<line class="bone" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;
+  }).join('');
+  const nodes=HAND_NODES.map(n=>{
+    const cls=n.palm?'zone palm-zone':'zone node';
+    const r=n.r||7; // larger than v2 for Kindle tapping
+    return `<circle class="${cls}" data-side="${side}" data-zone-id="${n.id}" data-zone-name="${n.name}" cx="${n.x}" cy="${n.y}" r="${r}" onclick="onHandTap(event,'${side}','${n.id}','${n.name}')"><title>${n.name}</title></circle>`;
+  }).join('');
+  return `<svg class="hand-svg" viewBox="-14 -16 178 236" xmlns="http://www.w3.org/2000/svg" data-hand="${side}"><g${mirror}>${bones}${nodes}</g></svg>`;
 }
 
-function handlePalmClick(e){
-  e.stopPropagation();
-  const key=e.currentTarget.getAttribute('data-key');
-  const name=e.currentTarget.getAttribute('data-name');
-  const st=handState[key];
-  const isLeft=key==='lPalm';
-  const summaryId=isLeft?'lp-summary':'rp-summary';
-  const hotLocId=isLeft?'loc-l-hot':'loc-r-hot';
-  const coldLocId=isLeft?'loc-l-cold':'loc-r-cold';
-  const n=st.clicks%3;
-  if(n===0){
-    st.hot={name,el:e.currentTarget};
-    e.currentTarget.classList.add('hot');
-    st.clicks=1;
-    document.getElementById(hotLocId).textContent=name;
-    document.getElementById(summaryId).textContent='Hot: '+name+' — tap for coolest';
-  } else if(n===1){
-    st.cold={name,el:e.currentTarget};
-    e.currentTarget.classList.add('cold');
-    st.clicks=2;
-    document.getElementById(coldLocId).textContent=name;
-    document.getElementById(summaryId).textContent='Hot: '+(st.hot?st.hot.name:'—')+' | Cool: '+name;
-  } else {
-    // clear
-    document.querySelectorAll('[data-key="'+key+'"]').forEach(el=>{
+function initHands(){
+  const lm=document.getElementById('left-palm-mount');
+  const rm=document.getElementById('right-palm-mount');
+  // Always overwrite — this is the canonical call from DOMContentLoaded.
+  // We clear first to prevent double-diagram when baked Kindle copies
+  // already have inline SVGs from the download snapshot.
+  if(lm){ lm.innerHTML=''; lm.innerHTML=buildHand('left'); }
+  if(rm){ rm.innerHTML=''; rm.innerHTML=buildHand('right'); }
+}
+
+function onHandTap(ev, side, zoneId, zoneName){
+  ev.stopPropagation();
+  const key=side==='left'?'lPalm':'rPalm';
+  const s=handState[key];
+  if(s.hot===null){ s.hot={id:zoneId,name:zoneName}; }
+  else if(s.cold===null){ s.cold={id:zoneId,name:zoneName}; }
+  else{ s.hot=null; s.cold=null; }
+  renderHandState();
+}
+
+function renderHandState(){
+  ['left','right'].forEach(side=>{
+    const key=side==='left'?'lPalm':'rPalm';
+    const s=handState[key];
+    document.querySelectorAll(`.zone[data-side="${side}"]`).forEach(el=>{
       el.classList.remove('hot','cold');
+      const id=el.dataset.zoneId;
+      if(s.hot&&s.hot.id===id) el.classList.add('hot');
+      if(s.cold&&s.cold.id===id) el.classList.add('cold');
     });
-    st.hot=null; st.cold=null; st.clicks=0;
-    document.getElementById(hotLocId).textContent='not marked';
-    document.getElementById(coldLocId).textContent='not marked';
-    document.getElementById(summaryId).textContent='Tap once = hottest, again = coolest, third = clear';
-  }
+    const pre=side==='left'?'l':'r';
+    const hotEl=document.getElementById('loc-'+pre+'-hot');
+    const coldEl=document.getElementById('loc-'+pre+'-cold');
+    if(hotEl)  hotEl.textContent =side==='left'?'Left':'Right'+(s.hot?' · '+s.hot.name:' — not marked');
+    if(coldEl) coldEl.textContent=side==='left'?'Left':'Right'+(s.cold?' · '+s.cold.name:' — not marked');
+  });
 }
+
+function getHandHotString(){
+  const p=[];
+  if(handState.lPalm.hot)  p.push('L: '+handState.lPalm.hot.name);
+  if(handState.rPalm.hot)  p.push('R: '+handState.rPalm.hot.name);
+  return p.join(' | ')||null;
+}
+function getHandColdString(){
+  const p=[];
+  if(handState.lPalm.cold) p.push('L: '+handState.lPalm.cold.name);
+  if(handState.rPalm.cold) p.push('R: '+handState.rPalm.cold.name);
+  return p.join(' | ')||null;
+}
+
+
 
 // ============================================================
 // TEMPERATURE DIFF CALCULATION
@@ -1078,7 +1041,7 @@ function getPainVal(joint){
   const el=document.querySelector('input[data-joint="'+joint+'"]');
   if(!el) return null;
   const v=parseInt(el.value);
-  return v===0?null:v; // null = not recorded, 0 = explicitly zero never happens with slider
+  return v===0?null:v;
 }
 
 function getGroupChecked(cls){
@@ -1166,7 +1129,13 @@ function copyScript(){
 
 function downloadBaked(){
   if(!sheetsUrl){alert('Save and test your URL first.');return;}
-  const src=document.documentElement.outerHTML;
+  let src=document.documentElement.outerHTML;
+  // Strip any already-rendered SVGs from the palm mount divs
+  // so initHands starts with empty mounts on the Kindle
+  src=src.replace(/<div id="left-palm-mount">[^<]*<svg[\s\S]*?<\/svg>\s*<\/div>/,
+    '<div id="left-palm-mount"></div>');
+  src=src.replace(/<div id="right-palm-mount">[^<]*<svg[\s\S]*?<\/svg>\s*<\/div>/,
+    '<div id="right-palm-mount"></div>');
   const baked=src.replace("const BAKED_URL = ''; /*BAKED_URL*/",
     "const BAKED_URL = '"+sheetsUrl+"'; /*BAKED_URL*/");
   const a=document.createElement('a');
@@ -1232,7 +1201,8 @@ async function uploadQuickNote(){
   entries.unshift(local);
   saveLocal();
   if(!sheetsUrl){showStatus(bar,'pending','Saved locally — no URL set.');document.getElementById('quick-note').value='';return;}
-  await pushEntry(payload,bar,'Quick note saved.');
+  const _qr = await pushEntry(payload,bar,'Quick note saved.');
+  if(_qr&&_sr.status==='ok') { try{launchFireworks();}catch(e){} }
   document.getElementById('quick-note').value='';
 }
 
@@ -1309,7 +1279,6 @@ async function saveEntry(){
   payload.cRankle=document.getElementById('c-rankle').value||null;
   payload.cLfoot=document.getElementById('c-lfoot').value||null;
   payload.cRfoot=document.getElementById('c-rfoot').value||null;
-  payload.cJaw=document.getElementById('c-jaw').value||null;
   payload.ctrlInnerArm=arm; payload.ctrlCalf=calf; payload.ctrlForehead=forehead;
   payload.ctrlRoom=parseDec('t-ctrl-room');
   payload.refInitials=document.getElementById('ref-initials').value||null;
@@ -1327,6 +1296,9 @@ async function saveEntry(){
   payload.handRhotTemp=parseDec('t-r-hot');
   payload.handColdLocR=handState.rPalm.cold?handState.rPalm.cold.name:null;
   payload.handRcoldTemp=parseDec('t-r-cold');
+  // legacy combined strings for compatibility
+  payload.handHot=getHandHotString();
+  payload.handCold=getHandColdString();
   payload.tLjaw=parseDec('t-ljaw'); payload.tRjaw=parseDec('t-rjaw');
   payload.dLjaw=(forehead!==null&&payload.tLjaw!==null)?parseFloat((payload.tLjaw-forehead).toFixed(2)):null;
   payload.dRjaw=(forehead!==null&&payload.tRjaw!==null)?parseFloat((payload.tRjaw-forehead).toFixed(2)):null;
@@ -1358,7 +1330,8 @@ async function saveEntry(){
   if(!sheetsUrl){showStatus(bar,'pending','Saved locally — no Sheets URL set.');resetForm();return;}
   btn.disabled=true;
   showStatus(bar,'pending','Syncing...');
-  await pushEntry(payload,bar,'Saved and synced.');
+  const _sr = await pushEntry(payload,bar,'Saved and synced.');
+  if(_sr&&(_sr.status==='ok'||_sr.ping===undefined)) { try{launchFireworks();}catch(e){} }
   btn.disabled=false;
   resetForm();
 }
@@ -1390,7 +1363,7 @@ function blankPayload(){
     cLlittle:null,cRlittle:null,
     gripL:null,gripR:null,
     cLelbow:null,cRelbow:null,cLknee:null,cRknee:null,
-    cLankle:null,cRankle:null,cLfoot:null,cRfoot:null,cJaw:null,
+    cLankle:null,cRankle:null,cLfoot:null,cRfoot:null,
     ctrlInnerArm:null,ctrlCalf:null,ctrlForehead:null,ctrlRoom:null,
     refInitials:null,refForehead:null,refLhand:null,refRhand:null,refLpalm:null,refRpalm:null,
     tLhand:null,tRhand:null,dLhand:null,dRhand:null,
@@ -1412,8 +1385,8 @@ function blankPayload(){
 function resetForm(){
   document.querySelectorAll('#tab-entry input[type=range]').forEach(el=>{
     el.value=0;
-    const row=el.closest('.pr-row');
-    if(row){ const sp=row.querySelector('.val'); if(sp){sp.textContent='—';} row.classList.remove('has-val'); }
+    const sp=el.nextElementSibling;
+    if(sp&&sp.classList.contains('val')) sp.textContent='0';
   });
   document.querySelectorAll('#swelling-checks input,#photo-checks input').forEach(el=>el.checked=false);
   ['exertion','stress','sleep','alcohol','illness','cold','diet','travel'].forEach(id=>{
@@ -1442,19 +1415,12 @@ function resetForm(){
    'c-lthumb','c-rthumb','c-lindex','c-rindex','c-lmiddle','c-rmiddle',
    'c-lring','c-rring','c-llittle','c-rlittle','grip-l','grip-r',
    'c-lelbow','c-relbow','c-lknee','c-rknee','c-lankle','c-rankle',
-   'c-lfoot','c-rfoot','c-jaw'
+   'c-lfoot','c-rfoot'
   ].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   recalcDiffs();
   // Reset hand state
-  handState={lPalm:{hot:null,cold:null,clicks:0},rPalm:{hot:null,cold:null,clicks:0}};
-  document.querySelectorAll('.node,.palm-zone').forEach(el=>el.classList.remove('hot','cold'));
-  ['loc-l-hot','loc-l-cold','loc-r-hot','loc-r-cold'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.textContent='not marked';
-  });
-  ['lp-summary','rp-summary'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.textContent='Tap once = hottest, again = coolest, third = clear';
-  });
+  handState={lPalm:{hot:null,cold:null},rPalm:{hot:null,cold:null}};
+  renderHandState();
   medRows=[]; renderMedRows();
   setTodayDate();
   updateLoggedAt();
@@ -1638,6 +1604,87 @@ function renderSummary(){
 
   c.innerHTML=html;
 }
+</script>
+
+<canvas id="fw-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:none"></canvas>
+<script>
+(function(){
+  const canvas = document.getElementById('fw-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId = null;
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function randomColor(){
+    const cols = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff922b','#cc5de8','#f8f9fa'];
+    return cols[Math.floor(Math.random()*cols.length)];
+  }
+
+  function burst(x, y){
+    const count = 52;
+    for(let i=0;i<count;i++){
+      const angle = (Math.PI*2/count)*i;
+      const speed = 2.5 + Math.random()*4;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed,
+        alpha: 1,
+        color: randomColor(),
+        size: 4 + Math.random()*4,
+        decay: 0.013 + Math.random()*0.008
+      });
+    }
+  }
+
+  function launchFireworks(){
+    resize();
+    canvas.style.display = 'block';
+    particles = [];
+    // 3 bursts at different positions
+    const cx = canvas.width/2;
+    const cy = canvas.height/2;
+    burst(cx, cy*0.45);
+    setTimeout(()=>burst(cx*0.35, cy*0.55), 180);
+    setTimeout(()=>burst(cx*1.65, cy*0.55), 320);
+
+    if(animId) cancelAnimationFrame(animId);
+
+    function frame(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      let alive = false;
+      for(const p of particles){
+        if(p.alpha<=0) continue;
+        alive = true;
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.09; // gravity
+        p.alpha -= p.decay;
+        p.size *= 0.97;
+      }
+      if(alive){
+        animId = requestAnimationFrame(frame);
+      } else {
+        canvas.style.display='none';
+        particles=[];
+      }
+    }
+    animId = requestAnimationFrame(frame);
+  }
+
+  window.launchFireworks = launchFireworks;
+})();
 </script>
 </body>
 </html>
