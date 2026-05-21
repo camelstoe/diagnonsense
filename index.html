@@ -142,6 +142,7 @@ tr:last-child td{border-bottom:none}
 /* Kindle scroll arrows */
 .kindle-nav{display:none;position:fixed;right:6px;top:50%;transform:translateY(-50%);flex-direction:column;gap:8px;z-index:999}
 .kindle-nav button{width:44px;height:44px;border-radius:50%;background:var(--accent-bg);color:var(--accent-fg);border:none;font-size:22px;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center}
+@media(max-width:500px) and (pointer:coarse){.kindle-nav{display:flex}}
 /* Responsive */
 @media(max-width:600px){.hands-section,.lr-grid{grid-template-columns:1fr;gap:14px}.lr-row{grid-template-columns:1fr;gap:4px}.lr-row-label{font-weight:600;margin-top:6px}}
 @media(max-width:760px),(pointer:coarse){
@@ -160,7 +161,6 @@ tr:last-child td{border-bottom:none}
   .add-med-btn{font-size:14px;padding:9px 16px}
   .hand-svg{width:200px;height:255px}
   .lr-row input[type=text]{font-size:16px;padding:10px 12px}
-  .kindle-nav{display:flex}
 }
 </style>
 </head>
@@ -170,7 +170,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.6</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.7</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
