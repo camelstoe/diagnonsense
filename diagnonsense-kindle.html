@@ -170,7 +170,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.8</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.9</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -331,7 +331,7 @@ function buildResponse(data){
         </select>
       </div>
     </div>
-    <div id="logged-at-display" style="font-size:11px;color:var(--muted);margin-top:6px">Will be logged at: 10:17 PM</div>
+    <div id="logged-at-display" style="font-size:11px;color:var(--muted);margin-top:6px">Will be logged at: 10:25 PM</div>
   </div>
 
   <!-- QUICK NOTE -->
@@ -916,7 +916,7 @@ function buildResponse(data){
 // ============================================================
 const SHEET_URL_KEY = 'diagno_sheets_url_v3';
 const ENTRIES_KEY   = 'diagno_entries_v3';
-const BAKED_URL     = ''; /*BAKED_URL*/
+const BAKED_URL = 'https://script.google.com/macros/s/AKfycbxvrQN314SJT8i7Y386PdoUkAmXowefqdQzdXhoSaz7zdCy0AM5PMmY6sULG9aEYHep/exec'; /*BAKED_URL*/
 const PAIN_TYPES    = ['Burning','Throbbing','Aching','Stabbing','Pressing','Dull','Stiff','Shooting'];
 const BILATERAL     = [
   {id:'shoulders',label:'Shoulders'},
@@ -1271,8 +1271,10 @@ function downloadBaked(){
     '<div id="left-palm-mount"></div>');
   src=src.replace(/<div id="right-palm-mount">[^<]*<svg[\s\S]*?<\/svg>\s*<\/div>/,
     '<div id="right-palm-mount"></div>');
-  const baked=src.replace("const BAKED_URL = 'https://script.google.com/macros/s/AKfycbxvrQN314SJT8i7Y386PdoUkAmXowefqdQzdXhoSaz7zdCy0AM5PMmY6sULG9aEYHep/exec'; /*BAKED_URL*/",
+  // Use regex to handle any browser quote/whitespace normalisation of outerHTML
+  const baked=src.replace(/const BAKED_URL\s*=\s*['"][^'"]*['"]\s*;?\s*\/\*BAKED_URL\*\//,
     "const BAKED_URL = '"+sheetsUrl+"'; /*BAKED_URL*/");
+  if(baked===src){ alert('Could not bake URL — marker not found. Try saving the page first.'); return; }
   const a=document.createElement('a');
   a.href='data:text/html;charset=utf-8,'+encodeURIComponent(baked);
   a.download='diagnonsense-kindle.html';
