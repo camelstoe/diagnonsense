@@ -171,7 +171,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.12</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.13</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -822,7 +822,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 // Switch to entry tab immediately if URL is known — must run inline not in DOMContentLoaded
 // so it works reliably on Kindle browser
-if(sheetsUrl){ showTab('entry'); }
+if(sheetsUrl){ setTimeout(function(){ showTab('entry'); }, 0); }
 
 function setTodayDate(){
   const d=new Date();
@@ -1152,7 +1152,7 @@ function downloadBaked(){
     });
 }
 function bakeAndDownload(html){
-  var stamped=html.replace(/const BAKED_URL\s*=\s*'[^']*';\s*\/\*BAKED_URL\*\//,
+  var stamped=html.replace(/const BAKED_URL\s*=\s*['"][^'"]*['"];\s*\/\*BAKED_URL\*\//,
     'const BAKED_URL = '+JSON.stringify(sheetsUrl)+'; /*BAKED_URL*/');
   if(stamped===html){
     alert('Could not find the BAKED_URL marker. Make sure you are running this from GitHub Pages or a web server, not from a downloaded file.');
@@ -1224,7 +1224,7 @@ async function uploadQuickNote(){
   saveLocal();
   if(!sheetsUrl){showStatus(bar,'pending','Saved locally — no URL set.');document.getElementById('quick-note').value='';return;}
   const _qr = await pushEntry(payload,bar,'Quick note saved.');
-  if(_qr&&_sr.status==='ok') { try{launchFireworks();}catch(e){} }
+  if(_qr&&_qr.status==='ok') { try{launchFireworks();}catch(e){} }
   document.getElementById('quick-note').value='';
 }
 
