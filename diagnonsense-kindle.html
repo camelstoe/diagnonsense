@@ -171,7 +171,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.11</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.12</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -816,10 +816,13 @@ window.addEventListener('DOMContentLoaded', function(){
   setTodayDate();
   updateLoggedAt();
   if(sheetsUrl){ document.getElementById('sheets-url').value=sheetsUrl; }
-  if(BAKED_URL||sheetsUrl) showTab('entry');
   document.getElementById('no-url-warn').style.display=(sheetsUrl?'none':'block');
   setInterval(updateLoggedAt,30000);
 });
+
+// Switch to entry tab immediately if URL is known — must run inline not in DOMContentLoaded
+// so it works reliably on Kindle browser
+if(sheetsUrl){ showTab('entry'); }
 
 function setTodayDate(){
   const d=new Date();
