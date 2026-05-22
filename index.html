@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-baked-url="">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -171,7 +171,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.9</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.10</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -782,7 +782,7 @@ function buildResponse(data){
 // ============================================================
 const SHEET_URL_KEY = 'diagno_sheets_url_v3';
 const ENTRIES_KEY   = 'diagno_entries_v3';
-const BAKED_URL     = ''; /*BAKED_URL*/
+const BAKED_URL     = document.documentElement.getAttribute('data-baked-url')||'';
 const PAIN_TYPES    = ['Burning','Throbbing','Aching','Stabbing','Pressing','Dull','Stiff','Shooting'];
 const BILATERAL     = [
   {id:'shoulders',label:'Shoulders'},
@@ -1130,19 +1130,20 @@ function copyScript(){
 
 function downloadBaked(){
   if(!sheetsUrl){alert('Save and test your URL first.');return;}
-  let src=document.documentElement.outerHTML;
-  // Strip any already-rendered SVGs from the palm mount divs
-  // so initHands starts with empty mounts on the Kindle
-  src=src.replace(/<div id="left-palm-mount">[^<]*<svg[\s\S]*?<\/svg>\s*<\/div>/,
-    '<div id="left-palm-mount"></div>');
-  src=src.replace(/<div id="right-palm-mount">[^<]*<svg[\s\S]*?<\/svg>\s*<\/div>/,
-    '<div id="right-palm-mount"></div>');
-  // Use regex to handle any browser quote/whitespace normalisation of outerHTML
-  const baked=src.replace(/const BAKED_URL\s*=\s*['"][^'"]*['"]\s*;?\s*\/\*BAKED_URL\*\//,
-    "const BAKED_URL = '"+sheetsUrl+"'; /*BAKED_URL*/");
-  if(baked===src){ alert('Could not bake URL — marker not found. Try saving the page first.'); return; }
+  // Bake URL into data attribute — survives outerHTML serialisation reliably
+  document.documentElement.setAttribute('data-baked-url', sheetsUrl);
+  // Clear palm mount SVGs so Kindle rebuilds them fresh
+  const lm=document.getElementById('left-palm-mount');
+  const rm=document.getElementById('right-palm-mount');
+  const lSaved=lm.innerHTML; const rSaved=rm.innerHTML;
+  lm.innerHTML=''; rm.innerHTML='';
+  const src=document.documentElement.outerHTML;
+  // Restore for current session
+  lm.innerHTML=lSaved; rm.innerHTML=rSaved;
+  // Remove the baked URL from current session (we only want it in the download)
+  document.documentElement.setAttribute('data-baked-url','');
   const a=document.createElement('a');
-  a.href='data:text/html;charset=utf-8,'+encodeURIComponent(baked);
+  a.href='data:text/html;charset=utf-8,'+encodeURIComponent(src);
   a.download='diagnonsense-kindle.html';
   a.click();
 }
