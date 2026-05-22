@@ -171,7 +171,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.14</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.15</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -783,8 +783,8 @@ function buildResponse(data){
 const SHEET_URL_KEY = 'diagno_sheets_url_v3';
 const ENTRIES_KEY   = 'diagno_entries_v3';
 const BAKED_URL = "https://script.google.com/macros/s/AKfycbxvrQN314SJT8i7Y386PdoUkAmXowefqdQzdXhoSaz7zdCy0AM5PMmY6sULG9aEYHep/exec"; /*BAKED_URL*/
-const PAIN_TYPES    = ['Burning','Throbbing','Aching','Stabbing','Pressing','Dull','Stiff','Shooting'];
-const BILATERAL     = [
+var PAIN_TYPES = ['Burning','Throbbing','Aching','Stabbing','Pressing','Dull','Stiff','Shooting'];
+var BILATERAL = [
   {id:'shoulders',label:'Shoulders'},
   {id:'elbows',   label:'Elbows'},
   {id:'wrists',   label:'Wrists'},
@@ -876,7 +876,7 @@ function updPrMin(el){ el.nextElementSibling.textContent = el.value + ' min'; }
 // ============================================================
 // HAND DIAGRAM — v2 system with larger nodes for Kindle
 // ============================================================
-const HAND_NODES = [
+var HAND_NODES = [
   {id:'index-tip',      name:'Index tip',           x:57,  y:14},
   {id:'index-upper',    name:'Index upper joint',   x:57,  y:36},
   {id:'index-lower',    name:'Index lower joint',   x:57,  y:60},
@@ -902,7 +902,7 @@ const HAND_NODES = [
   {id:'pinky-pad',      name:'Pinky pad',            x:118, y:120, r:11, palm:true},
   {id:'wrist',          name:'Wrist',                x:82,  y:170, r:13, palm:true}
 ];
-const HAND_LINES = [
+var HAND_LINES = [
   ['index-tip','index-upper'],['index-upper','index-lower'],['index-lower','index-knuckle'],
   ['middle-tip','middle-upper'],['middle-upper','middle-lower'],['middle-lower','middle-knuckle'],
   ['ring-tip','ring-upper'],['ring-upper','ring-lower'],['ring-lower','ring-knuckle'],
