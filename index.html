@@ -171,7 +171,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.13</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.14</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -809,20 +809,7 @@ try{ entries=JSON.parse(localStorage.getItem(ENTRIES_KEY)||'[]'); }catch(e){}
 // ============================================================
 // INIT
 // ============================================================
-window.addEventListener('DOMContentLoaded', function(){
-  buildBilateral();
-  buildPainTypeCbs('pt-neck');
-  initHands();
-  setTodayDate();
-  updateLoggedAt();
-  if(sheetsUrl){ document.getElementById('sheets-url').value=sheetsUrl; }
-  document.getElementById('no-url-warn').style.display=(sheetsUrl?'none':'block');
-  setInterval(updateLoggedAt,30000);
-});
-
-// Switch to entry tab immediately if URL is known — must run inline not in DOMContentLoaded
-// so it works reliably on Kindle browser
-if(sheetsUrl){ setTimeout(function(){ showTab('entry'); }, 0); }
+// (init runs after all declarations — see end of script)
 
 function setTodayDate(){
   const d=new Date();
@@ -945,8 +932,7 @@ function buildHand(side){
 function initHands(){
   const lm=document.getElementById('left-palm-mount');
   const rm=document.getElementById('right-palm-mount');
-  // Always overwrite — this is the canonical call from DOMContentLoaded.
-  // We clear first to prevent double-diagram when baked Kindle copies
+  // Always overwrite. Clear first to prevent double-diagram when baked Kindle copies
   // already have inline SVGs from the download snapshot.
   if(lm){ lm.innerHTML=''; lm.innerHTML=buildHand('left'); }
   if(rm){ rm.innerHTML=''; rm.innerHTML=buildHand('right'); }
@@ -1625,6 +1611,21 @@ function renderSummary(){
   }
 
   c.innerHTML=html;
+}
+
+// ---------- inline init — runs after all declarations ----------
+buildBilateral();
+buildPainTypeCbs('pt-neck');
+initHands();
+setTodayDate();
+updateLoggedAt();
+setInterval(updateLoggedAt, 30000);
+if(sheetsUrl){
+  document.getElementById('sheets-url').value = sheetsUrl;
+  document.getElementById('no-url-warn').style.display = 'none';
+  showTab('entry');
+} else {
+  document.getElementById('no-url-warn').style.display = 'none';
 }
 </script>
 
