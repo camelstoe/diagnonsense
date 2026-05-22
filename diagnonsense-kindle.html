@@ -5,140 +5,173 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Project Diagnonsense</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:#f5f5f3;color:#1a1a1a;padding:16px;max-width:760px;margin:0 auto}
-  h1{font-size:18px;font-weight:500;margin-bottom:16px}
-  .tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
-  .tab{padding:6px 14px;font-size:13px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:none;color:#666}
-  .tab.active{background:#eee;color:#1a1a1a;font-weight:500;border-color:#bbb}
-  .sec{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:16px;margin-bottom:10px}
-  .sec-title{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
-  .sec-hint{font-size:12px;color:#888;margin-bottom:10px}
-  .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-  .f{display:flex;flex-direction:column;gap:4px}
-  .f label{font-size:12px;color:#666}
-  .f input,.f select,.f textarea{font-size:14px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;width:100%;font-family:inherit}
-  .f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:#999}
-  .ctrl-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding:12px;background:#f5f5f3;border-radius:8px;flex-wrap:wrap}
-  .ctrl-item{display:flex;flex-direction:column;gap:4px;min-width:140px}
-  .ctrl-item label{font-size:12px;color:#666}
-  .ctrl-item input{width:100%;font-size:14px;padding:6px 10px;border:1px solid #ddd;border-radius:8px;font-family:inherit}
-  .ctrl-item input.required-missing{border-color:#c0392b;background:#fff5f5}
-  .diff-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
-  .diff-pos{background:#faeeda;color:#854f0b}
-  .diff-neg{background:#eaf3de;color:#3b6d11}
-  .diff-zero{background:#f0f0ee;color:#888}
-  .side-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
-  .side-label{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-  .pr{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-  .pr label{font-size:13px;color:#1a1a1a;min-width:30px}
-  .pr input[type=range]{flex:1;accent-color:#555}
-  .pr .val{font-size:13px;font-weight:500;min-width:24px;color:#1a1a1a;text-align:right}
-  .cb-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-  .cb-label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;padding:3px 9px;border:1px solid #e5e5e5;border-radius:7px;background:#fff}
-  .cb-label input{width:13px;height:13px;accent-color:#555}
-  .cb-label:has(input:checked){background:#f0f0ee;border-color:#bbb}
-  .ice-cb{background:#eef4fc;border-color:#c5d9f0}
-  .ice-cb:has(input:checked){background:#d0e6f7;border-color:#7ab0d9}
-  .joint-block{border:1px solid #efefef;border-radius:10px;padding:12px;margin-bottom:8px}
-  .joint-title{font-size:13px;font-weight:500;margin-bottom:10px;color:#333;display:flex;justify-content:space-between;align-items:center}
-  .joint-title .both-score{font-size:11px;color:#888;font-weight:400}
-  .add-med-btn{font-size:12px;color:#888;background:none;border:1px dashed #ccc;border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:6px}
-  .med-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-  .med-row input[type=text]{flex:1;min-width:140px;font-size:13px;padding:6px 10px;border:1px solid #ddd;border-radius:8px}
-  .btn-p{background:#eee;border:1px solid #ccc;border-radius:8px;padding:9px 22px;font-size:14px;cursor:pointer;color:#1a1a1a;font-weight:500;font-family:inherit}
-  .btn-p:hover{background:#e0e0e0}
-  .btn-p:disabled{opacity:.5;cursor:not-allowed}
-  .btn-s{background:none;border:1px solid #ddd;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:#888;font-family:inherit}
-  .btn-s:hover{color:#333}
-  .btn-accent{background:#1a1a1a;color:#fff;border:1px solid #1a1a1a}
-  .btn-accent:hover{background:#333}
-  .status-bar{font-size:13px;padding:9px 13px;border-radius:8px;margin-top:10px;display:none}
-  .status-ok{background:#e1f5ee;color:#0f6e56}
-  .status-err{background:#fcebeb;color:#a32d2d}
-  .status-pending{background:#faeeda;color:#854f0b}
-  .warn{background:#faeeda;color:#854f0b;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:12px}
-  .logged-at{font-size:11px;color:#888;margin-top:6px}
-  table{width:100%;border-collapse:collapse;font-size:12px}
-  th{text-align:left;padding:7px 8px;border-bottom:1px solid #e5e5e5;color:#888;font-weight:500}
-  td{padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#1a1a1a;vertical-align:top}
-  tr:last-child td{border-bottom:none}
-  .tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:#f0f0ee;color:#666;margin:1px}
-  .tag.sun{background:#faeeda;color:#854f0b}
-  .tag.photo{background:#e6f1fb;color:#185fa5}
-  .es{color:#888;font-size:13px;text-align:center;padding:2rem 0}
-  .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
-  .mc{background:#f5f5f3;border-radius:8px;padding:12px 14px}
-  .ml{font-size:12px;color:#888;margin:0 0 4px}
-  .mv{font-size:22px;font-weight:500;color:#1a1a1a;margin:0}
-  .url-saved{font-size:12px;color:#0f6e56;margin-top:5px}
-  .setup-step{border:1px solid #e5e5e5;border-radius:10px;padding:13px 15px;margin-bottom:10px}
-  .step-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#eee;font-size:12px;font-weight:500;margin-right:8px}
-  .step-title{font-size:13px;font-weight:500}
-  .step-body{font-size:13px;color:#666;margin:8px 0 0 30px;line-height:1.65}
-  .step-body a{color:#185fa5}
-  .code-wrap{background:#f5f5f3;border:1px solid #e5e5e5;border-radius:8px;padding:11px 13px;font-family:monospace;font-size:11px;color:#1a1a1a;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;margin:8px 0 0 30px;line-height:1.5}
-  .copy-btn{font-size:11px;background:none;border:1px solid #ccc;border-radius:6px;padding:3px 9px;cursor:pointer;color:#666;margin:5px 0 0 30px;font-family:inherit}
-  .hands-wrap{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:6px 0 4px}
-  .hand-svg{width:170px;height:215px;touch-action:manipulation;user-select:none}
-  .hand-svg .bone{stroke:#d4d4d0;stroke-width:5;fill:none;stroke-linecap:round}
-  .hand-svg .zone{cursor:pointer;transition:fill .12s,stroke .12s}
-  .hand-svg .node{fill:#fff;stroke:#888;stroke-width:1.5}
-  .hand-svg .node:hover{fill:#f0e4cf;stroke:#444}
-  .hand-svg .node.hot{fill:#f0a04b;stroke:#a86a1f}
-  .hand-svg .node.cold{fill:#5e96cf;stroke:#2d6296}
-  .hand-svg .palm-zone{fill:#f0f0ee;stroke:#bbb;stroke-width:1}
-  .hand-svg .palm-zone:hover{fill:#e2e2dd}
-  .hand-svg .palm-zone.hot{fill:#f0a04b;stroke:#a86a1f}
-  .hand-svg .palm-zone.cold{fill:#5e96cf;stroke:#2d6296}
-  .hand-svg .label{font-size:9px;fill:#888;pointer-events:none;text-anchor:middle;font-family:-apple-system,sans-serif}
-  .hand-caption{font-size:12px;color:#666;margin-top:4px;text-align:center}
-  .hand-summary{font-size:12px;color:#333;background:#f5f5f3;border-radius:6px;padding:6px 10px;margin-top:8px;min-height:24px}
-  .hand-legend{display:flex;gap:14px;justify-content:center;font-size:11px;color:#666;margin-top:6px}
-  .hand-legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-  .hand-legend .lg-hot::before{background:#f0a04b}
-  .hand-legend .lg-cold::before{background:#5e96cf}
-  .chart-box{background:#fafaf8;border:1px solid #efefee;border-radius:8px;padding:12px;margin-bottom:10px}
-  .chart-title{font-size:12px;color:#666;font-weight:500;margin-bottom:6px}
-  .chart-svg{width:100%;height:170px;display:block}
-  .chart-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#666;margin-top:6px}
-  .chart-legend .lg{display:flex;align-items:center;gap:4px}
-  .chart-legend .lg::before{content:'';width:10px;height:2px;display:inline-block}
-  .qn-sec{background:#fef7e8;border:1px solid #f0d99f}
-  .qn-sec textarea{min-height:60px}
-  .person-ref{background:#fafaf8;border:1px dashed #d8d8d4;border-radius:10px;padding:12px;margin-top:12px}
-  .hands-section{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
-  .hand-col{display:flex;flex-direction:column;align-items:center;gap:10px}
-  .hand-col .f{width:100%;max-width:220px}
-  .lr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-  .lr-col{display:flex;flex-direction:column;gap:10px}
-  .lr-col-label{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #efefee;padding-bottom:4px}
-  .spot-loc{font-weight:400;color:#888;font-size:11px}
-  .spot-loc.hot{color:#a86a1f}
-  .spot-loc.cold{color:#2d6296}
-  @media(max-width:600px){.hands-section,.lr-grid{grid-template-columns:1fr;gap:14px}}
-  @media(max-width:480px){body{padding:10px}.tabs{gap:3px}.tab{padding:5px 10px;font-size:12px}.side-grid{grid-template-columns:1fr}.hand-svg{width:150px;height:190px}}
-  /* Larger touch targets on phones, tablets, and Kindle (coarse pointer or narrow viewport). */
-  @media(max-width:760px),(pointer:coarse){
-    body{font-size:16px}
-    .f input,.f select,.f textarea,.ctrl-item input,.med-row input[type=text]{font-size:17px;padding:11px 12px}
-    .f label,.ctrl-item label{font-size:13px}
-    .pr label{font-size:14px}
-    .pr input[type=range]{height:34px}
-    .pr .val{font-size:15px;min-width:30px}
-    .cb-label{font-size:14px;padding:7px 12px}
-    .cb-label input{width:18px;height:18px}
-    .btn-p{font-size:16px;padding:13px 26px}
-    .btn-s{font-size:14px;padding:7px 12px}
-    .joint-title{font-size:15px}
-    .sec-title{font-size:12px}
-    #quick-note{font-size:16px;padding:11px 12px;min-height:80px}
-    .add-med-btn{font-size:14px;padding:9px 16px}
+:root {
+  --bg:#f5f5f3;--surface:#fff;--border:#e5e5e5;--border2:#efefef;
+  --text:#1a1a1a;--text2:#444;--muted:#888;--hint:#aaa;
+  --ctrl-bg:#f5f5f3;--badge-pos-bg:#faeeda;--badge-pos-fg:#854f0b;
+  --badge-neg-bg:#eaf3de;--badge-neg-fg:#3b6d11;--badge-zero-bg:#f0f0ee;--badge-zero-fg:#888;
+  --ok-bg:#e1f5ee;--ok-fg:#0f6e56;--err-bg:#fcebeb;--err-fg:#a32d2d;--pend-bg:#faeeda;--pend-fg:#854f0b;
+  --warn-bg:#faeeda;--warn-fg:#854f0b;--qn-bg:#fef7e8;--qn-border:#f0d99f;
+  --hot-fill:#f0a04b;--hot-stroke:#a86a1f;--cold-fill:#5e96cf;--cold-stroke:#2d6296;
+  --ice-bg:#eef4fc;--ice-border:#c5d9f0;--ice-checked-bg:#d0e6f7;--ice-checked-border:#7ab0d9;
+  --accent-bg:#1a1a1a;--accent-fg:#fff;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a1a;--surface:#252525;--border:#383838;--border2:#2e2e2e;
+    --text:#f0f0ee;--text2:#ccc;--muted:#888;--hint:#666;
+    --ctrl-bg:#1f1f1f;--badge-pos-bg:#3d2e10;--badge-pos-fg:#f0c060;
+    --badge-neg-bg:#1b2e12;--badge-neg-fg:#8ecf60;--badge-zero-bg:#2a2a2a;--badge-zero-fg:#888;
+    --ok-bg:#0f2e22;--ok-fg:#3aaa84;--err-bg:#2e1212;--err-fg:#c46060;--pend-bg:#2e2010;--pend-fg:#c09040;
+    --warn-bg:#2e2010;--warn-fg:#f0c060;--qn-bg:#1f1c10;--qn-border:#4a3e10;
+    --hot-fill:#c06020;--hot-stroke:#f0a04b;--cold-fill:#2d6296;--cold-stroke:#5e96cf;
+    --ice-bg:#0e1e2e;--ice-border:#1e3e5e;--ice-checked-bg:#1a3050;--ice-checked-border:#3a70a0;
+    --accent-bg:#f0f0ee;--accent-fg:#1a1a1a;
   }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:var(--bg);color:var(--text);padding:16px;max-width:760px;margin:0 auto}
+h1{font-size:18px;font-weight:500;margin-bottom:6px}
+.ver-tag{font-size:11px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ver-pill{background:var(--border);color:var(--text);padding:2px 9px;border-radius:99px;font-weight:500}
+.tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:6px 14px;font-size:13px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:none;color:var(--muted)}
+.tab.active{background:var(--border);color:var(--text);font-weight:500}
+.sec{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.sec-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.sec-hint{font-size:12px;color:var(--muted);margin-bottom:10px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-size:12px;color:var(--muted)}
+.f input,.f select,.f textarea{font-size:14px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);width:100%;font-family:inherit}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--muted)}
+.ctrl-inline{background:var(--ctrl-bg);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.ctrl-inline label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:3px;min-width:160px}
+.ctrl-inline input{width:100%;font-size:14px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;background:var(--surface);color:var(--text)}
+.diff-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
+.diff-pos{background:var(--badge-pos-bg);color:var(--badge-pos-fg)}
+.diff-neg{background:var(--badge-neg-bg);color:var(--badge-neg-fg)}
+.diff-zero{background:var(--badge-zero-bg);color:var(--badge-zero-fg)}
+.side-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;min-width:0;overflow:hidden}
+.side-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.pr{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.pr label{font-size:13px;color:var(--text);min-width:30px}
+.side-grid>div{min-width:0;overflow:hidden}
+.side-grid .pr{overflow:hidden}
+.side-grid .pr label{min-width:0;width:22px;flex-shrink:0;font-size:12px;color:var(--muted)}
+.pr input[type=range]{flex:1;accent-color:var(--muted);min-width:0;width:0}
+.pr .val{font-size:13px;font-weight:500;min-width:24px;color:var(--text);text-align:right}
+.cb-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.cb-label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;padding:3px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text)}
+.cb-label input{width:13px;height:13px;accent-color:#555}
+.cb-label:has(input:checked){background:var(--border);border-color:var(--muted)}
+.ice-cb{background:var(--ice-bg);border-color:var(--ice-border)}
+.ice-cb:has(input:checked){background:var(--ice-checked-bg);border-color:var(--ice-checked-border)}
+.joint-block{border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:8px;overflow:hidden}
+.joint-title{font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text2);display:flex;justify-content:space-between;align-items:center}
+.add-med-btn{font-size:12px;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:6px}
+.med-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.med-row input[type=text]{flex:1;min-width:140px;font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)}
+.btn-p{background:var(--border);border:1px solid var(--muted);border-radius:8px;padding:9px 22px;font-size:14px;cursor:pointer;color:var(--text);font-weight:500;font-family:inherit}
+.btn-p:active{opacity:.8}
+.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.btn-s{background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--muted);font-family:inherit}
+.btn-accent{background:var(--accent-bg);color:var(--accent-fg);border:1px solid var(--accent-bg)}
+.status-bar{font-size:13px;padding:9px 13px;border-radius:8px;margin-top:10px;display:none}
+.status-ok{background:var(--ok-bg);color:var(--ok-fg)}
+.status-err{background:var(--err-bg);color:var(--err-fg)}
+.status-pending{background:var(--pend-bg);color:var(--pend-fg)}
+.status-bar#save-status,.status-bar#quick-note-status{border:1px solid transparent}
+.status-ok{border-color:var(--ok-fg)}
+.status-err{border-color:var(--err-fg)}
+.status-pending{border-color:var(--pend-fg)}
+.warn{background:var(--warn-bg);color:var(--warn-fg);border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:12px}
+.qn-sec{background:var(--qn-bg);border:1px solid var(--qn-border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);color:var(--muted);font-weight:500}
+td{padding:7px 8px;border-bottom:1px solid var(--border2);color:var(--text);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:var(--border);color:var(--muted);margin:1px}
+.es{color:var(--muted);font-size:13px;text-align:center;padding:2rem 0}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.mc{background:var(--ctrl-bg);border-radius:8px;padding:12px 14px}
+.ml{font-size:12px;color:var(--muted);margin:0 0 4px}
+.mv{font-size:22px;font-weight:500;color:var(--text);margin:0}
+.url-saved{font-size:12px;color:var(--ok-fg);margin-top:5px}
+.setup-step{border:1px solid var(--border);border-radius:10px;padding:13px 15px;margin-bottom:10px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);font-size:12px;font-weight:500;margin-right:8px}
+.step-title{font-size:13px;font-weight:500}
+.step-body{font-size:13px;color:var(--muted);margin:8px 0 0 30px;line-height:1.65}
+.step-body a{color:#185fa5}
+.code-wrap{background:var(--ctrl-bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-family:monospace;font-size:11px;color:var(--text);white-space:pre-wrap;word-break:break-all;max-height:180px;overflow-y:auto;margin:8px 0 0 30px;line-height:1.5}
+.copy-btn{font-size:11px;background:none;border:1px solid var(--border);border-radius:6px;padding:3px 9px;cursor:pointer;color:var(--muted);margin:5px 0 0 30px;font-family:inherit}
+/* Hand SVG */
+.hands-section{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.hand-col{display:flex;flex-direction:column;align-items:center;gap:8px}
+.hand-svg{width:220px;height:280px;touch-action:manipulation;user-select:none;display:block}
+.hand-svg .bone{stroke:var(--border);stroke-width:4;fill:none;stroke-linecap:round}
+.hand-svg .node{fill:var(--surface);stroke:#888;stroke-width:1.5;cursor:pointer;transition:fill .12s,stroke .12s}
+.hand-svg .node:hover{fill:var(--border)}
+.hand-svg .node.hot{fill:var(--hot-fill);stroke:var(--hot-stroke)}
+.hand-svg .node.cold{fill:var(--cold-fill);stroke:var(--cold-stroke)}
+.hand-svg .palm-zone{fill:var(--border2);stroke:var(--border);stroke-width:1;cursor:pointer;transition:fill .12s}
+.hand-svg .palm-zone:hover{fill:var(--border)}
+.hand-svg .palm-zone.hot{fill:var(--hot-fill);stroke:var(--hot-stroke)}
+.hand-svg .palm-zone.cold{fill:var(--cold-fill);stroke:var(--cold-stroke)}
+.hand-svg .skin{fill:#f5e6d3;stroke:var(--border);stroke-width:1}
+.hand-svg .label{font-size:8px;fill:var(--muted);pointer-events:none;text-anchor:middle;font-family:-apple-system,sans-serif}
+.hand-legend{display:flex;gap:14px;justify-content:center;font-size:11px;color:var(--muted);margin:6px 0}
+.hand-legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.hand-legend .lg-hot::before{background:var(--hot-fill)}
+.hand-legend .lg-cold::before{background:var(--cold-fill)}
+.hand-summary{font-size:11px;color:var(--muted);text-align:center;min-height:16px}
+/* LR row layout */
+.lr-row{display:grid;grid-template-columns:130px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.lr-row-label{font-size:13px;color:var(--text);font-weight:500}
+.lr-cell{display:flex;flex-direction:column;gap:3px}
+.lr-sub{font-size:10px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.lr-row input[type=text]{width:100%;font-size:14px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:inherit}
+.lr-row input[type=text]:focus{outline:none;border-color:var(--muted)}
+.lr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.lr-col{display:flex;flex-direction:column;gap:10px}
+.lr-col-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border2);padding-bottom:4px}
+.person-ref{background:var(--ctrl-bg);border:1px dashed var(--border);border-radius:10px;padding:12px;margin-top:12px}
+.chart-box{background:var(--ctrl-bg);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:10px}
+.chart-title{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.chart-svg{width:100%;height:170px;display:block}
+.chart-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted);margin-top:6px}
+/* Kindle scroll arrows */
+.kindle-nav{display:none;position:fixed;right:6px;top:50%;transform:translateY(-50%);flex-direction:column;gap:8px;z-index:999}
+.kindle-nav button{width:44px;height:44px;border-radius:50%;background:var(--accent-bg);color:var(--accent-fg);border:none;font-size:22px;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center}
+@media(max-width:500px) and (pointer:coarse){.kindle-nav{display:flex}}
+/* Responsive */
+@media(max-width:600px){.hands-section,.lr-grid{grid-template-columns:1fr;gap:14px}.lr-row{grid-template-columns:1fr;gap:4px}.lr-row-label{font-weight:600;margin-top:6px}}
+@media(max-width:760px),(pointer:coarse){
+  body{font-size:16px}
+  .f input,.f select,.f textarea,.ctrl-inline input,.med-row input[type=text]{font-size:17px;padding:11px 12px}
+  .f label,.ctrl-item label{font-size:13px}
+  .pr label{font-size:14px}
+  .pr input[type=range],.pr-row input[type=range]{height:34px}
+  .pr .val,.pr-row .val{font-size:15px;min-width:28px}
+  .cb-label{font-size:14px;padding:7px 12px}
+  .cb-label input{width:18px;height:18px}
+  .btn-p{font-size:16px;padding:13px 26px}
+  .btn-s{font-size:14px;padding:7px 12px}
+  .joint-title{font-size:15px}
+  .sec-title{font-size:12px}
+  .add-med-btn{font-size:14px;padding:9px 16px}
+  .hand-svg{width:200px;height:255px}
+  .lr-row input[type=text]{font-size:16px;padding:10px 12px}
+}
 </style>
 </head>
 <body>
+<div class="kindle-nav">
+  <button onclick="window.scrollBy(0,-300)">&#9650;</button>
+  <button onclick="window.scrollBy(0,300)">&#9660;</button>
+</div>
 <h1>Project Diagnonsense</h1>
+<div style="font-size:11px;color:#888;margin-bottom:10px"><span style="background:#e5e5e5;color:#1a1a1a;padding:2px 9px;border-radius:99px;font-weight:500" id="app-ver">v 4.1</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -234,15 +267,15 @@ function buildResponse(data){const o=ContentService.createTextOutput(JSON.string
   </div>
 </div>
 
-<!-- ====================== ENTRY ====================== -->
+<!-- ENTRY -->
 <div id="tab-entry" style="display:none">
   <div class="warn" id="no-url-warn" style="display:none">No Google Sheets URL set — go to Setup first.</div>
 
-  <!-- DATE / TIME / LOGGED-AT -->
+  <!-- DATE / TIME -->
   <div class="sec">
     <p class="sec-title">Date &amp; time</p>
     <div class="fg">
-      <div class="f"><label>Date</label><input type="date" id="entry-date"></div>
+      <div class="f"><label>Date (dd/mm/yyyy)</label><input type="text" id="entry-date" placeholder="dd/mm/yyyy" maxlength="10"></div>
       <div class="f"><label>Time slot</label>
         <select id="entry-time">
           <option value="Waking">Waking</option>
@@ -252,52 +285,49 @@ function buildResponse(data){const o=ContentService.createTextOutput(JSON.string
         </select>
       </div>
     </div>
-    <div class="logged-at" id="logged-at-display">Logged at: —</div>
+    <div id="logged-at-display" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
   </div>
 
-  <!-- QUICK NOTE UPLOAD -->
+  <!-- QUICK NOTE -->
   <div class="sec qn-sec">
-    <p class="sec-title">Quick note</p>
-    <p style="font-size:12px;color:#854f0b;margin-bottom:8px">If detailed measurements aren't possible, just write a brief note and upload — everything else can be left blank.</p>
-    <textarea id="quick-note" rows="2" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid #d8c189;border-radius:8px;font-family:inherit" placeholder="e.g. flare today, both knees hot, can't measure"></textarea>
-    <button class="btn-p btn-accent" style="margin-top:8px" onclick="uploadQuickNote()">Upload quick note only</button>
+    <p class="sec-title">Quick note — too unwell for full entry?</p>
+    <p class="sec-hint">Just write what you feel and save. Everything else will be blank.</p>
+    <textarea id="quick-note" rows="3" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--qn-border);border-radius:8px;background:var(--surface);color:var(--text);font-family:inherit" placeholder="e.g. both knees hot and swollen, head 8/10, exhausted..."></textarea>
+    <button class="btn-p btn-accent" style="margin-top:8px" onclick="uploadQuickNote()">Save quick note</button>
     <div class="status-bar" id="quick-note-status"></div>
   </div>
 
   <!-- PAIN SCORES -->
   <div class="sec">
-    <p class="sec-title">Pain</p>
-    <p class="sec-hint">0 = none, 10 = worst. Tick pain types and ice for any joint scoring above 0.</p>
+    <p class="sec-title">Pain scores — 0 = none, 10 = worst</p>
+    <p class="sec-hint">Leave at 0 if not relevant today. Only scores you move will be recorded as active.</p>
 
     <!-- HEAD -->
     <div class="joint-block">
       <div class="joint-title">Head</div>
-      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="head"><span class="val">0</span></div>
-      <p style="font-size:11px;color:#888;margin:8px 0 4px">Headache location</p>
+      <div class="pr" data-pr="head"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="head"><span class="val">0</span></div>
       <div class="cb-group">
-        <label class="cb-label"><input type="checkbox" class="head-loc" value="Both sides/band"> Both sides / band</label>
+        <label class="cb-label"><input type="checkbox" class="head-loc" value="Both sides/band"> Both sides</label>
         <label class="cb-label"><input type="checkbox" class="head-loc" value="One side"> One side</label>
-        <label class="cb-label"><input type="checkbox" class="head-loc" value="Behind/around eye"> Behind / around eye</label>
-        <label class="cb-label"><input type="checkbox" class="head-loc" value="Forehead/face"> Forehead / face</label>
-        <label class="cb-label"><input type="checkbox" class="head-loc" value="Back of head/neck"> Back of head / neck</label>
+        <label class="cb-label"><input type="checkbox" class="head-loc" value="Behind/around eye"> Behind eye</label>
+        <label class="cb-label"><input type="checkbox" class="head-loc" value="Forehead/face"> Forehead</label>
+        <label class="cb-label"><input type="checkbox" class="head-loc" value="Back of head/neck"> Back of head</label>
       </div>
-      <p style="font-size:11px;color:#888;margin:8px 0 4px">Pain type</p>
-      <div class="cb-group">
-        <label class="cb-label"><input type="checkbox" class="head-type" value="Squeezing/tightness"> Squeezing / tightness</label>
-        <label class="cb-label"><input type="checkbox" class="head-type" value="Throbbing/pulsating"> Throbbing / pulsating</label>
-        <label class="cb-label"><input type="checkbox" class="head-type" value="Piercing/burning"> Piercing / burning</label>
-        <label class="cb-label"><input type="checkbox" class="head-type" value="Pressure/aching"> Pressure / aching</label>
-        <label class="cb-label"><input type="checkbox" class="head-type" value="Dull/stiff"> Dull / stiff</label>
+      <div class="cb-group" style="margin-top:6px">
+        <label class="cb-label"><input type="checkbox" class="head-type" value="Squeezing/tightness"> Squeezing</label>
+        <label class="cb-label"><input type="checkbox" class="head-type" value="Throbbing/pulsating"> Throbbing</label>
+        <label class="cb-label"><input type="checkbox" class="head-type" value="Piercing/burning"> Piercing</label>
+        <label class="cb-label"><input type="checkbox" class="head-type" value="Pressure/aching"> Pressure</label>
+        <label class="cb-label"><input type="checkbox" class="head-type" value="Dull/stiff"> Dull</label>
       </div>
-      <p style="font-size:11px;color:#888;margin:8px 0 4px">Area affected</p>
-      <div class="cb-group">
+      <div class="cb-group" style="margin-top:4px">
         <label class="cb-label"><input type="checkbox" class="head-area" value="Eyes"> Eyes</label>
         <label class="cb-label"><input type="checkbox" class="head-area" value="Cheeks"> Cheeks</label>
         <label class="cb-label"><input type="checkbox" class="head-area" value="Temples"> Temples</label>
         <label class="cb-label"><input type="checkbox" class="head-area" value="Forehead"> Forehead</label>
         <label class="cb-label"><input type="checkbox" class="head-area" value="Back of head"> Back of head</label>
       </div>
-      <div class="cb-group" style="margin-top:8px">
+      <div class="cb-group" style="margin-top:6px">
         <label class="cb-label ice-cb"><input type="checkbox" class="ice-w" data-joint="head"> Ice wanted</label>
         <label class="cb-label ice-cb"><input type="checkbox" class="ice-a" data-joint="head"> Ice applied</label>
       </div>
@@ -306,7 +336,7 @@ function buildResponse(data){const o=ContentService.createTextOutput(JSON.string
     <!-- NECK -->
     <div class="joint-block">
       <div class="joint-title">Neck</div>
-      <div class="pr"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="neck"><span class="val">0</span></div>
+      <div class="pr" data-pr="neck"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="neck"><span class="val">0</span></div>
       <div class="cb-group" id="pt-neck"></div>
       <div class="cb-group" style="margin-top:6px">
         <label class="cb-label ice-cb"><input type="checkbox" class="ice-w" data-joint="neck"> Ice wanted</label>
@@ -314,302 +344,330 @@ function buildResponse(data){const o=ContentService.createTextOutput(JSON.string
       </div>
     </div>
 
-    <!-- BILATERAL JOINTS (shoulders, elbows, wrists, hands, jaw, hips, knees, ankles, feet) -->
+    <!-- BILATERAL JOINTS -->
     <div id="bilateral-joints"></div>
 
-    <!-- FATIGUE — note: also lives below in 'general' but fatigue is also a useful pain peer -->
+    <!-- JAW OPENING DIFFICULTY -->
+    <div class="joint-block">
+      <div class="joint-title">Jaw opening difficulty</div>
+      <div class="pr" data-pr="jawOpening"><label>Score</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="jawOpening"><span class="val">0</span></div>
+    </div>
   </div>
 
-  <!-- VERTIGO / NAUSEA / LIGHT SENS -->
+  <!-- NEUROLOGICAL / SYSTEMIC -->
   <div class="sec">
-    <p class="sec-title">Vertigo, nausea, light sensitivity</p>
-    <div class="pr"><label style="min-width:140px">Vertigo</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="vertigo"><span class="val">0</span></div>
-    <div class="pr"><label style="min-width:140px">Nausea</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="nausea"><span class="val">0</span></div>
-    <div class="pr"><label style="min-width:140px">Light sensitivity</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="lightSens"><span class="val">0</span></div>
+    <p class="sec-title">Neurological &amp; systemic symptoms</p>
+    <div class="pr" data-pr="vertigo"><label style="min-width:140px">Vertigo</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="vertigo"><span class="val">0</span></div>
+    <div class="pr" data-pr="nausea"><label style="min-width:140px">Nausea</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="nausea"><span class="val">0</span></div>
+    <div class="pr" data-pr="tinnitus"><label style="min-width:140px">Tinnitus</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="tinnitus"><span class="val">0</span></div>
+    <div class="pr" data-pr="lightSens"><label style="min-width:140px">Light sensitivity</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="lightSens"><span class="val">0</span></div>
     <div class="pr" data-pr="chestHeaviness"><label style="min-width:140px">Chest heaviness</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="chestHeaviness"><span class="val">0</span></div>
     <div class="pr" data-pr="brainFog"><label style="min-width:140px">Brain fog</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="brainFog"><span class="val">0</span></div>
     <div class="pr" data-pr="speechClumsy"><label style="min-width:140px">Speech clumsiness</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="speechClumsy"><span class="val">0</span></div>
-    <div class="pr" data-pr="tinnitus"><label style="min-width:140px">Tinnitus</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="tinnitus"><span class="val">0</span></div>
   </div>
 
-  <!-- MORNING STIFFNESS -->
-  <div class="sec">
-    <p class="sec-title">Morning stiffness</p>
-    <p class="sec-hint">Minutes of joint stiffness on waking before easing.</p>
-    <div class="pr"><label style="min-width:140px">Duration</label><input type="range" min="0" max="120" step="5" value="0" oninput="updPrMin(this)" data-joint="morningStiff"><span class="val">0 min</span></div>
-  </div>
-
-  <!-- GENERAL: acid reflux, fatigue -->
+  <!-- GENERAL -->
   <div class="sec">
     <p class="sec-title">General</p>
-    <div class="pr"><label style="min-width:140px">Acid reflux</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="acidReflux"><span class="val">0</span></div>
-    <div class="pr"><label style="min-width:140px">Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="fatigue"><span class="val">0</span></div>
+    <div class="pr" data-pr="morningStiff"><label style="min-width:140px">Morning stiffness</label><input type="range" min="0" max="120" step="5" value="0" oninput="updPrMin(this)" data-joint="morningStiff"><span class="val">0</span></div>
+    <div class="pr" data-pr="acidReflux"><label style="min-width:140px">Acid reflux</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="acidReflux"><span class="val">0</span></div>
+    <div class="pr" data-pr="pFatigue"><label style="min-width:140px">Fatigue</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="fatigue"><span class="val">0</span></div>
   </div>
 
-  <!-- MOUTH / EYES (simplified) -->
+  <!-- MOUTH / EYES -->
   <div class="sec">
     <p class="sec-title">Mouth and eyes</p>
-    <div class="pr"><label style="min-width:170px">Mouth corner irritation</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="mouthCorner"><span class="val">0</span></div>
-    <div class="pr"><label style="min-width:170px">Dry eyes</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="dryEyes"><span class="val">0</span></div>
+    <div class="pr" data-pr="mouthCorner"><label style="min-width:170px">Mouth corner irritation</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="mouthCorner"><span class="val">0</span></div>
+    <div class="pr" data-pr="dryEyes"><label style="min-width:170px">Dry eyes</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="dryEyes"><span class="val">0</span></div>
     <div class="cb-group" style="margin-top:8px">
-      <label class="cb-label"><input type="checkbox" id="cheilitis-visible"> Angular cheilitis visible</label>
+      <label class="cb-label"><input type="checkbox" id="cheilitis-visible"> Angular cheilitis visible today</label>
     </div>
   </div>
 
   <!-- RING SIZES -->
   <div class="sec">
-    <p class="sec-title">Ring sizes</p>
-    <p class="sec-hint">Enter ring size (e.g. P, 19) or skip. Numeric values are charted in Summary.</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Thumb</label><input type="text" id="c-lthumb" placeholder="P or 19"></div>
-        <div class="f"><label>Index</label><input type="text" id="c-lindex" placeholder="P or 19"></div>
-        <div class="f"><label>Middle</label><input type="text" id="c-lmiddle" placeholder="P or 19"></div>
-        <div class="f"><label>Ring</label><input type="text" id="c-lring" placeholder="P or 19"></div>
-        <div class="f"><label>Little</label><input type="text" id="c-llittle" placeholder="P or 19"></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Thumb</label><input type="text" id="c-rthumb" placeholder="P or 19"></div>
-        <div class="f"><label>Index</label><input type="text" id="c-rindex" placeholder="P or 19"></div>
-        <div class="f"><label>Middle</label><input type="text" id="c-rmiddle" placeholder="P or 19"></div>
-        <div class="f"><label>Ring</label><input type="text" id="c-rring" placeholder="P or 19"></div>
-        <div class="f"><label>Little</label><input type="text" id="c-rlittle" placeholder="P or 19"></div>
-      </div>
+    <p class="sec-title">Ring sizes — skip if not measuring today</p>
+    <div class="lr-row"><div class="lr-row-label">Thumb</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lthumb" placeholder="e.g. P"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rthumb" placeholder="e.g. P"></div>
+    </div>
+    <div class="lr-row"><div class="lr-row-label">Index</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lindex" placeholder=""></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rindex" placeholder=""></div>
+    </div>
+    <div class="lr-row"><div class="lr-row-label">Middle</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lmiddle" placeholder=""></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rmiddle" placeholder=""></div>
+    </div>
+    <div class="lr-row"><div class="lr-row-label">Ring</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lring" placeholder=""></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rring" placeholder=""></div>
+    </div>
+    <div class="lr-row"><div class="lr-row-label">Little</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-llittle" placeholder=""></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rlittle" placeholder=""></div>
     </div>
   </div>
 
   <!-- GRIP STRENGTH -->
   <div class="sec">
     <p class="sec-title">Grip strength</p>
-    <p class="sec-hint">Raw value from your dynamometer (e.g. kg or lbs — use the same unit every time).</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Grip strength</label><input type="text" id="grip-l" placeholder="e.g. 24"></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Grip strength</label><input type="text" id="grip-r" placeholder="e.g. 26"></div>
-      </div>
+    <p class="sec-hint">Use dynamometer. Record in same units each time.</p>
+    <div class="lr-row">
+      <div class="lr-row-label">Grip</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="grip-l" placeholder="e.g. 24"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="grip-r" placeholder="e.g. 26"></div>
     </div>
   </div>
 
-  <!-- BODY CIRCUMFERENCE -->
+  <!-- CIRCUMFERENCES -->
   <div class="sec">
-    <p class="sec-title">Body circumference</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Knee (mm)</label><input type="text" id="c-lknee" placeholder="mm"></div>
-        <div class="f"><label>Elbow (mm)</label><input type="text" id="c-lelbow" placeholder="mm"></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Knee (mm)</label><input type="text" id="c-rknee" placeholder="mm"></div>
-        <div class="f"><label>Elbow (mm)</label><input type="text" id="c-relbow" placeholder="mm"></div>
-      </div>
+    <p class="sec-title">Circumferences (mm) — skip if not measuring today</p>
+    <div class="lr-row"><div class="lr-row-label">Elbow</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lelbow" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-relbow" placeholder="mm"></div>
     </div>
-    <div class="f" style="margin-top:12px;max-width:240px"><label>Jaw opening (mm)</label><input type="text" id="c-jaw" placeholder="mm"></div>
+    <div class="lr-row"><div class="lr-row-label">Knee</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lknee" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rknee" placeholder="mm"></div>
+    </div>
+    <div class="lr-row"><div class="lr-row-label">Ankle</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lankle" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rankle" placeholder="mm"></div>
+    </div>
+    <div class="lr-row"><div class="lr-row-label">Foot</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="c-lfoot" placeholder="mm"></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="c-rfoot" placeholder="mm"></div>
+    </div>
   </div>
 
-  <!-- CONTROL READINGS (+ reference person) -->
+  <!-- TEMPERATURES: CONTROLS -->
   <div class="sec">
-    <p class="sec-title">Control readings</p>
-    <p class="sec-hint">At least one control reading required before saving. Enter raw thermometer values (e.g. 32.4).</p>
-    <div class="ctrl-row">
-      <div class="ctrl-item">
-        <label>Inner forearm *</label>
-        <input type="text" id="t-ctrl-innerarm" placeholder="°C" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-innerarm-display"></span>
-      </div>
-      <div class="ctrl-item">
-        <label>Calf</label>
-        <input type="text" id="t-ctrl-calf" placeholder="°C" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-calf-display"></span>
-      </div>
-      <div class="ctrl-item">
-        <label>Forehead</label>
-        <input type="text" id="t-ctrl-forehead" placeholder="°C" oninput="recalcDiffs()">
-        <span class="diff-badge diff-zero" id="ctrl-forehead-display"></span>
-      </div>
-      <div class="ctrl-item">
-        <label>Room</label>
-        <input type="text" id="t-ctrl-room" placeholder="°C">
-      </div>
-      <div class="ctrl-item">
-        <label>Other person's hand</label>
-        <input type="text" id="t-ctrl-otherhand" placeholder="°C">
-      </div>
+    <p class="sec-title">Temperature — controls (enter before joint readings)</p>
+    <p class="sec-hint">Enter at least one control. Differentials are calculated automatically.</p>
+    <div class="ctrl-inline">
+      <label>Room temperature <input type="text" id="t-ctrl-room" placeholder="°C"></label>
     </div>
-
     <div class="person-ref">
-      <p style="font-size:12px;color:#666;margin-bottom:8px"><strong>Reference person</strong> — if someone else is present, log their readings as a same-room sanity check.</p>
-      <div class="lr-grid">
-        <div class="lr-col">
-          <div class="lr-col-label">Left</div>
-          <div class="f"><label>Their hand</label><input type="text" id="ref-lhand" placeholder="°C"></div>
-        </div>
-        <div class="lr-col">
-          <div class="lr-col-label">Right</div>
-          <div class="f"><label>Their hand</label><input type="text" id="ref-rhand" placeholder="°C"></div>
-        </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>Reference person</strong> — same-room comparison. Fill in whatever you measure.</p>
+      <div style="display:grid;grid-template-columns:80px 140px;gap:8px;align-items:end;margin-bottom:8px">
+        <div class="f"><label>Initials</label><input type="text" id="ref-initials" placeholder="HW" maxlength="6"></div>
+        <div class="f"><label>Their forehead (°C)</label><input type="text" id="ref-forehead" placeholder="°C"></div>
       </div>
-      <div class="fg" style="margin-top:12px">
-        <div class="f"><label>Initials</label><input type="text" id="ref-initials" placeholder="e.g. JM" maxlength="6"></div>
-        <div class="f"><label>Their forehead</label><input type="text" id="ref-forehead" placeholder="°C"></div>
+      <div class="lr-row" style="margin-bottom:6px">
+        <div class="lr-row-label">Their dorsum</div>
+        <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="ref-lhand" placeholder="°C"></div>
+        <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="ref-rhand" placeholder="°C"></div>
+      </div>
+      <div class="lr-row">
+        <div class="lr-row-label">Their palm</div>
+        <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="ref-lpalm" placeholder="°C"></div>
+        <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="ref-rpalm" placeholder="°C"></div>
       </div>
     </div>
   </div>
 
-  <!-- HANDS — L palm + L temps on LEFT, R palm + R temps on RIGHT -->
+  <!-- TEMPERATURES: JAW -->
   <div class="sec">
-    <p class="sec-title">Hands</p>
-    <p class="sec-hint">On each palm: tap once for hottest (orange), again for coldest (blue), third time clears. Then enter the temperature readings at each spot. All temperatures are raw values; differentials calculate automatically.</p>
-    <div class="hands-section">
-      <div class="hand-col">
-        <div class="lr-col-label">Left palm</div>
-        <div id="left-palm-mount"><!-- injected by JS --></div>
-        <div class="f"><label>Hand dorsum temperature</label><input type="text" id="t-lhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhand">—</span></div>
-        <div class="f"><label>Hottest spot temp <span class="spot-loc hot" id="loc-l-hot">— not marked —</span></label><input type="text" id="t-l-hot" placeholder="°C"></div>
-        <div class="f"><label>Coldest spot temp <span class="spot-loc cold" id="loc-l-cold">— not marked —</span></label><input type="text" id="t-l-cold" placeholder="°C"></div>
+    <p class="sec-title">Head &amp; jaw temperature</p>
+    <div class="ctrl-inline" style="margin-bottom:12px">
+      <label>Forehead control <input type="text" id="t-ctrl-forehead" placeholder="°C" oninput="recalcDiffs()"></label>
+      <span class="diff-badge diff-zero" id="ctrl-forehead-display"></span>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Jaw</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-ljaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rjaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rjaw">—</span></div>
+    </div>
+  </div>
+
+  <!-- TEMPERATURES: HANDS (new order) -->
+  <div class="sec">
+    <p class="sec-title">Hand temperature</p>
+    <div class="ctrl-inline" style="margin-bottom:12px">
+      <label>Inner forearm control (upper body) <input type="text" id="t-ctrl-innerarm" placeholder="°C" oninput="recalcDiffs()"></label>
+      <span class="diff-badge diff-zero" id="ctrl-innerarm-display"></span>
+    </div>
+    <p class="sec-hint">Enter dorsum readings, then hottest and coolest points for each hand. Tap the palm diagram to mark where those points are.</p>
+
+    <!-- Dorsum -->
+    <div class="lr-row" style="margin-bottom:14px">
+      <div class="lr-row-label">Dorsum (back of hand)</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhand">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhand">—</span></div>
+    </div>
+
+    <!-- Left hand: hot/cold + palm -->
+    <div style="border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:12px">
+      <div class="lr-row">
+        <div class="lr-row-label">Hottest spot</div>
+        <div class="lr-cell"><span class="lr-sub" id="loc-l-hot" style="color:var(--hot-stroke)">not marked</span><input type="text" id="t-l-hot" placeholder="°C"></div>
+        <div class="lr-cell"></div>
       </div>
-      <div class="hand-col">
-        <div class="lr-col-label">Right palm</div>
-        <div id="right-palm-mount"><!-- injected by JS --></div>
-        <div class="f"><label>Hand dorsum temperature</label><input type="text" id="t-rhand" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhand">—</span></div>
-        <div class="f"><label>Hottest spot temp <span class="spot-loc hot" id="loc-r-hot">— not marked —</span></label><input type="text" id="t-r-hot" placeholder="°C"></div>
-        <div class="f"><label>Coldest spot temp <span class="spot-loc cold" id="loc-r-cold">— not marked —</span></label><input type="text" id="t-r-cold" placeholder="°C"></div>
+      <div class="lr-row">
+        <div class="lr-row-label">Coolest spot</div>
+        <div class="lr-cell"><span class="lr-sub" id="loc-l-cold" style="color:var(--cold-stroke)">not marked</span><input type="text" id="t-l-cold" placeholder="°C"></div>
+        <div class="lr-cell"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-top:10px">
+        <div id="left-palm-mount"></div>
+        <div class="hand-summary" id="lp-summary">Tap once = hottest, again = coolest, third = clear</div>
+      </div>
+    </div>
+
+    <!-- Right hand: hot/cold + palm -->
+    <div style="border:1px solid var(--border2);border-radius:10px;padding:12px">
+      <div class="lr-row">
+        <div class="lr-row-label">Hottest spot</div>
+        <div class="lr-cell"><span class="lr-sub" id="loc-r-hot" style="color:var(--hot-stroke)">not marked</span><input type="text" id="t-r-hot" placeholder="°C"></div>
+        <div class="lr-cell"></div>
+      </div>
+      <div class="lr-row">
+        <div class="lr-row-label">Coolest spot</div>
+        <div class="lr-cell"><span class="lr-sub" id="loc-r-cold" style="color:var(--cold-stroke)">not marked</span><input type="text" id="t-r-cold" placeholder="°C"></div>
+        <div class="lr-cell"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-top:10px">
+        <div id="right-palm-mount"></div>
+        <div class="hand-summary" id="rp-summary">Tap once = hottest, again = coolest, third = clear</div>
       </div>
     </div>
     <div class="hand-legend" style="margin-top:10px">
-      <span class="lg-hot">Hottest</span>
-      <span class="lg-cold">Coldest</span>
+      <span class="lg-hot">Hottest</span><span class="lg-cold">Coolest</span>
     </div>
   </div>
 
-  <!-- JOINT TEMPERATURES -->
+  <!-- TEMPERATURES: ELBOWS -->
   <div class="sec">
-    <p class="sec-title">Joint temperatures</p>
-    <p class="sec-hint">Raw thermometer readings. Differential vs control shown next to each.</p>
-    <div class="lr-grid">
-      <div class="lr-col">
-        <div class="lr-col-label">Left</div>
-        <div class="f"><label>Knee</label><input type="text" id="t-lknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lknee">—</span></div>
-        <div class="f"><label>Hip</label><input type="text" id="t-lhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhip">—</span></div>
-        <div class="f"><label>Elbow</label><input type="text" id="t-lelbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lelbow">—</span></div>
-        <div class="f"><label>Jaw</label><input type="text" id="t-ljaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-ljaw">—</span></div>
-      </div>
-      <div class="lr-col">
-        <div class="lr-col-label">Right</div>
-        <div class="f"><label>Knee</label><input type="text" id="t-rknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rknee">—</span></div>
-        <div class="f"><label>Hip</label><input type="text" id="t-rhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhip">—</span></div>
-        <div class="f"><label>Elbow</label><input type="text" id="t-relbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-relbow">—</span></div>
-        <div class="f"><label>Jaw</label><input type="text" id="t-rjaw" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rjaw">—</span></div>
-      </div>
+    <p class="sec-title">Elbow temperature</p>
+    <div class="lr-row">
+      <div class="lr-row-label">Elbow</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lelbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lelbow">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-relbow" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-relbow">—</span></div>
+    </div>
+  </div>
+
+  <!-- TEMPERATURES: LOWER BODY -->
+  <div class="sec">
+    <p class="sec-title">Lower body temperature</p>
+    <div class="ctrl-inline" style="margin-bottom:12px">
+      <label>Calf control (lower body) <input type="text" id="t-ctrl-calf" placeholder="°C" oninput="recalcDiffs()"></label>
+      <span class="diff-badge diff-zero" id="ctrl-calf-display"></span>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Hip</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lhip">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rhip" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rhip">—</span></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Knee</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lknee">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rknee" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rknee">—</span></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Ankle</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lankle" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lankle">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rankle" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rankle">—</span></div>
+    </div>
+    <div class="lr-row">
+      <div class="lr-row-label">Foot</div>
+      <div class="lr-cell"><span class="lr-sub">Left</span><input type="text" id="t-lfoot" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-lfoot">—</span></div>
+      <div class="lr-cell"><span class="lr-sub">Right</span><input type="text" id="t-rfoot" placeholder="°C" oninput="recalcDiffs()"><span class="diff-badge diff-zero" id="d-rfoot">—</span></div>
     </div>
   </div>
 
   <!-- SWELLING -->
   <div class="sec">
-    <p class="sec-title">Swelling</p>
+    <p class="sec-title">Swelling visible</p>
     <div id="swelling-checks">
       <div class="lr-grid">
-        <div class="lr-col">
-          <div class="lr-col-label">Left</div>
+        <div class="lr-col"><div class="lr-col-label">Left</div>
           <div class="cb-group">
             <label class="cb-label"><input type="checkbox" value="L knee"> Knee</label>
             <label class="cb-label"><input type="checkbox" value="L elbow"> Elbow</label>
             <label class="cb-label"><input type="checkbox" value="L wrist"> Wrist</label>
-            <label class="cb-label"><input type="checkbox" value="L hand/fingers"> Hand/fingers</label>
+            <label class="cb-label"><input type="checkbox" value="L hand/fingers"> Hand</label>
             <label class="cb-label"><input type="checkbox" value="L hip"> Hip</label>
             <label class="cb-label"><input type="checkbox" value="L ankle"> Ankle</label>
             <label class="cb-label"><input type="checkbox" value="L foot"> Foot</label>
+            <label class="cb-label"><input type="checkbox" value="L jaw"> Jaw</label>
           </div>
         </div>
-        <div class="lr-col">
-          <div class="lr-col-label">Right</div>
+        <div class="lr-col"><div class="lr-col-label">Right</div>
           <div class="cb-group">
             <label class="cb-label"><input type="checkbox" value="R knee"> Knee</label>
             <label class="cb-label"><input type="checkbox" value="R elbow"> Elbow</label>
             <label class="cb-label"><input type="checkbox" value="R wrist"> Wrist</label>
-            <label class="cb-label"><input type="checkbox" value="R hand/fingers"> Hand/fingers</label>
+            <label class="cb-label"><input type="checkbox" value="R hand/fingers"> Hand</label>
             <label class="cb-label"><input type="checkbox" value="R hip"> Hip</label>
             <label class="cb-label"><input type="checkbox" value="R ankle"> Ankle</label>
             <label class="cb-label"><input type="checkbox" value="R foot"> Foot</label>
+            <label class="cb-label"><input type="checkbox" value="R jaw"> Jaw</label>
           </div>
         </div>
-      </div>
-      <div class="cb-group" style="margin-top:10px">
-        <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
       </div>
     </div>
   </div>
 
   <!-- PHOTOS -->
   <div class="sec">
-    <p class="sec-title">Photos</p>
-    <div id="photo-checks">
-      <div class="lr-grid">
-        <div class="lr-col">
-          <div class="lr-col-label">Left</div>
-          <div class="cb-group">
-            <label class="cb-label"><input type="checkbox" value="L knee"> Knee</label>
-            <label class="cb-label"><input type="checkbox" value="L elbow"> Elbow</label>
-            <label class="cb-label"><input type="checkbox" value="L hand/fingers"> Hand/fingers</label>
-            <label class="cb-label"><input type="checkbox" value="L hip"> Hip</label>
-            <label class="cb-label"><input type="checkbox" value="L foot"> Foot</label>
-          </div>
-        </div>
-        <div class="lr-col">
-          <div class="lr-col-label">Right</div>
-          <div class="cb-group">
-            <label class="cb-label"><input type="checkbox" value="R knee"> Knee</label>
-            <label class="cb-label"><input type="checkbox" value="R elbow"> Elbow</label>
-            <label class="cb-label"><input type="checkbox" value="R hand/fingers"> Hand/fingers</label>
-            <label class="cb-label"><input type="checkbox" value="R hip"> Hip</label>
-            <label class="cb-label"><input type="checkbox" value="R foot"> Foot</label>
-          </div>
-        </div>
-      </div>
-      <div class="cb-group" style="margin-top:10px">
-        <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
-        <label class="cb-label"><input type="checkbox" value="Mouth corner"> Mouth corner</label>
-        <label class="cb-label"><input type="checkbox" value="Full body/other"> Full body / other</label>
-      </div>
+    <p class="sec-title">Photos taken of</p>
+    <div id="photo-checks" class="cb-group">
+      <label class="cb-label"><input type="checkbox" value="L knee"> L knee</label>
+      <label class="cb-label"><input type="checkbox" value="R knee"> R knee</label>
+      <label class="cb-label"><input type="checkbox" value="L elbow"> L elbow</label>
+      <label class="cb-label"><input type="checkbox" value="R elbow"> R elbow</label>
+      <label class="cb-label"><input type="checkbox" value="L hand"> L hand</label>
+      <label class="cb-label"><input type="checkbox" value="R hand"> R hand</label>
+      <label class="cb-label"><input type="checkbox" value="Jaw"> Jaw</label>
+      <label class="cb-label"><input type="checkbox" value="Mouth corners"> Mouth corners</label>
+      <label class="cb-label"><input type="checkbox" value="Other"> Other</label>
     </div>
   </div>
 
-  <!-- CONTEXT — triggers + sun -->
+  <!-- TRIGGERS / SLEEP -->
   <div class="sec">
-    <p class="sec-title">Context</p>
-    <div class="pr"><label style="min-width:170px">Physical exertion</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="physExertion"><span class="val">0</span></div>
-    <div class="pr"><label style="min-width:170px">Stress</label><input type="range" min="0" max="10" step="1" value="0" oninput="updPr(this)" data-joint="stress"><span class="val">0</span></div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f"><label>Sleep score</label><input type="text" id="sleep-score" placeholder="e.g. 78"></div>
+    <p class="sec-title">Triggers and sleep</p>
+    <div class="cb-group" style="margin-bottom:12px">
+      <label class="cb-label"><input type="checkbox" id="trig-exertion" value="Physical exertion"> Physical exertion</label>
+      <label class="cb-label"><input type="checkbox" id="trig-stress" value="Mental stress"> Mental stress</label>
+      <label class="cb-label"><input type="checkbox" id="trig-sleep" value="Poor sleep"> Poor sleep</label>
+      <label class="cb-label"><input type="checkbox" id="trig-alcohol" value="Alcohol"> Alcohol</label>
+      <label class="cb-label"><input type="checkbox" id="trig-illness" value="Infection/illness"> Illness</label>
+      <label class="cb-label"><input type="checkbox" id="trig-cold" value="Cold exposure"> Cold exposure</label>
+      <label class="cb-label"><input type="checkbox" id="trig-diet" value="Dietary change"> Diet change</label>
+      <label class="cb-label"><input type="checkbox" id="trig-travel" value="Travel"> Travel</label>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Sleep score (from watch)</label><input type="text" id="sleep-score" placeholder="e.g. 78"></div>
       <div class="f"><label>Sleep duration (hours)</label><input type="text" id="sleep-duration" placeholder="e.g. 7.5"></div>
     </div>
-    <p style="font-size:12px;color:#888;margin:12px 0 6px">Weather</p>
-    <div class="cb-group" id="weather-group">
-      <label class="cb-label"><input type="radio" name="weather" value="Sunny"> Sunny</label>
-      <label class="cb-label"><input type="radio" name="weather" value="Cloudy"> Cloudy</label>
-      <label class="cb-label"><input type="radio" name="weather" value="Rainy"> Rainy</label>
-      <label class="cb-label"><input type="radio" name="weather" value="Mixed"> Mixed</label>
-    </div>
-    <p style="font-size:12px;color:#888;margin:14px 0 6px">Sun exposure</p>
-    <div class="fg">
-      <div class="f"><label>Duration</label>
+  </div>
+
+  <!-- WEATHER / SUN -->
+  <div class="sec">
+    <p class="sec-title">Weather and sun exposure</p>
+    <div class="fg" style="margin-bottom:10px">
+      <div class="f"><label>Weather today</label>
+        <select id="weather-select">
+          <option value="">— not recorded</option>
+          <option value="Sunny">☀️ Sunny</option>
+          <option value="Partly cloudy">⛅ Partly cloudy</option>
+          <option value="Cloudy">☁️ Cloudy</option>
+          <option value="Rainy">🌧️ Rainy</option>
+          <option value="Cold and bright">❄️ Cold and bright</option>
+        </select>
+      </div>
+      <div class="f"><label>Sun exposure</label>
         <select id="sun-exp">
-          <option value="None">None today</option>
-          <option value="Brief <15min">Brief — under 15 min</option>
-          <option value="Moderate 15-60min">Moderate — 15 to 60 min</option>
-          <option value="Prolonged >60min">Prolonged — over 60 min</option>
+          <option value="None">None</option>
+          <option value="Brief <15min">Brief under 15 min</option>
+          <option value="Moderate 15-60min">Moderate 15 to 60 min</option>
+          <option value="Prolonged >60min">Prolonged over 60 min</option>
         </select>
       </div>
       <div class="f"><label>Hours since exposure ended</label><input type="text" id="sun-hours" placeholder="hrs"></div>
     </div>
-    <p style="font-size:12px;color:#888;margin:10px 0 6px">Skin coverage during exposure</p>
     <div class="cb-group">
       <label class="cb-label"><input type="checkbox" id="sun-arms"> Arms bare</label>
       <label class="cb-label"><input type="checkbox" id="sun-legs"> Legs bare</label>
@@ -621,9 +679,9 @@ function buildResponse(data){const o=ContentService.createTextOutput(JSON.string
     </div>
   </div>
 
-  <!-- MEDS -->
+  <!-- MEDICATION -->
   <div class="sec">
-    <p class="sec-title">Medication</p>
+    <p class="sec-title">Medication this time slot</p>
     <div id="med-rows"></div>
     <button class="add-med-btn" onclick="addMedRow()">+ add medication</button>
   </div>
@@ -631,12 +689,13 @@ function buildResponse(data){const o=ContentService.createTextOutput(JSON.string
   <!-- NOTES -->
   <div class="sec">
     <p class="sec-title">Notes</p>
-    <textarea id="entry-notes" rows="2" style="width:100%" placeholder="Anything else — new joints, triggers, how symptoms changed through the day..."></textarea>
+    <textarea id="entry-notes" rows="3" style="width:100%;font-size:14px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:inherit" placeholder="New joints, triggers, how symptoms changed through the day..."></textarea>
   </div>
 
-  <button class="btn-p btn-accent" id="save-btn" onclick="saveEntry()">Save and sync</button>
+  <button class="btn-p btn-accent" id="save-btn" onclick="saveEntry()" style="width:100%;margin-bottom:6px">Save and sync</button>
   <div class="status-bar" id="save-status"></div>
 </div>
+
 
 <!-- ====================== HISTORY ====================== -->
 <div id="tab-log" style="display:none">
@@ -684,7 +743,7 @@ const SHEET_URL_KEY = 'diagno_sheets_url_v3';
 // If you want the URL baked in (e.g. for a Kindle copy where typing is painful),
 // edit the line below. The Setup tab also has a one-click button to generate
 // a baked copy from a working device — you don't need to edit this by hand.
-const BAKED_URL = "https://script.google.com/macros/s/AKfycbxMhyBh1YegHFajJM0T9x841720vrohECF_zFzu84Wmq6KRehuM4_0hKq0ezNSbTrM73g/exec"; /*BAKED_URL*/
+const BAKED_URL = "https://script.google.com/macros/s/AKfycbz-DPXacUuJYUtiB0dQxdYw_4Eq2tsjBI60cb7CW9s0bJeMTSgX0Eg-lXawHOZxDmsKvQ/exec"; /*BAKED_URL*/
 const ENTRIES_KEY = 'diagno_entries_v3';
 const PAIN_TYPES = ['Burning','Throbbing','Aching','Stabbing','Pressing','Dull','Stiff','Shooting'];
 const BILATERAL = [
@@ -959,6 +1018,8 @@ function bakeAndDownload(html){
     alert('Could not find the BAKED_URL marker in the source HTML. Make sure you are downloading from a current version of the app.');
     return;
   }
+  // Strip fireworks block — not needed on Kindle
+  stamped = stamped.replace(/<!--\s*FIREWORKS:START\s*-->[\s\S]*?<!--\s*FIREWORKS:END\s*-->/g, '');
   var blob = new Blob([stamped], {type:'text/html'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
@@ -1624,5 +1685,7 @@ function renderSummary(){
 // init
 renderHandState();
 </script>
+
+
 </body>
 </html>
