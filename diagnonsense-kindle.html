@@ -171,7 +171,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)" title="Down">▼</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.15</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
+<div class="ver-tag"><span class="ver-pill" id="app-ver">v 3.17</span><span id="net-time-info" style="font-size:11px;color:var(--muted)">device time</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -203,7 +203,7 @@ tr:last-child td{border-bottom:none}
       <div class="step-body">Click <strong>Extensions → Apps Script</strong>. Delete everything in the editor.</div></div>
     <div class="setup-step"><span class="step-num">3</span><span class="step-title">Paste the script</span>
       <div class="step-body">Copy the code below and paste into Apps Script, then save (Ctrl+S).</div>
-      <div class="code-wrap" id="script-code">const SHEET_NAME = "Entries";
+      <textarea class="code-wrap" id="script-code" readonly rows="10" style="resize:none;cursor:text">const SHEET_NAME = "Entries";
 const COLUMNS = [
   ["Date","date"],["Time slot","time"],["Logged at","loggedAt"],
   ["Quick note only","quickNoteOnly"],
@@ -305,7 +305,7 @@ function buildResponse(data){
   const o=ContentService.createTextOutput(JSON.stringify(data));
   o.setMimeType(ContentService.MimeType.JSON);
   return o;
-}</div>
+}</textarea>
       <button class="copy-btn" onclick="copyScript()">Copy script</button></div>
     <div class="setup-step"><span class="step-num">4</span><span class="step-title">Deploy as web app</span>
       <div class="step-body">Deploy → New deployment → Web app → Execute as Me → Anyone → Deploy → copy URL.</div></div>
@@ -809,7 +809,6 @@ try{ entries=JSON.parse(localStorage.getItem(ENTRIES_KEY)||'[]'); }catch(e){}
 // ============================================================
 // INIT
 // ============================================================
-// (init runs after all declarations — see end of script)
 
 function setTodayDate(){
   const d=new Date();
@@ -937,6 +936,13 @@ function initHands(){
   if(lm){ lm.innerHTML=''; lm.innerHTML=buildHand('left'); }
   if(rm){ rm.innerHTML=''; rm.innerHTML=buildHand('right'); }
 }
+initHands();
+buildBilateral();
+buildPainTypeCbs('pt-neck');
+setTodayDate();
+updateLoggedAt();
+setInterval(updateLoggedAt, 30000);
+if(sheetsUrl){ document.getElementById('sheets-url').value=sheetsUrl; showTab('entry'); }
 
 function onHandTap(ev, side, zoneId, zoneName){
   ev.stopPropagation();
@@ -1109,7 +1115,7 @@ async function testConnection(){
 }
 
 function copyScript(){
-  const txt=document.getElementById('script-code').textContent;
+  const txt=document.getElementById('script-code').value;
   navigator.clipboard.writeText(txt).then(()=>{
     const b=document.querySelector('.copy-btn');
     b.textContent='Copied!';
@@ -1611,21 +1617,6 @@ function renderSummary(){
   }
 
   c.innerHTML=html;
-}
-
-// ---------- inline init — runs after all declarations ----------
-buildBilateral();
-buildPainTypeCbs('pt-neck');
-initHands();
-setTodayDate();
-updateLoggedAt();
-setInterval(updateLoggedAt, 30000);
-if(sheetsUrl){
-  document.getElementById('sheets-url').value = sheetsUrl;
-  document.getElementById('no-url-warn').style.display = 'none';
-  showTab('entry');
-} else {
-  document.getElementById('no-url-warn').style.display = 'none';
 }
 </script>
 
