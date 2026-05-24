@@ -29,6 +29,18 @@
     --accent-bg:#f0f0ee;--accent-fg:#1a1a1a;
   }
 }
+/* Kindle dark mode fallback — JS applies .dark class when prefers-color-scheme unavailable */
+html.dark{
+    --bg:#1a1a1a;--surface:#252525;--border:#383838;--border2:#2e2e2e;
+    --text:#f0f0ee;--text2:#ccc;--muted:#888;--hint:#666;
+    --ctrl-bg:#1f1f1f;--badge-pos-bg:#3d2e10;--badge-pos-fg:#f0c060;
+    --badge-neg-bg:#1b2e12;--badge-neg-fg:#8ecf60;--badge-zero-bg:#2a2a2a;--badge-zero-fg:#888;
+    --ok-bg:#0f2e22;--ok-fg:#3aaa84;--err-bg:#2e1212;--err-fg:#c46060;--pend-bg:#2e2010;--pend-fg:#c09040;
+    --warn-bg:#2e2010;--warn-fg:#f0c060;--qn-bg:#1f1c10;--qn-border:#4a3e10;
+    --hot-fill:#c06020;--hot-stroke:#f0a04b;--cold-fill:#2d6296;--cold-stroke:#5e96cf;
+    --ice-bg:#0e1e2e;--ice-border:#1e3e5e;--ice-checked-bg:#1a3050;--ice-checked-border:#3a70a0;
+    --accent-bg:#f0f0ee;--accent-fg:#1a1a1a;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:var(--bg);color:var(--text);padding:16px;max-width:760px;margin:0 auto}
 h1{font-size:18px;font-weight:500;margin-bottom:6px}
@@ -65,8 +77,10 @@ h1{font-size:18px;font-weight:500;margin-bottom:6px}
 .cb-label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;padding:3px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text)}
 .cb-label input{width:13px;height:13px;accent-color:#555}
 .cb-label:has(input:checked){background:var(--border);border-color:var(--muted)}
+.cb-label.cb-checked{background:var(--border);border-color:var(--muted)}
 .ice-cb{background:var(--ice-bg);border-color:var(--ice-border)}
 .ice-cb:has(input:checked){background:var(--ice-checked-bg);border-color:var(--ice-checked-border)}
+.ice-cb.cb-checked{background:var(--ice-checked-bg);border-color:var(--ice-checked-border)}
 .joint-block{border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:8px;overflow:hidden}
 .joint-title{font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text2);display:flex;justify-content:space-between;align-items:center}
 .add-med-btn{font-size:12px;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:6px}
@@ -143,7 +157,7 @@ tr:last-child td{border-bottom:none}
 /* Kindle scroll arrows */
 .kindle-nav{display:none;position:fixed;right:6px;top:50%;transform:translateY(-50%);flex-direction:column;gap:8px;z-index:999}
 .kindle-nav button{width:44px;height:44px;border-radius:50%;background:var(--accent-bg);color:var(--accent-fg);border:none;font-size:22px;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center}
-@media(max-width:500px) and (pointer:coarse){.kindle-nav{display:flex}}
+/* kindle-nav shown only in baked Kindle copy */
 /* Responsive */
 @media(max-width:600px){.hands-section,.lr-grid{grid-template-columns:1fr;gap:14px}.lr-row{grid-template-columns:1fr;gap:4px}.lr-row-label{font-weight:600;margin-top:6px}}
 @media(max-width:760px),(pointer:coarse){
@@ -171,7 +185,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)">&#9660;</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div style="font-size:11px;color:#888;margin-bottom:10px"><span style="background:#e5e5e5;color:#1a1a1a;padding:2px 9px;border-radius:99px;font-weight:500" id="app-ver">v 4.1</span></div>
+<div style="font-size:11px;color:#888;margin-bottom:10px"><span style="background:#e5e5e5;color:#1a1a1a;padding:2px 9px;border-radius:99px;font-weight:500" id="app-ver">v 4.5</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -203,7 +217,7 @@ tr:last-child td{border-bottom:none}
       <div class="step-body">Click <strong>Extensions → Apps Script</strong>. Delete everything in the editor.</div></div>
     <div class="setup-step"><span class="step-num">3</span><span class="step-title">Paste the script</span>
       <div class="step-body">Copy the code below and paste into Apps Script, then save.</div>
-      <div class="code-wrap" id="script-code">const SHEET_NAME = "Entries";
+      <textarea readonly id="script-code" class="code-wrap" rows="14" style="resize:vertical;font-family:monospace">const SHEET_NAME = "Entries";
 const COLUMNS = [
   ["Date","date"],["Time slot","time"],["Logged at","loggedAt"],["Quick note only","quickNoteOnly"],
   ["Pain head","pHead"],["Head location","headLoc"],["Head pain type","headType"],["Head area","headArea"],
@@ -258,7 +272,7 @@ function getSheet_(){const ss=SpreadsheetApp.getActiveSpreadsheet();let s=ss.get
 function ensureHeaders_(sheet){if(sheet.getLastRow()===0){sheet.appendRow(HEADERS);sheet.setFrozenRows(1);}}
 function doPost(e){const lock=LockService.getScriptLock();lock.tryLock(10000);try{const sheet=getSheet_();ensureHeaders_(sheet);var raw=(e.parameter&&e.parameter.payload)?e.parameter.payload:(e.postData&&e.postData.contents)||'{}';const d=JSON.parse(raw);if(d&&d.ping)return buildResponse({status:"ok",ping:true});const row=KEYS.map(function(k){const v=d[k];if(v===undefined||v===null||v==='')return '';return v;});sheet.appendRow(row);return buildResponse({status:"ok"});}catch(err){return buildResponse({status:"error",message:err.toString()});}finally{lock.releaseLock();}}
 function doGet(e){try{const ss=SpreadsheetApp.getActiveSpreadsheet();const sheet=ss.getSheetByName(SHEET_NAME);const now=new Date().toISOString();if(!sheet)return buildResponse({rows:[],now:now});const data=sheet.getDataRange().getValues();const headers=data[0];const rows=data.slice(1).map(r=>{const obj={};headers.forEach((h,i)=>obj[h]=r[i]);return obj;});return buildResponse({rows:rows,now:now});}catch(err){return buildResponse({status:"error",message:err.toString()});}}
-function buildResponse(data){const o=ContentService.createTextOutput(JSON.stringify(data));o.setMimeType(ContentService.MimeType.JSON);return o;}</div>
+function buildResponse(data){const o=ContentService.createTextOutput(JSON.stringify(data));o.setMimeType(ContentService.MimeType.JSON);return o;}</textarea>
       <button class="copy-btn" onclick="copyScript()">Copy script</button></div>
     <div class="setup-step"><span class="step-num">4</span><span class="step-title">Deploy as web app</span>
       <div class="step-body">Deploy → New deployment → Web app → Execute as Me → Anyone → Deploy → copy URL.</div></div>
@@ -769,8 +783,10 @@ if (BAKED_URL && !sheetsUrl) {
 try { entries = JSON.parse(localStorage.getItem(ENTRIES_KEY)||'[]'); } catch(e){}
 
 // ---------- range slider helpers ----------
-function updPr(el){ el.nextElementSibling.textContent = el.value; }
-function updPrMin(el){ el.nextElementSibling.textContent = el.value + ' min'; }
+// Sliders default to 0; we mark them 'touched' once the user moves them so
+// untouched sliders save as null (distinguishable from a deliberate 0).
+function updPr(el){ el.nextElementSibling.textContent = el.value; el.setAttribute('data-touched','1'); }
+function updPrMin(el){ el.nextElementSibling.textContent = el.value + ' min'; el.setAttribute('data-touched','1'); }
 
 // ---------- BUILD BILATERAL JOINT BLOCKS ----------
 function buildBilateral() {
@@ -799,7 +815,7 @@ function buildBilateral() {
   document.getElementById('pt-neck').innerHTML = PAIN_TYPES.map(t =>
     `<label class="cb-label"><input type="checkbox" class="pt-neck" value="${t}"> ${t}</label>`).join('');
 }
-buildBilateral();
+// (buildBilateral is invoked from the consolidated init block at end of script)
 
 // ---------- HAND DIAGRAM ----------
 // Palm view with a node for every finger / thumb joint.
@@ -875,10 +891,12 @@ function buildHand(side){
 }
 
 function initHands(){
-  document.getElementById('left-palm-mount').innerHTML  = buildHand('left');
-  document.getElementById('right-palm-mount').innerHTML = buildHand('right');
+  var lm = document.getElementById('left-palm-mount');
+  var rm = document.getElementById('right-palm-mount');
+  if (lm) { lm.innerHTML = ''; lm.innerHTML = buildHand('left'); }
+  if (rm) { rm.innerHTML = ''; rm.innerHTML = buildHand('right'); }
 }
-initHands();
+// (initHands is invoked from the consolidated init block at end of script)
 
 function onHandTap(ev, side, zoneId, zoneName){
   ev.stopPropagation();
@@ -935,9 +953,8 @@ function getHandColdString(){
 }
 
 // ---------- init date / url ----------
-document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
-updateLoggedAtTicker();
-setInterval(updateLoggedAtTicker, 30000);
+// All init calls are consolidated at the bottom of this script to avoid
+// any temporal-dead-zone or function-not-yet-defined surprises on old browsers.
 function updateLoggedAtTicker(){
   const d = new Date();
   const hh = String(d.getHours()).padStart(2,'0');
@@ -945,7 +962,6 @@ function updateLoggedAtTicker(){
   const el = document.getElementById('logged-at-display');
   if (el) el.textContent = 'Will log at: ' + hh + ':' + mm + ' (auto, updates on save)';
 }
-if(sheetsUrl) { document.getElementById('sheets-url').value = sheetsUrl; showTab('entry'); }
 
 function saveUrl() {
   sheetsUrl = document.getElementById('sheets-url').value.trim();
@@ -954,10 +970,19 @@ function saveUrl() {
 }
 
 function copyScript() {
-  navigator.clipboard.writeText(document.getElementById('script-code').textContent).then(() => {
-    const b = document.querySelector('.copy-btn'); b.textContent='Copied!';
-    setTimeout(()=>b.textContent='Copy script',2000);
-  });
+  var el = document.getElementById('script-code');
+  var text = (el && (el.value !== undefined && el.value !== null)) ? el.value : (el ? el.textContent : '');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      const b = document.querySelector('.copy-btn'); b.textContent='Copied!';
+      setTimeout(()=>b.textContent='Copy script',2000);
+    });
+  } else {
+    // Old browsers (Kindle): select the textarea so user can long-press copy
+    try { el.focus(); el.select(); document.execCommand && document.execCommand('copy'); } catch(e){}
+    const b = document.querySelector('.copy-btn'); b.textContent='Selected — long-press to copy';
+    setTimeout(()=>b.textContent='Copy script',3000);
+  }
 }
 
 async function testConnection() {
@@ -1012,7 +1037,7 @@ async function downloadBaked(){
   }
 }
 function bakeAndDownload(html){
-  var stamped = html.replace(/const BAKED_URL = ['\"][^'\"]*['\"]; \/\*BAKED_URL\*\//,
+  var stamped = html.replace(/const\s+BAKED_URL\s*=\s*['"][^'"]*['"]\s*;\s*\/\*BAKED_URL\*\//,
     'const BAKED_URL = ' + JSON.stringify(sheetsUrl) + '; /*BAKED_URL*/');
   if (stamped === html) {
     alert('Could not find the BAKED_URL marker in the source HTML. Make sure you are downloading from a current version of the app.');
@@ -1020,6 +1045,8 @@ function bakeAndDownload(html){
   }
   // Strip fireworks block — not needed on Kindle
   stamped = stamped.replace(/<!--\s*FIREWORKS:START\s*-->[\s\S]*?<!--\s*FIREWORKS:END\s*-->/g, '');
+  // Show scroll arrows on Kindle
+  stamped = stamped.replace('/* kindle-nav shown only in baked Kindle copy */', '.kindle-nav{display:flex !important}');
   var blob = new Blob([stamped], {type:'text/html'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
@@ -1124,9 +1151,14 @@ function recalcDiffs() {
 }
 
 // ---------- form helpers ----------
+// Returns null if the slider hasn't been moved (so the sheet shows blank,
+// not "0"), or the numeric value if it has.
 function getPainVal(joint) {
-  const el = document.querySelector(`input[data-joint="${joint}"]`);
-  return el ? parseInt(el.value) : 0;
+  const el = document.querySelector('input[data-joint="'+joint+'"]');
+  if (!el) return null;
+  if (!el.getAttribute('data-touched')) return null;
+  const n = parseInt(el.value);
+  return isNaN(n) ? null : n;
 }
 function getPainTypes(cls) { return Array.from(document.querySelectorAll('.'+cls+':checked')).map(el=>el.value).join('; '); }
 function getChecked(containerId) { return Array.from(document.querySelectorAll('#'+containerId+' input:checked')).map(el=>el.value).join('; '); }
@@ -1189,27 +1221,33 @@ function blankPayload(){
     pLankle:0, pRankle:0, ptAnkles:'',
     pLfoot:0, pRfoot:0, ptFeet:'',
     iceWanted:'', iceApplied:'',
-    vertigo:0, nausea:0, lightSens:0,
-    morningStiff:0,
-    acidReflux:0, pFatigue:0,
-    mouthCorner:0, dryEyes:0, cheilitisVisible:false,
-    physExertion:0, stress:0, sleepScore:'', sleepDuration:'', weather:'',
+    vertigo:null, nausea:null, tinnitus:null, lightSens:null,
+    chestHeaviness:null, brainFog:null, speechClumsy:null,
+    morningStiff:null,
+    acidReflux:null, pFatigue:null,
+    mouthCorner:null, dryEyes:null, cheilitisVisible:false,
+    physExertion:'', stress:'', sleepScore:'', sleepDuration:'', weather:'',
     sunExp:'None', sunHours:'', sunCoverage:'',
     cLthumb:'', cRthumb:'', cLindex:'', cRindex:'',
     cLmiddle:'', cRmiddle:'', cLring:'', cRring:'',
     cLlittle:'', cRlittle:'',
     gripL:'', gripR:'',
-    cLknee:'', cRknee:'', cLelbow:'', cRelbow:'', cJaw:'',
+    cLknee:'', cRknee:'', cLelbow:'', cRelbow:'',
+    cLankle:'', cRankle:'', cLfoot:'', cRfoot:'',
     handHot:'', handLhotTemp:null, handRhotTemp:null,
     handCold:'', handLcoldTemp:null, handRcoldTemp:null,
-    ctrlInnerArm:null, ctrlCalf:null, ctrlForehead:null, ctrlRoom:null, ctrlOtherHand:null,
+    ctrlInnerArm:null, ctrlCalf:null, ctrlForehead:null, ctrlRoom:null,
     tLknee:null, tRknee:null, dLknee:null, dRknee:null,
     tLhip:null, tRhip:null, dLhip:null, dRhip:null,
     tLelbow:null, tRelbow:null, dLelbow:null, dRelbow:null,
     tLhand:null, tRhand:null, dLhand:null, dRhand:null,
     tLjaw:null, tRjaw:null, dLjaw:null, dRjaw:null,
-    refInitials:'', refLhand:null, refRhand:null, refForehead:null,
+    tLankle:null, tRankle:null, dLankle:null, dRankle:null,
+    tLfoot:null, tRfoot:null, dLfoot:null, dRfoot:null,
+    handHotLocL:null, handColdLocL:null, handHotLocR:null, handColdLocR:null,
+    refInitials:'', refLhand:null, refRhand:null, refLpalm:null, refRpalm:null, refForehead:null,
     swelling:'', photos:'',
+    jawOpening:null,
     meds:'', notes:''
   };
 }
@@ -1252,15 +1290,10 @@ async function saveEntry() {
   const calf=parseDec('t-ctrl-calf');
   const forehead=parseDec('t-ctrl-forehead');
   const room=parseDec('t-ctrl-room');
-  const otherHand=parseDec('t-ctrl-otherhand');
+  // (t-ctrl-otherhand was removed from the UI — keep payload key for back-compat but always null)
+  const otherHand=null;
 
-  // require at least one control reading (any of the 5)
-  if(arm===null && calf===null && forehead===null && room===null && otherHand===null){
-    document.getElementById('t-ctrl-innerarm').classList.add('required-missing');
-    showStatus(bar,'err','Please enter at least one control temperature before saving (or use Quick note above).');
-    return;
-  }
-  document.getElementById('t-ctrl-innerarm').classList.remove('required-missing');
+  // no control temperature requirement — save whatever is filled in
 
   const tRaw = id => parseDec('t-'+id);
   const diff = (id, ctrl) => { const r=tRaw(id); if(r===null||ctrl===null) return null; return parseFloat((r-ctrl).toFixed(2)); };
@@ -1288,22 +1321,27 @@ async function saveEntry() {
     pLknee: getPainVal('knees-l'), pRknee: getPainVal('knees-r'), ptKnees: getPainTypes('pt-knees'),
     pLankle: getPainVal('ankles-l'), pRankle: getPainVal('ankles-r'), ptAnkles: getPainTypes('pt-ankles'),
     pLfoot: getPainVal('feet-l'), pRfoot: getPainVal('feet-r'), ptFeet: getPainTypes('pt-feet'),
+    jawOpening: getPainVal('jawOpening'),
     iceWanted: getIceJoints('ice-w'),
     iceApplied: getIceJoints('ice-a'),
     vertigo: getPainVal('vertigo'),
     nausea: getPainVal('nausea'),
+    tinnitus: getPainVal('tinnitus'),
     lightSens: getPainVal('lightSens'),
+    chestHeaviness: getPainVal('chestHeaviness'),
+    brainFog: getPainVal('brainFog'),
+    speechClumsy: getPainVal('speechClumsy'),
     morningStiff: getPainVal('morningStiff'),
     acidReflux: getPainVal('acidReflux'),
     pFatigue: getPainVal('fatigue'),
     mouthCorner: getPainVal('mouthCorner'),
     dryEyes: getPainVal('dryEyes'),
     cheilitisVisible: document.getElementById('cheilitis-visible').checked,
-    physExertion: getPainVal('physExertion'),
-    stress: getPainVal('stress'),
+    physExertion: document.getElementById('trig-exertion')&&document.getElementById('trig-exertion').checked?'Yes':'',
+    stress: document.getElementById('trig-stress')&&document.getElementById('trig-stress').checked?'Yes':'',
     sleepScore: document.getElementById('sleep-score').value||'',
     sleepDuration: document.getElementById('sleep-duration').value||'',
-    weather: getRadio('weather'),
+    weather: (document.getElementById('weather-select')||{value:''}).value||'',
     sunExp: document.getElementById('sun-exp').value,
     sunHours: document.getElementById('sun-hours').value||'',
     sunCoverage: getSunCoverage(),
@@ -1323,7 +1361,10 @@ async function saveEntry() {
     cRknee: document.getElementById('c-rknee').value||'',
     cLelbow: document.getElementById('c-lelbow').value||'',
     cRelbow: document.getElementById('c-relbow').value||'',
-    cJaw: document.getElementById('c-jaw').value||'',
+    cLankle: (document.getElementById('c-lankle')||{}).value||'',
+    cRankle: (document.getElementById('c-rankle')||{}).value||'',
+    cLfoot: (document.getElementById('c-lfoot')||{}).value||'',
+    cRfoot: (document.getElementById('c-rfoot')||{}).value||'',
     handHot: getHandHotString(),
     handLhotTemp: parseDec('t-l-hot'),
     handRhotTemp: parseDec('t-r-hot'),
@@ -1336,10 +1377,18 @@ async function saveEntry() {
     tLelbow: tRaw('lelbow'), tRelbow: tRaw('relbow'), dLelbow: diff('lelbow',arm), dRelbow: diff('relbow',arm),
     tLhand: tRaw('lhand'), tRhand: tRaw('rhand'), dLhand: diff('lhand',arm), dRhand: diff('rhand',arm),
     tLjaw: tRaw('ljaw'), tRjaw: tRaw('rjaw'), dLjaw: diff('ljaw',forehead), dRjaw: diff('rjaw',forehead),
+    tLankle: tRaw('lankle'), tRankle: tRaw('rankle'), dLankle: diff('lankle',calf), dRankle: diff('rankle',calf),
+    tLfoot: tRaw('lfoot'), tRfoot: tRaw('rfoot'), dLfoot: diff('lfoot',calf), dRfoot: diff('rfoot',calf),
+    handHotLocL: handState.lPalm.hot?handState.lPalm.hot.name:null,
+    handColdLocL: handState.lPalm.cold?handState.lPalm.cold.name:null,
+    handHotLocR: handState.rPalm.hot?handState.rPalm.hot.name:null,
+    handColdLocR: handState.rPalm.cold?handState.rPalm.cold.name:null,
     refInitials: document.getElementById('ref-initials').value||'',
+    refForehead: parseDec('ref-forehead'),
     refLhand: parseDec('ref-lhand'),
     refRhand: parseDec('ref-rhand'),
-    refForehead: parseDec('ref-forehead'),
+    refLpalm: parseDec('ref-lpalm'),
+    refRpalm: parseDec('ref-rpalm'),
     swelling: getChecked('swelling-checks'),
     photos: getChecked('photo-checks'),
     meds: medRows.filter(r=>r.name.trim()).map(m=>(m.taken?'[taken] ':'[not taken] ')+m.name).join('; '),
@@ -1355,6 +1404,7 @@ async function saveEntry() {
 function resetForm(){
   document.querySelectorAll('#tab-entry input[type=range]').forEach(el=>{
     el.value=0;
+    el.removeAttribute('data-touched');
     const v = el.nextElementSibling;
     if(v) v.textContent = (el.dataset.joint==='morningStiff') ? '0 min' : '0';
   });
@@ -1366,25 +1416,34 @@ function resetForm(){
   document.getElementById('sun-exp').value='None';
   document.getElementById('sleep-score').value='';
   document.getElementById('sleep-duration').value='';
-  document.querySelectorAll('input[name="weather"]').forEach(el=>el.checked=false);
+  var wsel=document.getElementById('weather-select'); if(wsel) wsel.value='';
   document.getElementById('cheilitis-visible').checked=false;
-  ['t-ctrl-innerarm','t-ctrl-calf','t-ctrl-forehead','t-ctrl-room','t-ctrl-otherhand'].forEach(id=>document.getElementById(id).value='');
+  ['t-ctrl-innerarm','t-ctrl-calf','t-ctrl-forehead','t-ctrl-room'].forEach(id=>{
+    var e=document.getElementById(id); if(e) e.value='';
+  });
   ['ctrl-innerarm-display','ctrl-calf-display','ctrl-forehead-display'].forEach(id=>{
-    const e=document.getElementById(id); e.textContent=''; e.className='diff-badge diff-zero';
+    const e=document.getElementById(id); if(!e) return; e.textContent=''; e.className='diff-badge diff-zero';
   });
   Object.keys(JOINT_CTRL).forEach(j=>{
-    document.getElementById('t-'+j).value='';
-    const b=document.getElementById('d-'+j);b.textContent='—';b.className='diff-badge diff-zero';
+    var t=document.getElementById('t-'+j); if(t) t.value='';
+    const b=document.getElementById('d-'+j); if(b){ b.textContent='—'; b.className='diff-badge diff-zero'; }
   });
-  ['ref-initials','ref-lhand','ref-rhand','ref-forehead','t-l-hot','t-l-cold','t-r-hot','t-r-cold'].forEach(id=>document.getElementById(id).value='');
-  ['c-lknee','c-rknee','c-lelbow','c-relbow','c-jaw',
+  ['ref-initials','ref-lhand','ref-rhand','ref-lpalm','ref-rpalm','ref-forehead',
+   't-l-hot','t-l-cold','t-r-hot','t-r-cold'].forEach(id=>{
+    var e=document.getElementById(id); if(e) e.value='';
+  });
+  ['c-lknee','c-rknee','c-lelbow','c-relbow',
+   'c-lankle','c-rankle','c-lfoot','c-rfoot',
    'c-lthumb','c-rthumb','c-lindex','c-rindex','c-lmiddle','c-rmiddle',
-   'c-lring','c-rring','c-llittle','c-rlittle','grip-l','grip-r'].forEach(id=>document.getElementById(id).value='');
+   'c-lring','c-rring','c-llittle','c-rlittle','grip-l','grip-r'].forEach(id=>{
+    var e=document.getElementById(id); if(e) e.value='';
+  });
   document.querySelectorAll('.head-loc,.head-type,.head-area,.ice-w,.ice-a').forEach(el=>el.checked=false);
   BILATERAL.forEach(({id})=>{
     document.querySelectorAll('.pt-'+id).forEach(el=>el.checked=false);
   });
   document.querySelectorAll('.pt-neck').forEach(el=>el.checked=false);
+  document.querySelectorAll('#tab-entry .cb-label.cb-checked').forEach(el=>el.classList.remove('cb-checked'));
   medRows=[];renderMedRows();
   handState = { lPalm: {hot:null, cold:null}, rPalm: {hot:null, cold:null} };
   renderHandState();
@@ -1682,10 +1741,77 @@ function renderSummary(){
   c.innerHTML=html;
 }
 
-// init
+// ---------- CONSOLIDATED INIT (runs after every function & const is declared) ----------
+// Single inline init block. Order matters:
+//  1. build dynamic DOM (bilateral joints, hand SVGs)
+//  2. seed the date input + logged-at ticker
+//  3. wire the :has() polyfill (Kindle/old WebKit) for .cb-label checked state
+//  4. if a URL is saved, populate the field and switch to the entry tab
+//  5. final hand-state paint
+buildBilateral();
+initHands();
+(function(){
+  var de = document.getElementById('entry-date');
+  if (de) de.value = new Date().toISOString().split('T')[0];
+})();
+updateLoggedAtTicker();
+setInterval(updateLoggedAtTicker, 30000);
+
+// :has() polyfill for older WebKit. Toggle `.cb-checked` on the enclosing
+// .cb-label whenever an interior checkbox changes. We also do an initial
+// sweep so pre-checked inputs get the class.
+(function(){
+  function findLabel(node){
+    while (node && node !== document) {
+      if (node.classList && node.classList.contains('cb-label')) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+  function syncOne(input){
+    var lbl = findLabel(input);
+    if (!lbl) return;
+    if (input.checked) lbl.classList.add('cb-checked');
+    else lbl.classList.remove('cb-checked');
+  }
+  document.addEventListener('change', function(ev){
+    var t = ev.target;
+    if (t && t.type === 'checkbox') syncOne(t);
+  }, false);
+  // Initial sweep — also covers checkboxes added dynamically by buildBilateral.
+  var inputs = document.querySelectorAll('.cb-label input[type=checkbox]');
+  for (var i = 0; i < inputs.length; i++) syncOne(inputs[i]);
+})();
+
+if (sheetsUrl) {
+  var su = document.getElementById('sheets-url');
+  if (su) su.value = sheetsUrl;
+  showTab('entry');
+}
 renderHandState();
 </script>
 
+
+<!-- KINDLE_DARK:START -->
+<script>
+(function(){
+  try{
+    var check = function(){
+      var el = document.body;
+      if(!el) return;
+      var bg = window.getComputedStyle(el).backgroundColor;
+      var m = bg.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if(m){
+        var dark = (parseInt(m[1])+parseInt(m[2])+parseInt(m[3])) < 200;
+        document.documentElement.classList.toggle('dark', dark);
+      }
+    };
+    check();
+    setInterval(check, 2000);
+  }catch(e){}
+})();
+</script>
+<!-- KINDLE_DARK:END -->
 <!-- FIREWORKS:START -->
 <canvas id="fw-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:none"></canvas>
 <script>
