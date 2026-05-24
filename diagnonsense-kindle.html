@@ -183,7 +183,7 @@ tr:last-child td{border-bottom:none}
   <button onclick="window.scrollBy(0,300)">&#9660;</button>
 </div>
 <h1>Project Diagnonsense</h1>
-<div style="font-size:11px;color:#888;margin-bottom:10px"><span style="background:#e5e5e5;color:#1a1a1a;padding:2px 9px;border-radius:99px;font-weight:500" id="app-ver">v 5.0</span></div>
+<div style="font-size:11px;color:#888;margin-bottom:10px"><span style="background:#e5e5e5;color:#1a1a1a;padding:2px 9px;border-radius:99px;font-weight:500" id="app-ver">v 5.2</span></div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('setup')">Setup</button>
   <button class="tab" onclick="showTab('entry')">Log entry</button>
@@ -1101,7 +1101,7 @@ const JOINT_CTRL = {
   ljaw:'forehead', rjaw:'forehead'
 };
 
-function parseDec(id){ const v=parseFloat(document.getElementById(id).value); return isNaN(v)?null:v; }
+function parseDec(id){ const el=document.getElementById(id); if(!el) return null; const v=parseFloat(el.value); return isNaN(v)?null:v; }
 
 function recalcDiffs() {
   const arm = parseDec('t-ctrl-innerarm');
@@ -1265,7 +1265,6 @@ async function saveEntry() {
   const calf=parseDec('t-ctrl-calf');
   const forehead=parseDec('t-ctrl-forehead');
   const room=parseDec('t-ctrl-room');
-  const otherHand=parseDec('t-ctrl-otherhand');
 
   // no control temperature requirement — save whatever is filled in
 
@@ -1344,7 +1343,7 @@ async function saveEntry() {
     handCold: getHandColdString(),
     handLcoldTemp: parseDec('t-l-cold'),
     handRcoldTemp: parseDec('t-r-cold'),
-    ctrlInnerArm: arm, ctrlCalf: calf, ctrlForehead: forehead, ctrlRoom: room, ctrlOtherHand: otherHand,
+    ctrlInnerArm: arm, ctrlCalf: calf, ctrlForehead: forehead, ctrlRoom: room,
     tLknee: tRaw('lknee'), tRknee: tRaw('rknee'), dLknee: diff('lknee',calf), dRknee: diff('rknee',calf),
     tLhip: tRaw('lhip'), tRhip: tRaw('rhip'), dLhip: diff('lhip',calf), dRhip: diff('rhip',calf),
     tLelbow: tRaw('lelbow'), tRelbow: tRaw('relbow'), dLelbow: diff('lelbow',arm), dRelbow: diff('relbow',arm),
@@ -1381,27 +1380,32 @@ function resetForm(){
     if(v) v.textContent = (el.dataset.joint==='morningStiff') ? '0 min' : '0';
   });
   document.querySelectorAll('#swelling-checks input,#photo-checks input').forEach(el=>el.checked=false);
-  ['arms','legs','face','hands','hat','spf','shade'].forEach(f=>document.getElementById('sun-'+f).checked=false);
-  document.getElementById('entry-notes').value='';
-  document.getElementById('quick-note').value='';
-  document.getElementById('sun-hours').value='';
-  document.getElementById('sun-exp').value='None';
-  document.getElementById('sleep-score').value='';
-  document.getElementById('sleep-duration').value='';
+  ['arms','legs','face','hands','hat','spf','shade'].forEach(f=>{const e=document.getElementById('sun-'+f); if(e) e.checked=false;});
+  // Safe setters: silently skip any ID that isn't in the DOM, so a single
+  // dangling reference can't tank the whole reset (and by extension the save flow).
+  const setVal = (id,v)=>{const e=document.getElementById(id); if(e) e.value=v;};
+  const setChecked = (id,v)=>{const e=document.getElementById(id); if(e) e.checked=v;};
+  setVal('entry-notes','');
+  setVal('quick-note','');
+  setVal('sun-hours','');
+  setVal('sun-exp','None');
+  setVal('sleep-score','');
+  setVal('sleep-duration','');
   document.querySelectorAll('input[name="weather"]').forEach(el=>el.checked=false);
-  document.getElementById('cheilitis-visible').checked=false;
-  ['t-ctrl-innerarm','t-ctrl-calf','t-ctrl-forehead','t-ctrl-room','t-ctrl-otherhand'].forEach(id=>document.getElementById(id).value='');
+  setChecked('cheilitis-visible', false);
+  ['t-ctrl-innerarm','t-ctrl-calf','t-ctrl-forehead','t-ctrl-room'].forEach(id=>setVal(id,''));
   ['ctrl-innerarm-display','ctrl-calf-display','ctrl-forehead-display'].forEach(id=>{
-    const e=document.getElementById(id); e.textContent=''; e.className='diff-badge diff-zero';
+    const e=document.getElementById(id); if(e){e.textContent=''; e.className='diff-badge diff-zero';}
   });
   Object.keys(JOINT_CTRL).forEach(j=>{
-    document.getElementById('t-'+j).value='';
-    const b=document.getElementById('d-'+j);b.textContent='—';b.className='diff-badge diff-zero';
+    setVal('t-'+j,'');
+    const b=document.getElementById('d-'+j); if(b){b.textContent='—'; b.className='diff-badge diff-zero';}
   });
-  ['ref-initials','ref-lhand','ref-rhand','ref-forehead','t-l-hot','t-l-cold','t-r-hot','t-r-cold'].forEach(id=>document.getElementById(id).value='');
-  ['c-lknee','c-rknee','c-lelbow','c-relbow','c-jaw',
+  ['ref-initials','ref-lhand','ref-rhand','ref-lpalm','ref-rpalm','ref-forehead','t-l-hot','t-l-cold','t-r-hot','t-r-cold'].forEach(id=>setVal(id,''));
+  ['c-lknee','c-rknee','c-lelbow','c-relbow',
    'c-lthumb','c-rthumb','c-lindex','c-rindex','c-lmiddle','c-rmiddle',
-   'c-lring','c-rring','c-llittle','c-rlittle','grip-l','grip-r'].forEach(id=>document.getElementById(id).value='');
+   'c-lring','c-rring','c-llittle','c-rlittle','grip-l','grip-r',
+   'c-lankle','c-rankle','c-lfoot','c-rfoot'].forEach(id=>setVal(id,''));
   document.querySelectorAll('.head-loc,.head-type,.head-area,.ice-w,.ice-a').forEach(el=>el.checked=false);
   BILATERAL.forEach(({id})=>{
     document.querySelectorAll('.pt-'+id).forEach(el=>el.checked=false);
